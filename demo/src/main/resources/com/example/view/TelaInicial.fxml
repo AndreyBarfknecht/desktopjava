@@ -94,7 +94,7 @@
                <children>
                   <VBox styleClass="summary-card, card-green" prefWidth="250.0">
                      <children>
-                        <Label styleClass="summary-card-value" text="0" />
+                        <Label styleClass="summary-card-value" text="1" />
                         <Label styleClass="summary-card-label" text="Cursos Ativos" />
                      </children>
                   </VBox>
