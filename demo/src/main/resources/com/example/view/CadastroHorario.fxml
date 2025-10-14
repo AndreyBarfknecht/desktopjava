@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="550.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.CadastroHorarioController" stylesheets="@../style.css">
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="30.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+            <children>
+                <Label text="Cadastro de Horário">
+                    <styleClass>
+                        <String fx:value="label" />
+                        <String fx:value="titulo-janela" />
+                    </styleClass>
+                </Label>
+                <GridPane hgap="10.0" vgap="15.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="350.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Período Letivo:" />
+                        <ComboBox fx:id="periodoLetivoComboBox" prefWidth="450.0" promptText="Selecione o período letivo" GridPane.columnIndex="1" />
+                        <Label text="Turma:" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="turmaComboBox" prefWidth="450.0" promptText="Selecione a turma" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Professor:" GridPane.rowIndex="2" />
+                        <ComboBox fx:id="professorComboBox" prefWidth="450.0" promptText="Selecione o professor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        
+                        <Label text="Dia da Semana:" GridPane.rowIndex="3" />
+                        <ComboBox fx:id="diaSemanaComboBox" prefWidth="450.0" promptText="Selecione o dia" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label text="Hora de Início:" GridPane.rowIndex="4" />
+                        <TextField fx:id="horaInicioField" promptText="HH:MM" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label text="Hora de Fim:" GridPane.rowIndex="5" />
+                        <TextField fx:id="horaFimField" promptText="HH:MM" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                    </children>
+                </GridPane>
+                <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                    <children>
+                        <Button fx:id="cancelarButton" onAction="#onCancelar" prefWidth="120.0" text="Cancelar" styleClass="cancel-button" />
+                        <Button fx:id="salvarButton" onAction="#onSalvar" prefWidth="120.0" text="Salvar" styleClass="salvar-button" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
