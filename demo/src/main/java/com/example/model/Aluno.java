@@ -43,7 +43,6 @@ public class Aluno {
     
     @Override
     public String toString() {
-        // Isto é o que aparecerá nas listas de seleção
         return this.nomeCompleto;
     }
     
