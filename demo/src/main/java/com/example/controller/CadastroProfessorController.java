@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
 import com.example.model.Professor;
-import com.example.service.AcademicService;
+import com.example.repository.ProfessorDAO; // ALTERAÇÃO: Importa o DAO que criámos
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -22,7 +22,6 @@ public class CadastroProfessorController implements Initializable {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
 
-    // --- CAMPOS DO FXML ---
     @FXML private TextField nomeCompletoField;
     @FXML private TextField cpfField;
     @FXML private DatePicker dataNascimentoPicker;
@@ -32,35 +31,48 @@ public class CadastroProfessorController implements Initializable {
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
 
+    private ProfessorDAO professorDAO; // ALTERAÇÃO: Adicionamos uma variável para o nosso DAO
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Adiciona máscaras e validações aos campos
+        this.professorDAO = new ProfessorDAO(); // ALTERAÇÃO: Criamos uma nova instância do DAO
         addCpfMask(cpfField);
         addPhoneMask(telefoneField);
         addEmailValidation(emailField);
     }
 
     @FXML
-        private void onSalvar() {
+    private void onSalvar() {
         if (!isProfessorDataValid()) {
             return;
         }
 
-        // Cria um novo objeto Professor
+        // 1. Cria um objeto Professor com todos os dados do formulário
         Professor novoProfessor = new Professor(
             nomeCompletoField.getText(),
-            cpfField.getText()
+            cpfField.getText(),
+            dataNascimentoPicker.getValue(),
+            emailField.getText(),
+            telefoneField.getText(),
+            disciplinaField.getText()
         );
 
-        // Adiciona o professor ao nosso serviço de dados
-        AcademicService.getInstance().addProfessor(novoProfessor);
+        // 2. --- LÓGICA PRINCIPAL ALTERADA ---
+        //    Usa o DAO para salvar o objeto na base de dados
+        try {
+            professorDAO.save(novoProfessor);
+            
+            System.out.println("Professor " + novoProfessor.getNomeCompleto() + " salvo na base de dados.");
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Professor salvo com sucesso!");
+            fecharJanela();
 
-        System.out.println("Professor " + novoProfessor.getNomeCompleto() + " salvo no serviço.");
-        
-        showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Professor salvo com sucesso!");
-        fecharJanela();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar o professor. Verifique a consola para mais detalhes.");
+            e.printStackTrace();
+        }
     }
 
+    // (O resto da classe, com os métodos de validação e máscaras, permanece igual)
     
     private boolean isProfessorDataValid() {
         if (nomeCompletoField.getText().trim().isEmpty() || 
@@ -95,9 +107,6 @@ public class CadastroProfessorController implements Initializable {
         stage.close();
     }
     
-    // --- MÉTODOS AUXILIARES (Máscaras, Alertas, etc.) ---
-    // (Estes métodos são reutilizados do CadastroAlunoController)
-
     private void addCpfMask(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             String digitsOnly = newValue.replaceAll("\\D", "");
