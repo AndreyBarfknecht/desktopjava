@@ -30,6 +30,7 @@ public class CadastroProfessorController implements Initializable {
     @FXML private TextField disciplinaField;
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
+    
 
     private ProfessorDAO professorDAO; // ALTERAÇÃO: Adicionamos uma variável para o nosso DAO
 
@@ -41,33 +42,48 @@ public class CadastroProfessorController implements Initializable {
         addEmailValidation(emailField);
     }
 
+    private Professor professorParaEditar;
+    public void setProfessorParaEdicao(Professor professor) {
+        this.professorParaEditar = professor;
+        
+        // Preenche os campos do formulário com os dados do professor
+        nomeCompletoField.setText(professor.getNomeCompleto());
+        cpfField.setText(professor.getCpf());
+        dataNascimentoPicker.setValue(professor.getDataNascimento());
+        emailField.setText(professor.getEmail());
+        telefoneField.setText(professor.getTelefone());
+        disciplinaField.setText(professor.getDisciplinaPrincipal());
+    }
+
     @FXML
     private void onSalvar() {
         if (!isProfessorDataValid()) {
             return;
         }
 
-        // 1. Cria um objeto Professor com todos os dados do formulário
-        Professor novoProfessor = new Professor(
-            nomeCompletoField.getText(),
-            cpfField.getText(),
-            dataNascimentoPicker.getValue(),
-            emailField.getText(),
-            telefoneField.getText(),
-            disciplinaField.getText()
-        );
-
-        // 2. --- LÓGICA PRINCIPAL ALTERADA ---
-        //    Usa o DAO para salvar o objeto na base de dados
+        // 3. LÓGICA DE SALVAR ALTERADA
         try {
-            professorDAO.save(novoProfessor);
-            
-            System.out.println("Professor " + novoProfessor.getNomeCompleto() + " salvo na base de dados.");
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Professor salvo com sucesso!");
+            if (professorParaEditar == null) { // Se não há professor para editar, é um novo registo
+                Professor novoProfessor = new Professor(
+                    nomeCompletoField.getText(), cpfField.getText(), dataNascimentoPicker.getValue(),
+                    emailField.getText(), telefoneField.getText(), disciplinaField.getText()
+                );
+                professorDAO.save(novoProfessor);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Professor salvo com sucesso!");
+            } else { // Se há um professor para editar, atualiza os seus dados
+                professorParaEditar.setNomeCompleto(nomeCompletoField.getText());
+                professorParaEditar.setCpf(cpfField.getText());
+                professorParaEditar.setDataNascimento(dataNascimentoPicker.getValue());
+                professorParaEditar.setEmail(emailField.getText());
+                professorParaEditar.setTelefone(telefoneField.getText());
+                professorParaEditar.setDisciplinaPrincipal(disciplinaField.getText());
+                
+                professorDAO.update(professorParaEditar);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Professor atualizado com sucesso!");
+            }
             fecharJanela();
-
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar o professor. Verifique a consola para mais detalhes.");
+            showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar o professor.");
             e.printStackTrace();
         }
     }

@@ -7,6 +7,10 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProfessorDAO {
 
@@ -35,4 +39,78 @@ public class ProfessorDAO {
             e.printStackTrace();
         }
     }
+
+    // metodo para listar os
+    public List<Professor> getAll() {
+        String sql = "SELECT * FROM professores";
+        List<Professor> professores = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            // Itera sobre cada linha que a base de dados retornou
+            while (rs.next()) {
+                // Extrai os dados de cada coluna da linha atual
+                int id = rs.getInt("id");
+                String nome = rs.getString("nome_completo");
+                String cpf = rs.getString("cpf");
+                LocalDate dataNascimento = rs.getDate("data_nascimento").toLocalDate();
+                String email = rs.getString("email");
+                String telefone = rs.getString("telefone");
+                String disciplina = rs.getString("disciplina_principal");
+
+                // Cria um objeto Professor com os dados extraídos
+                Professor professor = new Professor(nome, cpf, dataNascimento, email, telefone, disciplina);
+                professor.setId(id); // Define o ID que veio da base de dados
+
+                // Adiciona o professor à lista
+                professores.add(professor);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar professores: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return professores; // Retorna a lista completa de professores
+    }
+
+    public void update(Professor professor) {
+        String sql = "UPDATE professores SET nome_completo = ?, cpf = ?, data_nascimento = ?, email = ?, telefone = ?, disciplina_principal = ? WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, professor.getNomeCompleto());
+            pstmt.setString(2, professor.getCpf());
+            pstmt.setDate(3, Date.valueOf(professor.getDataNascimento()));
+            pstmt.setString(4, professor.getEmail());
+            pstmt.setString(5, professor.getTelefone());
+            pstmt.setString(6, professor.getDisciplinaPrincipal());
+            pstmt.setInt(7, professor.getId()); // O ID é usado no 'WHERE'
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar professor: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // --- NOVO MÉTODO PARA APAGAR ---
+    public void delete(int id) {
+        String sql = "DELETE FROM professores WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id); // Define o ID do professor a ser apagado
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao apagar professor: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
+

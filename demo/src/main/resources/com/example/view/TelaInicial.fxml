@@ -68,6 +68,11 @@
                   <FontAwesomeIconView glyphName="SEARCH" size="1.5em" />
                </graphic>
             </Button>
+            <Button fx:id="consultarProfessoresButton" onAction="#handleConsultarProfessoresButton" styleClass="sidebar-button" text="Consultar Professores">
+               <graphic>
+                  <FontAwesomeIconView glyphName="SEARCH_PLUS" size="1.5em" />
+               </graphic>
+            </Button>
              <Button fx:id="cadastrarUsuarioButton" onAction="#handleCadastroUsuarioButton" styleClass="sidebar-button" text="Cadastrar Usuário">
                <graphic>
                   <FontAwesomeIconView glyphName="USER_PLUS" size="1.5em" />
@@ -108,6 +113,12 @@
                      <children>
                         <Label styleClass="summary-card-value" text="0" />
                         <Label styleClass="summary-card-label" text="Alunos Matriculados" />
+                     </children>
+                  </VBox>
+                  <VBox fx:id="professoresWidget" styleClass="summary-card, card-purple" prefWidth="250.0" onMouseClicked="#handleConsultarProfessoresWidget">
+                     <children>
+                        <Label fx:id="professoresCountLabel" styleClass="summary-card-value" text="0" />
+                        <Label styleClass="summary-card-label" text="Professores Registados/n(Clique para mais informações)" />
                      </children>
                   </VBox>
                </children>

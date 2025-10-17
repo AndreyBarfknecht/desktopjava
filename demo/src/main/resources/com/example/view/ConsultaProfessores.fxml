@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?> <?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.ConsultaProfessoresController" stylesheets="@../style.css">
+    <top>
+        <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Consulta de Professores">
+                    <styleClass>
+                        <String fx:value="label" />
+                        <String fx:value="titulo-janela" />
+                    </styleClass>
+                </Label>
+                <TextField fx:id="searchField" maxWidth="400.0" promptText="Buscar por nome ou CPF..." />
+            </children>
+            <padding>
+                <Insets bottom="20.0" top="20.0" />
+            </padding>
+        </VBox>
+    </top>
+    <center>
+        <TableView fx:id="professoresTableView" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn prefWidth="250.0" text="Nome Completo">
+                    <cellValueFactory><PropertyValueFactory property="nomeCompleto" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="120.0" text="CPF">
+                    <cellValueFactory><PropertyValueFactory property="cpf" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="150.0" text="Data de Nascimento">
+                     <cellValueFactory><PropertyValueFactory property="dataNascimento" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="200.0" text="E-mail">
+                    <cellValueFactory><PropertyValueFactory property="email" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="150.0" text="Disciplina Principal">
+                    <cellValueFactory><PropertyValueFactory property="disciplinaPrincipal" /></cellValueFactory>
+                </TableColumn>
+            </columns>
+        </TableView>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+            <children>
+                <Button onAction="#onEditar" prefWidth="120.0" text="Editar" styleClass="salvar-button" />
+                <Button onAction="#onExcluir" prefWidth="120.0" text="Excluir" styleClass="cancel-button" />
+                <Button onAction="#onFechar" prefWidth="120.0" text="Fechar" styleClass="cancel-button" />
+            </children>
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+        </HBox>
+    </bottom>
+</BorderPane>
