@@ -3,6 +3,7 @@ module com.example {
     requires javafx.fxml;
     // Requisito para a biblioteca de ícones que adicionámos
     requires de.jensd.fx.glyphs.fontawesome;
+    requires java.sql;
 
     // Abre os pacotes para que o JavaFX possa acedê-los (via reflection)
     opens com.example.controller to javafx.fxml;
@@ -18,4 +19,6 @@ module com.example {
     // --- LINHAS ADICIONADAS ---
     exports com.example.model;
     exports com.example.service;
+    exports com.example.util;       // Torna o pacote 'util' visível
+    exports com.example.repository; // Torna o pacote 'repository' visível
 }
