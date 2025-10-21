@@ -34,7 +34,7 @@ public class ConsultaProfessoresController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.professorDAO = new ProfessorDAO();
-        carregarProfessores(); // Carrega os dados da base de dados
+        carregarProfessores(); // Carrega os dados da base de dadosl
 
         // 1. Envolve a lista principal (masterData) numa FilteredList.
         FilteredList<Professor> filteredData = new FilteredList<>(masterData, p -> true);
