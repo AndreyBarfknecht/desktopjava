@@ -1,14 +1,12 @@
 package com.example.controller;
 
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
-
 import com.example.model.Aluno;
+import com.example.repository.AlunoDAO;
 import com.example.model.Responsavel;
-import com.example.service.AcademicService;
-
+import com.example.repository.ResponsavelDAO;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,50 +19,120 @@ import javafx.stage.Stage;
 
 public class CadastroAlunoController implements Initializable {
 
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
 
-    // --- PAINEIS DE NAVEGAÇÃO ---
+    // --- CAMPOS FXML ---
     @FXML private VBox guardianPane;
     @FXML private VBox studentPane;
-
-    // --- CAMPOS DO RESPONSÁVEL ---
     @FXML private TextField guardianNameField;
     @FXML private TextField guardianCpfField;
     @FXML private TextField guardianEmailField;
     @FXML private TextField guardianPhoneField;
-
-    // --- CAMPOS DO ALUNO ---
     @FXML private TextField nomeCompletoField;
     @FXML private TextField cpfField;
     @FXML private DatePicker dataNascimentoPicker;
-    @FXML private TextField emailField;
-    @FXML private TextField telefoneField;
-
-    // --- BOTÕES ---
+    @FXML private TextField emailField; // Campo para o email do aluno
+    @FXML private TextField telefoneField; // Campo para o telefone do aluno
     @FXML private Button salvarButton;
+
+    // --- DAOs para acesso à base de dados ---
+    private AlunoDAO alunoDAO;
+    private ResponsavelDAO responsavelDAO;
+
+    // --- Variável para o modo de edição ---
+    private Aluno alunoParaEditar;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         guardianPane.setVisible(true);
         studentPane.setVisible(false);
-
+        this.alunoDAO = new AlunoDAO();
+        this.responsavelDAO = new ResponsavelDAO();
+        
+        // Configura máscaras e validações
         addCpfMask(cpfField);
         addPhoneMask(telefoneField);
         addEmailValidation(emailField);
-
         addCpfMask(guardianCpfField);
         addPhoneMask(guardianPhoneField);
         addEmailValidation(guardianEmailField);
     }
 
-    // --- MÉTODOS DE NAVEGAÇÃO ---
+    // Método chamado para preencher o formulário no modo de edição
+    public void setAlunoParaEdicao(Aluno aluno) {
+        this.alunoParaEditar = aluno;
+        Responsavel responsavel = aluno.getResponsavel();
+
+        // Preenche campos do responsável
+        guardianNameField.setText(responsavel.getNomeCompleto());
+        guardianCpfField.setText(responsavel.getCpf());
+        guardianEmailField.setText(responsavel.getEmail());
+        guardianPhoneField.setText(responsavel.getTelefone());
+
+        // Preenche campos do aluno
+        nomeCompletoField.setText(aluno.getNomeCompleto());
+        cpfField.setText(aluno.getCpf());
+        dataNascimentoPicker.setValue(aluno.getDataNascimento());
+        telefoneField.setText(aluno.getTelefone());
+        emailField.setText(aluno.getEmail());
+    
+        
+        // Nota: Os campos de email e telefone do aluno não estão no modelo,
+        // mas preenchemos se eles existirem na UI.
+        // Se quiseres guardar estes dados, terias de os adicionar ao modelo Aluno e à tabela 'estudantes'.
+    }
 
     @FXML
-    private void onProximo() {
-        if (!isGuardianDataValid()) {
-            return; 
+    private void onSalvar() {
+        if (!isStudentDataValid()) { return; }
+
+        try {
+            if (alunoParaEditar == null) { // --- MODO DE CRIAÇÃO ---
+                Responsavel responsavel = new Responsavel(
+                    guardianNameField.getText(), guardianCpfField.getText(),
+                    guardianPhoneField.getText(), guardianEmailField.getText()
+                );
+                int responsavelId = responsavelDAO.saveAndReturnId(responsavel);
+                if (responsavelId == -1) {
+                    showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível salvar o responsável.");
+                    return;
+                }
+                responsavel.setId(responsavelId);
+
+                Aluno novoAluno = new Aluno(
+                    nomeCompletoField.getText(), cpfField.getText(),
+                    dataNascimentoPicker.getValue(), responsavel,
+                    telefoneField.getText() // Adiciona o telefone do aluno
+                );
+
+                alunoDAO.save(novoAluno);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Aluno e Responsável salvos com sucesso!");
+
+            } else { // --- MODO DE EDIÇÃO ---
+                Responsavel responsavel = alunoParaEditar.getResponsavel();
+                responsavel.setNomeCompleto(guardianNameField.getText());
+                responsavel.setCpf(guardianCpfField.getText());
+                responsavel.setTelefone(guardianPhoneField.getText());
+                responsavel.setEmail(guardianEmailField.getText());
+                responsavelDAO.update(responsavel);
+
+                alunoParaEditar.setNomeCompleto(nomeCompletoField.getText());
+                alunoParaEditar.setCpf(cpfField.getText());
+                alunoParaEditar.setDataNascimento(dataNascimentoPicker.getValue());
+                alunoDAO.update(alunoParaEditar);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Aluno e Responsável atualizados com sucesso!");
+            }
+            fecharJanela();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar os dados.");
+            e.printStackTrace();
         }
+    }
+
+    // ... (Todos os outros métodos como onProximo, onVoltar, validações, máscaras, etc. permanecem aqui sem alterações)
+    @FXML
+    private void onProximo() {
+        if (!isGuardianDataValid()) { return; }
         guardianPane.setVisible(false);
         studentPane.setVisible(true);
     }
@@ -74,36 +142,7 @@ public class CadastroAlunoController implements Initializable {
         studentPane.setVisible(false);
         guardianPane.setVisible(true);
     }
-
-    // --- LÓGICA PRINCIPAL ---
-
-    @FXML
-    private void onSalvar() {
-        if (!isStudentDataValid()) {
-            return;
-        }
-
-        Responsavel responsavel = new Responsavel(guardianNameField.getText(), guardianCpfField.getText(), guardianPhoneField.getText());
-
-        // 2. Cria o objeto Aluno, associando o responsável
-        Aluno novoAluno = new Aluno(
-            nomeCompletoField.getText(),
-            cpfField.getText(),
-            dataNascimentoPicker.getValue(),
-            responsavel
-        );
-
-        // 3. Adiciona o novo aluno ao nosso serviço de dados
-        AcademicService.getInstance().addAluno(novoAluno);
-        
-        System.out.println("Aluno " + novoAluno.getNomeCompleto() + " salvo no serviço.");
-        
-        showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Aluno e Responsável salvos com sucesso!");
-        fecharJanela();
-        }
     
-    // --- MÉTODOS DE VALIDAÇÃO ---
-
     private boolean isGuardianDataValid() {
         if (guardianNameField.getText().trim().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", "O campo 'Nome Completo' do responsável é obrigatório.");
@@ -127,36 +166,27 @@ public class CadastroAlunoController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", "O campo 'Nome Completo do Aluno' é obrigatório.");
             return false;
         }
-
         if (dataNascimentoPicker.getValue() == null) {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", "O campo 'Data de Nascimento' do aluno é obrigatório.");
             return false;
         }
-
-        // --- ALTERAÇÃO AQUI ---
-        // Validação do CPF do Aluno (agora obrigatório)
         String cpfDigitsOnly = cpfField.getText().replaceAll("\\D", "");
         if (cpfDigitsOnly.length() != 11) {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", "O CPF do aluno é obrigatório e deve estar completo.");
             return false;
         }
-        
         String email = emailField.getText();
         if (!email.isEmpty() && !EMAIL_PATTERN.matcher(email).matches()) {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", "O formato do e-mail do aluno é inválido.");
             return false;
         }
-
         String telefoneDigitsOnly = telefoneField.getText().replaceAll("\\D", "");
         if (!telefoneDigitsOnly.isEmpty() && telefoneDigitsOnly.length() < 10) {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", "O Telefone do aluno está incompleto.");
             return false;
         }
-
         return true;
     }
-    
-    // --- MÉTODOS AUXILIARES (Máscaras, Alertas, etc.) ---
 
     private void addCpfMask(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {

@@ -55,7 +55,11 @@ public class ProfessorDAO {
                 int id = rs.getInt("id");
                 String nome = rs.getString("nome_completo");
                 String cpf = rs.getString("cpf");
-                LocalDate dataNascimento = rs.getDate("data_nascimento").toLocalDate();
+                // Lida com a possibilidade de data_nascimento ser NULL na base de dados
+                Date sqlDate = rs.getDate("data_nascimento");
+                LocalDate dataNascimento = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+
+
                 String email = rs.getString("email");
                 String telefone = rs.getString("telefone");
                 String disciplina = rs.getString("disciplina_principal");
@@ -80,10 +84,15 @@ public class ProfessorDAO {
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+            
+            // Lida com a possibilidade de dataNascimento ser NULL no objeto Professor
+            if (professor.getDataNascimento() != null) {
+                 pstmt.setDate(3, Date.valueOf(professor.getDataNascimento()));
+            } else {
+                 pstmt.setNull(3, java.sql.Types.DATE);
+            }
             pstmt.setString(1, professor.getNomeCompleto());
             pstmt.setString(2, professor.getCpf());
-            pstmt.setDate(3, Date.valueOf(professor.getDataNascimento()));
             pstmt.setString(4, professor.getEmail());
             pstmt.setString(5, professor.getTelefone());
             pstmt.setString(6, professor.getDisciplinaPrincipal());
@@ -113,4 +122,3 @@ public class ProfessorDAO {
         }
     }
 }
-
