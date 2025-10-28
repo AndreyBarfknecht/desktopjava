@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.controller.RegisterController"
+            prefWidth="400" prefHeight="300">
+
+    <children>
+        <VBox spacing="10" alignment="CENTER" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Campo Nome -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Nome:"/>
+                <TextField fx:id="txtName" promptText="Digite seu nome"/>
+            </HBox>
+
+            <!-- Campo Email -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Email:"/>
+                <TextField fx:id="txtEmail" promptText="Digite seu email"/>
+            </HBox>
+
+            <!-- Campo Usuário -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Usuário:"/>
+                <TextField fx:id="txtUsername" promptText="Digite seu usuário"/>
+            </HBox>
+
+            <!-- Campo Senha -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Senha:"/>
+                <PasswordField fx:id="txtPassword" promptText="Digite sua senha"/>
+            </HBox>
+
+            <!-- Botão e Mensagem -->
+            <Button text="Salvar" onAction="#onSalvar"/>
+            <Label fx:id="lblMessage" textFill="green"/>
+        </VBox>
+    </children>
+</AnchorPane>
