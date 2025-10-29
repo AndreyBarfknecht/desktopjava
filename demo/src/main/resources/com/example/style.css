@@ -117,31 +117,141 @@
     -fx-padding: 10px 20px;
 }
 
+/* ============================================= */
+/* ESTILOS SIDEBAR MELHORADA (ACCORDION + RETRÁTIL) V3 */
+/* ============================================= */
+
+/* Container Principal */
 .sidebar {
-    -fx-background-color: #2c3e50; /* Azul escuro para o menu lateral */
-    -fx-padding: 20px 0px;
+    -fx-padding: 0;
+    -fx-background-color: #2c3e50;
+    -fx-alignment: top-center;
 }
 
-.sidebar-button {
+/* Botão Toggle */
+.toggle-button {
+    -fx-background-color: transparent; -fx-background-radius: 0;
+    -fx-min-height: 50px; -fx-pref-height: 50px;
+    -fx-max-width: Infinity; -fx-padding: 0; -fx-alignment: CENTER;
+    -fx-border-width: 0 0 1 0; -fx-border-color: #34495e;
+}
+.toggle-button .toggle-icon { -fx-fill: #ECF0F1; }
+.toggle-button:hover { -fx-background-color: #34495e; }
+
+/* Accordion */
+.sidebar .accordion { -fx-background-color: transparent; }
+
+/* TitledPane - Cabeçalho */
+.sidebar-titled-pane > .title {
     -fx-background-color: transparent;
-    -fx-text-fill: #ECF0F1; /* Texto quase branco */
-    -fx-font-size: 16px;
-    -fx-pref-width: 200px; /* Largura total da sidebar */
-    -fx-alignment: CENTER_LEFT;
-    -fx-padding: 15px 25px;
-    -fx-background-radius: 0;
-    -fx-graphic-text-gap: 15;
+    -fx-border-color: transparent transparent #34495e transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 12px 15px;
+}
+/* --- AJUSTE COR TEXTO TÍTULO --- */
+/* Acessa o Label interno do TitledPane title */
+.sidebar-titled-pane > .title .label {
+    -fx-text-fill: #ECF0F1; /* Cor clara */
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+/* Seta */
+.sidebar-titled-pane > .title > .arrow-button { -fx-padding: 0 8 0 0; }
+.sidebar-titled-pane > .title > .arrow-button .arrow {
+     -fx-background-color: #ECF0F1;
+     -fx-scale-x: 0.8; -fx-scale-y: 0.8;
+}
+
+/* Hover e Foco no Título */
+.sidebar-titled-pane:hover > .title,
+.sidebar-titled-pane:focused > .title {
+     -fx-background-color: #34495e; -fx-color: #34495e;
+     -fx-border-color: transparent transparent #34495e transparent;
+     -fx-background-insets: 0;
+}
+/* --- AJUSTE COR TEXTO TÍTULO HOVER/FOCUS --- */
+.sidebar-titled-pane:hover > .title .label,
+.sidebar-titled-pane:focused > .title .label {
+    -fx-text-fill: #FFFFFF; /* Branco */
+}
+
+/* Conteúdo do TitledPane */
+.sidebar-titled-pane > .content {
+    -fx-background-color: transparent; -fx-border-color: transparent;
+    -fx-padding: 5px 0 5px 0;
+}
+.sidebar-pane-content { /* VBox interno */
+     -fx-padding: 0 5px 0 10px; /* Adicionado padding direito para evitar corte */
+     -fx-spacing: 2px;
+}
+
+/* Botões dentro da Sidebar */
+.sidebar-button {
+     -fx-pref-width: 100%;
+     -fx-padding: 10px 15px;
+     -fx-font-size: 14px;
+     -fx-graphic-text-gap: 12px;
+     -fx-alignment: CENTER_LEFT;
+     -fx-background-color: transparent;
+     /* --- AJUSTE COR TEXTO BOTÃO --- */
+     -fx-text-fill: #BDC3C7; /* Cinza claro */
+     /* --- AJUSTE ELLIPSIS --- */
+     /* Garante que o texto não seja cortado com "..." se houver espaço */
+     -fx-text-overrun: clip;
+}
+/* Acessa o Label INTERNO do botão (se houver) */
+.sidebar-button .label {
+     -fx-text-fill: inherit; /* Herda a cor do texto do botão */
 }
 
 .sidebar-button:hover {
-    -fx-background-color: #34495e; /* Um pouco mais claro no hover */
+    -fx-background-color: #34495e;
+    -fx-text-fill: #FFFFFF; /* Branco no hover */
+}
+.sidebar-button:hover .sidebar-icon { -fx-fill: #FFFFFF; } /* Ícone branco no hover */
+/* Cor do texto do Label interno no hover */
+.sidebar-button:hover .label {
+     -fx-text-fill: inherit; /* Herda o branco do botão */
 }
 
-/* Ícone do botão da sidebar */
-.sidebar-button .glyph-icon {
-    -fx-fill: #ECF0F1;
+/* Ícone padrão */
+.sidebar-icon { -fx-fill: #BDC3C7; }
+
+/* ======== ADIÇÃO SUGERIDA PARA CORRIGIR COR DO TEXTO ======== */
+/* Força a cor clara no texto do botão da sidebar (MAIOR ESPECIFICIDADE) */
+.sidebar .sidebar-button .label {
+    -fx-text-fill: #ECF0F1; /* Quase branco. Use #FFFFFF se preferir branco puro. */
+}
+/* Força a cor branca no hover (MAIOR ESPECIFICIDADE) */
+.sidebar .sidebar-button:hover .label {
+     -fx-text-fill: #FFFFFF; /* Branco */
+}
+/* =================== FIM DA ADIÇÃO =================== */
+
+
+/* Estado Colapsado */
+.sidebar-button-collapsed {
+    -fx-alignment: CENTER; -fx-padding: 10px;
+    -fx-background-radius: 4px; -fx-min-width: 40px;
+    -fx-text-fill: transparent; /* Esconde texto remanescente */
+}
+.sidebar-button-collapsed .label {
+     -fx-text-fill: transparent; /* Esconde label interno */
+}
+.sidebar-button-collapsed .sidebar-icon { -fx-fill: #ECF0F1; } /* Ícone mais claro */
+.sidebar-button-collapsed:hover { -fx-background-color: #4e5d6c; }
+.sidebar-button-collapsed:hover .sidebar-icon { -fx-fill: #FFFFFF; }
+
+
+/* Tooltip */
+.tooltip {
+    -fx-background-color: rgba(44, 62, 80, 0.9); -fx-text-fill: white;
+    -fx-font-size: 12px; -fx-background-radius: 4px; -fx-padding: 5px 10px;
 }
 
+/* ==========================================================================
+   ESTILOS DOS WIDGETS (CARTÕES) DO DASHBOARD
+   ========================================================================== */
 /* Cartões de resumo do Dashboard */
 .summary-card {
     -fx-background-radius: 8px;
@@ -149,7 +259,8 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0.2, 0, 1);
 }
 .summary-card:hover {
-    -fx-background-color: #7B3A9B; /* Um roxo um pouco mais escuro */
+    /* -fx-background-color: #7B3A9B; /* Exemplo: Um roxo um pouco mais escuro */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 2); /* Sombra mais pronunciada no hover */
     -fx-cursor: hand; /* Muda o cursor do rato para uma mãozinha */
 }
 
@@ -171,3 +282,11 @@
 .card-purple { -fx-background-color: #8E44AD; }
 .card-pink { -fx-background-color: #E91E63; }
 .card-yellow { -fx-background-color: #F1C40F; }
+
+/* Efeito de hover específico para cada cor (opcional, mas melhora a UI) */
+.card-green:hover { -fx-background-color: #229954; }
+.card-orange:hover { -fx-background-color: #e67e22; }
+.card-blue:hover { -fx-background-color: #2980b9; }
+.card-purple:hover { -fx-background-color: #7b3a9b; }
+.card-pink:hover { -fx-background-color: #d81b60; }
+.card-yellow:hover { -fx-background-color: #f39c12; } /* Ex: torna-se laranja no hover */

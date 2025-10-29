@@ -15,6 +15,7 @@ public class LoginController {
 
     @FXML
     protected void handleLoginButtonAction() {
+        System.out.println("Botão Login Clicado!");
         String username = usernameField.getText();
         String password = passwordField.getText();
 
