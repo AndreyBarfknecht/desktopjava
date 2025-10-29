@@ -13,7 +13,7 @@
 <BorderPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.TelaInicialController" stylesheets="@../style.css">
    
    <top>
-      <HBox alignment="CENTER_LEFT" styleClass="header-bar" spacing="20.0" BorderPane.alignment="CENTER">
+       <HBox alignment="CENTER_LEFT" styleClass="header-bar" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
             <FontAwesomeIconView fill="WHITE" glyphName="BARS" size="2em" />
             <Label text="Painel Administrativo" style="-fx-font-size: 20px; -fx-text-fill: white;" />
@@ -26,7 +26,7 @@
    </top>
 
    <left>
-      <VBox styleClass="sidebar" spacing="5.0" BorderPane.alignment="CENTER">
+       <VBox styleClass="sidebar" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="cadastrarAlunoButton" onAction="#handleCadastroAlunoButton" styleClass="sidebar-button" text="Cadastrar Aluno">
                <graphic>
@@ -97,28 +97,31 @@
             
             <FlowPane hgap="20.0" vgap="20.0">
                <children>
-                  <VBox styleClass="summary-card, card-green" prefWidth="250.0">
+                  <VBox fx:id="cursosWidget" styleClass="summary-card, card-green" prefWidth="250.0">
                      <children>
-                        <Label styleClass="summary-card-value" text="1" />
+                        <Label fx:id="cursosCountLabel" styleClass="summary-card-value" text="0" />
                         <Label styleClass="summary-card-label" text="Cursos Ativos" />
                      </children>
                   </VBox>
-                  <VBox styleClass="summary-card, card-orange" prefWidth="250.0">
+                  
+                  <VBox fx:id="turmasWidget" styleClass="summary-card, card-orange" prefWidth="250.0">
                      <children>
-                        <Label styleClass="summary-card-value" text="0" />
+                        <Label fx:id="turmasCountLabel" styleClass="summary-card-value" text="0" />
                         <Label styleClass="summary-card-label" text="Turmas Ativas" />
                      </children>
                   </VBox>
-                  <VBox styleClass="summary-card, card-blue" prefWidth="250.0">
+                  
+                  <VBox fx:id="alunosWidget" onMouseClicked="#handleConsultarAlunosWidget" styleClass="summary-card, card-blue" prefWidth="250.0">
                      <children>
-                        <Label styleClass="summary-card-value" text="0" />
+                        <Label fx:id="alunosCountLabel" styleClass="summary-card-value" text="0" />
                         <Label styleClass="summary-card-label" text="Alunos Matriculados" />
                      </children>
                   </VBox>
+                  
                   <VBox fx:id="professoresWidget" styleClass="summary-card, card-purple" prefWidth="250.0" onMouseClicked="#handleConsultarProfessoresWidget">
                      <children>
                         <Label fx:id="professoresCountLabel" styleClass="summary-card-value" text="0" />
-                        <Label styleClass="summary-card-label" text="Professores Registados/n(Clique para mais informações)" />
+                        <Label styleClass="summary-card-label" text="Professores Registados&#10; " />
                      </children>
                   </VBox>
                </children>

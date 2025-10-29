@@ -3,8 +3,8 @@ package com.example.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.example.model.Turma;
-import com.example.service.AcademicService;
+import com.example.model.Turma; // Importa o modelo
+import com.example.repository.TurmaDAO; // Importa o DAO
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,6 +24,8 @@ public class CadastroTurmaController implements Initializable {
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
 
+    private TurmaDAO turmaDAO; // Adiciona uma instância do DAO
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Preenche o ComboBox com as opções de turno
@@ -35,6 +37,8 @@ public class CadastroTurmaController implements Initializable {
                 anoLetivoField.setText(newValue.replaceAll("[^\\d]", ""));
             }
         });
+
+        this.turmaDAO = new TurmaDAO(); // Inicializa o DAO
     }
 
     @FXML
@@ -42,14 +46,16 @@ public class CadastroTurmaController implements Initializable {
         if (!isTurmaDataValid()) {
             return;
         }
-
+        // CORREÇÃO: Passa o valor do turnoComboBox para o construtor
         Turma novaTurma = new Turma(
             nomeTurmaField.getText(),
-            anoLetivoField.getText()
+            anoLetivoField.getText(),
+            turnoComboBox.getValue(),
+            salaField.getText() // Adiciona o valor do campo sala
         );
 
-        AcademicService.getInstance().addTurma(novaTurma);
-        System.out.println("Turma " + novaTurma.getNome() + " salva no serviço.");
+        turmaDAO.save(novaTurma); // Usa o DAO para salvar no banco de dados
+        System.out.println("Turma " + novaTurma.getNome() + " salva no banco de dados.");
 
         showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Turma salva com sucesso!");
         fecharJanela();
@@ -58,8 +64,9 @@ public class CadastroTurmaController implements Initializable {
     private boolean isTurmaDataValid() {
         if (nomeTurmaField.getText().trim().isEmpty() || 
             anoLetivoField.getText().trim().isEmpty() ||
-            turnoComboBox.getValue() == null) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Nome da Turma, Ano Letivo e Turno são obrigatórios.");
+            turnoComboBox.getValue() == null ||
+            salaField.getText().trim().isEmpty()) { // Adiciona validação para a sala
+            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Todos os campos são obrigatórios.");
             return false;
         }
 

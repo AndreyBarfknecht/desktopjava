@@ -1,10 +1,11 @@
 package com.example.controller;
 
 import java.net.URL;
+import java.sql.SQLException; 
 import java.util.ResourceBundle;
 
 import com.example.model.PeriodoLetivo;
-import com.example.service.AcademicService;
+import com.example.repository.PeriodoLetivoDAO; 
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,27 +25,41 @@ public class CadastroPeriodoLetivoController implements Initializable {
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
 
+    private PeriodoLetivoDAO periodoDAO; 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Preenche o ComboBox com as opções de status
         statusComboBox.getItems().addAll("Aberto para Matrículas", "Em Andamento", "Encerrado");
+        this.periodoDAO = new PeriodoLetivoDAO(); 
     }
 
     @FXML
-        private void onSalvar() {
+    private void onSalvar() {
         if (!isDataValid()) {
             return;
         }
 
         PeriodoLetivo novoPeriodo = new PeriodoLetivo(
-            nomePeriodoField.getText()
+            nomePeriodoField.getText(),
+            dataInicioPicker.getValue(),
+            dataFimPicker.getValue(),
+            statusComboBox.getValue()
         );
 
-        AcademicService.getInstance().addPeriodoLetivo(novoPeriodo);
-        System.out.println("Período Letivo " + novoPeriodo.getNome() + " salvo no serviço.");
-
-        showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Período Letivo salvo com sucesso!");
-        fecharJanela();
+        try {
+            periodoDAO.save(novoPeriodo); 
+            System.out.println("Período Letivo " + novoPeriodo.getNome() + " salvo no banco de dados.");
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Período Letivo salvo com sucesso!");
+            fecharJanela();
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao salvar período letivo: " + e.getMessage());
+            if (e.getErrorCode() == 1062) { 
+                 showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Já existe um período letivo com este nome.");
+            } else {
+                 showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar o período.");
+            }
+        }
     }
 
     private boolean isDataValid() {

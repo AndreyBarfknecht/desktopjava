@@ -7,7 +7,7 @@ module com.example {
 
     // Abre os pacotes para que o JavaFX possa acedê-los (via reflection)
     opens com.example.controller to javafx.fxml;
-    opens com.example.view to javafx.fxml;
+    opens com.example.view to javafx.fxml; // Já existe, mas garantindo
     
     // --- LINHA ADICIONADA ---
     // Permite que o JavaFX aceda aos seus modelos (útil para ComboBox)
@@ -21,4 +21,5 @@ module com.example {
     exports com.example.service;
     exports com.example.util;       // Torna o pacote 'util' visível
     exports com.example.repository; // Torna o pacote 'repository' visível
+    exports com.example.controller; // Exporta o controller
 }

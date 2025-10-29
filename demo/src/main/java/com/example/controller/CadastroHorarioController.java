@@ -1,11 +1,20 @@
 package com.example.controller;
 
+import com.example.model.Horario; 
 import com.example.model.PeriodoLetivo;
 import com.example.model.Professor;
 import com.example.model.Turma;
-import com.example.service.AcademicService;
+import com.example.repository.PeriodoLetivoDAO; 
+import com.example.repository.ProfessorDAO;      
+import com.example.repository.TurmaDAO;         
+import com.example.repository.HorarioDAO;       
+import com.example.repository.TurmaProfessorDAO; 
+
 import java.net.URL;
+import java.sql.SQLException; 
 import java.util.ResourceBundle;
+
+import javafx.collections.FXCollections; 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -16,26 +25,32 @@ import javafx.stage.Stage;
 
 public class CadastroHorarioController implements Initializable {
 
-    // CAMPOS NOVOS/ATUALIZADOS
     @FXML private ComboBox<PeriodoLetivo> periodoLetivoComboBox;
     @FXML private ComboBox<Turma> turmaComboBox;
     @FXML private ComboBox<Professor> professorComboBox;
-    
     @FXML private ComboBox<String> diaSemanaComboBox;
     @FXML private TextField horaInicioField;
     @FXML private TextField horaFimField;
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
 
+    private PeriodoLetivoDAO periodoLetivoDAO;
+    private TurmaDAO turmaDAO;
+    private ProfessorDAO professorDAO;
+    private TurmaProfessorDAO turmaProfessorDAO;
+    private HorarioDAO horarioDAO;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Pega a instância do nosso serviço de dados
-        AcademicService service = AcademicService.getInstance();
+        this.periodoLetivoDAO = new PeriodoLetivoDAO();
+        this.turmaDAO = new TurmaDAO();
+        this.professorDAO = new ProfessorDAO();
+        this.turmaProfessorDAO = new TurmaProfessorDAO();
+        this.horarioDAO = new HorarioDAO();
 
-        // Preenche as ComboBoxes com os dados do serviço
-        periodoLetivoComboBox.setItems(service.getPeriodosLetivos());
-        turmaComboBox.setItems(service.getTurmas());
-        professorComboBox.setItems(service.getProfessores());
+        periodoLetivoComboBox.setItems(FXCollections.observableArrayList(periodoLetivoDAO.getAll()));
+        turmaComboBox.setItems(FXCollections.observableArrayList(turmaDAO.getAll()));
+        professorComboBox.setItems(FXCollections.observableArrayList(professorDAO.getAll()));
 
         diaSemanaComboBox.getItems().addAll(
             "Segunda-feira", "Terça-feira", "Quarta-feira", 
@@ -49,17 +64,32 @@ public class CadastroHorarioController implements Initializable {
             return;
         }
 
-        System.out.println("--- Dados do Horário a Salvar ---");
-        System.out.println("Período: " + periodoLetivoComboBox.getValue());
-        System.out.println("Turma: " + turmaComboBox.getValue());
-        System.out.println("Professor: " + professorComboBox.getValue());
-        System.out.println("Dia: " + diaSemanaComboBox.getValue());
-        System.out.println("Início: " + horaInicioField.getText());
-        System.out.println("Fim: " + horaFimField.getText());
-        System.out.println("---------------------------------");
-        
-        showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Horário salvo com sucesso!");
-        fecharJanela();
+        PeriodoLetivo periodo = periodoLetivoComboBox.getValue();
+        Turma turma = turmaComboBox.getValue();
+        Professor professor = professorComboBox.getValue();
+        String dia = diaSemanaComboBox.getValue();
+        String inicio = horaInicioField.getText();
+        String fim = horaFimField.getText();
+
+        Horario novoHorario = new Horario(periodo, turma, professor, dia, inicio, fim);
+
+        try {
+            turmaProfessorDAO.adicionarProfessorNaTurma(turma.getId(), professor.getId());
+            horarioDAO.save(novoHorario);
+
+            System.out.println("Horário e Associação Professor-Turma salvos!");
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Horário salvo com sucesso!");
+            fecharJanela();
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao salvar horário: " + e.getMessage());
+            if (e.getErrorCode() == 1062) { 
+                showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Este horário já existe (Mesma turma, dia e hora de início).");
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar o horário.");
+            }
+            e.printStackTrace();
+        }
     }
 
     private boolean isDataValid() {
