@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.CadastroTurmaController" stylesheets="@../style.css">
+<AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.CadastroTurmaController" stylesheets="@../style.css">
     <children>
         <VBox alignment="TOP_CENTER" spacing="30.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
             <children>
@@ -34,19 +34,23 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
                         <Label text="Nome da Turma:" />
                         <TextField fx:id="nomeTurmaField" promptText="Ex: Turma A, 1º Ano" GridPane.columnIndex="1" />
                         
-                        <Label text="Ano Letivo:" GridPane.rowIndex="1" />
-                        <TextField fx:id="anoLetivoField" promptText="Ex: 2025" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Curso:" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="cursoComboBox" prefWidth="450.0" promptText="Selecione o curso" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         
-                        <Label text="Turno:" GridPane.rowIndex="2" />
-                        <ComboBox fx:id="turnoComboBox" prefWidth="450.0" promptText="Selecione o turno" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Período Letivo:" GridPane.rowIndex="2" />
+                        <ComboBox fx:id="periodoLetivoComboBox" prefWidth="450.0" promptText="Selecione o período letivo" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         
-                        <Label text="Sala de Aula:" GridPane.rowIndex="3" />
-                        <TextField fx:id="salaField" promptText="Ex: Sala 101" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label text="Turno:" GridPane.rowIndex="3" />
+                        <ComboBox fx:id="turnoComboBox" prefWidth="450.0" promptText="Selecione o turno" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        
+                        <Label text="Sala de Aula:" GridPane.rowIndex="4" />
+                        <TextField fx:id="salaField" promptText="Ex: Sala 101" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                     </children>
                 </GridPane>
                 

@@ -1,28 +1,28 @@
 /* ==========================================================================
-   TEMA CLARO E PROFISSIONAL - SISTEMA ACADÊMICO
+   TEMA CLARO E PROFISSIONAL - SISTEMA ACADÊMICO (VERSÃO LIMPA FINAL)
    ========================================================================== */
 
 /* --- GERAL --- */
 .root {
-    -fx-background-color: #F4F7FC; /* Um cinza muito claro para o fundo principal */
+    -fx-background-color: #F4F7FC;
     -fx-font-family: "Segoe UI", Arial, sans-serif;
     -fx-font-size: 14px;
 }
 
 .label {
-    -fx-text-fill: #333333; /* Texto escuro para boa legibilidade */
+    -fx-text-fill: #333333; /* Texto escuro padrão para labels fora da sidebar */
     -fx-font-weight: bold;
 }
 
 .titulo-janela {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-text-fill: #2c3e50; /* Azul escuro para títulos */
+    -fx-text-fill: #2c3e50;
 }
 
-/* --- BOTÕES --- */
+/* --- BOTÕES PADRÃO --- */
 .button {
-    -fx-background-color: #3498DB; /* Azul padrão para botões */
+    -fx-background-color: #3498DB;
     -fx-text-fill: #FFFFFF;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
@@ -30,251 +30,197 @@
     -fx-padding: 10px 20px;
     -fx-cursor: hand;
 }
+.button:hover { -fx-background-color: #2980B9; }
+.salvar-button { -fx-background-color: #27AE60; }
+.salvar-button:hover { -fx-background-color: #229954; }
+.cancel-button { -fx-background-color: #E74C3C; }
+.cancel-button:hover { -fx-background-color: #C0392B; }
 
-.button:hover {
-    -fx-background-color: #2980B9; /* Azul um pouco mais escuro no hover */
-}
-
-.salvar-button {
-    -fx-background-color: #27AE60; /* Verde para salvar */
-}
-.salvar-button:hover {
-    -fx-background-color: #229954;
-}
-
-.cancel-button {
-    -fx-background-color: #E74C3C; /* Vermelho para cancelar */
-}
-.cancel-button:hover {
-    -fx-background-color: #C0392B;
-}
-
-/* --- CAMPOS DE TEXTO E FORMULÁRIOS --- */
+/* --- CAMPOS DE FORMULÁRIO --- */
 .text-field, .password-field, .date-picker, .combo-box {
     -fx-background-color: #FFFFFF;
     -fx-text-fill: #333333;
     -fx-background-radius: 5px;
-    -fx-border-color: #BDC3C7; /* Borda cinza-claro */
+    -fx-border-color: #BDC3C7;
     -fx-border-radius: 5px;
     -fx-border-width: 1px;
     -fx-font-size: 14px;
 }
-
 .text-field:focused, .password-field:focused, .date-picker:focused, .combo-box:focused {
-    -fx-border-color: #3498DB; /* Borda azul para indicar foco */
+    -fx-border-color: #3498DB;
     -fx-border-width: 2px;
 }
-
 .text-field-error {
-    -fx-border-color: #E74C3C; /* Borda vermelha para erros */
+    -fx-border-color: #E74C3C;
     -fx-border-width: 2px;
 }
 
 /* ==========================================================================
-   ESTILOS ESPECÍFICOS DA TELA DE LOGIN
+   TELA DE LOGIN
    ========================================================================== */
-
 .login-container {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 10px;
-    -fx-padding: 40px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.5, 0, 0); /* Sombra suave */
+    -fx-padding: 30px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.5, 0, 0);
 }
-
-.login-title {
-    -fx-font-size: 28px;
-    -fx-text-fill: #333;
-}
-
-.login-subtitle {
-    -fx-font-size: 14px;
-    -fx-text-fill: #777;
-    -fx-font-weight: normal;
-}
-
-.login-hyperlink {
-    -fx-font-size: 14px;
-    -fx-text-fill: #3498DB;
-    -fx-font-weight: normal;
-}
-
-.login-hyperlink:hover {
-    -fx-text-fill: #2980B9;
-    -fx-underline: true;
-}
-
-/* Para o ícone dentro do campo de texto */
-.text-field-icon {
-    -fx-fill: #AAAAAA;
-}
+.login-title { -fx-font-size: 28px; -fx-text-fill: #333; }
+.login-subtitle { -fx-font-size: 14px; -fx-text-fill: #777; -fx-font-weight: normal; }
+.login-hyperlink { -fx-font-size: 14px; -fx-text-fill: #3498DB; -fx-font-weight: normal; }
+.login-hyperlink:hover { -fx-text-fill: #2980B9; -fx-underline: true; }
+.text-field-icon { -fx-fill: #AAAAAA; }
 
 /* ==========================================================================
-   ESTILOS ESPECÍFICOS DO DASHBOARD (TELA INICIAL)
+   DASHBOARD (TELA INICIAL)
    ========================================================================== */
 
+/* --- CABEÇALHO --- */
 .header-bar {
-    -fx-background-color: #27AE60; /* Verde do cabeçalho */
+    -fx-background-color: #27AE60; /* Verde */
     -fx-padding: 10px 20px;
 }
+/* Estilos para texto/ícones dentro do header */
+.header-bar .label, .header-bar .text {
+    -fx-text-fill: white;
+}
+.header-bar .glyph-icon { /* Ícones FontAwesome no header */
+     -fx-fill: white;
+}
+
 
 /* ============================================= */
-/* ESTILOS SIDEBAR MELHORADA (ACCORDION + RETRÁTIL) V3 */
+/* SIDEBAR FIXA COM ACCORDION (VERSÃO FINAL LIMPA) */
 /* ============================================= */
 
-/* Container Principal */
-.sidebar {
+/* Container (o Accordion) */
+.sidebar { /* Aplicado ao Accordion no FXML */
     -fx-padding: 0;
-    -fx-background-color: #2c3e50;
+    -fx-background-color: #2c3e50; /* Fundo escuro */
     -fx-alignment: top-center;
 }
 
-/* Botão Toggle */
-.toggle-button {
-    -fx-background-color: transparent; -fx-background-radius: 0;
-    -fx-min-height: 50px; -fx-pref-height: 50px;
-    -fx-max-width: Infinity; -fx-padding: 0; -fx-alignment: CENTER;
-    -fx-border-width: 0 0 1 0; -fx-border-color: #34495e;
-}
-.toggle-button .toggle-icon { -fx-fill: #ECF0F1; }
-.toggle-button:hover { -fx-background-color: #34495e; }
-
 /* Accordion */
-.sidebar .accordion { -fx-background-color: transparent; }
+.sidebar .accordion {
+    -fx-background-color: transparent;
+}
 
 /* TitledPane - Cabeçalho */
+.sidebar-titled-pane {
+    -fx-text-fill: #ECF0F1; /* Cor padrão do texto (importante!) */
+}
 .sidebar-titled-pane > .title {
     -fx-background-color: transparent;
-    -fx-border-color: transparent transparent #34495e transparent;
+    -fx-border-color: transparent transparent #34495e transparent; /* Linha abaixo */
     -fx-border-width: 0 0 1 0;
-    -fx-padding: 12px 15px;
+    -fx-padding: 15px 25px; /* Espaçamento interno */
 }
-/* --- AJUSTE COR TEXTO TÍTULO --- */
-/* Acessa o Label interno do TitledPane title */
-.sidebar-titled-pane > .title .label {
-    -fx-text-fill: #ECF0F1; /* Cor clara */
-    -fx-font-size: 14px;
+/* Seletor específico para o Texto do Título */
+.sidebar-titled-pane > .title > .text {
+    -fx-fill: #ECF0F1 !important; /* Cor clara */
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
 /* Seta */
 .sidebar-titled-pane > .title > .arrow-button { -fx-padding: 0 8 0 0; }
 .sidebar-titled-pane > .title > .arrow-button .arrow {
-     -fx-background-color: #ECF0F1;
-     -fx-scale-x: 0.8; -fx-scale-y: 0.8;
+     -fx-background-color: #ECF0F1; /* Cor da seta */
+     -fx-shape: "M 0 0 L 4 4 L 8 0 Z"; /* Forma da seta */
+     -fx-scale-x: 0.8;
+     -fx-scale-y: 0.8;
 }
 
 /* Hover e Foco no Título */
 .sidebar-titled-pane:hover > .title,
 .sidebar-titled-pane:focused > .title {
-     -fx-background-color: #34495e; -fx-color: #34495e;
+     -fx-background-color: #34495e; /* Fundo no hover/focus */
+     -fx-color: #34495e; /* Remove anel de foco azul */
      -fx-border-color: transparent transparent #34495e transparent;
      -fx-background-insets: 0;
 }
-/* --- AJUSTE COR TEXTO TÍTULO HOVER/FOCUS --- */
-.sidebar-titled-pane:hover > .title .label,
-.sidebar-titled-pane:focused > .title .label {
-    -fx-text-fill: #FFFFFF; /* Branco */
+.sidebar-titled-pane:hover > .title > .text,
+.sidebar-titled-pane:focused > .title > .text {
+    -fx-fill: #FFFFFF !important; /* Texto branco no hover/focus */
+}
+.sidebar-titled-pane:hover > .title > .arrow-button .arrow,
+.sidebar-titled-pane:focused > .title > .arrow-button .arrow {
+    -fx-background-color: #FFFFFF; /* Seta branca no hover/focus */
 }
 
-/* Conteúdo do TitledPane */
+/* Conteúdo do TitledPane (VBox com os botões) */
 .sidebar-titled-pane > .content {
-    -fx-background-color: transparent; -fx-border-color: transparent;
-    -fx-padding: 5px 0 5px 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 5px 0 5px 0; /* Espaçamento vertical */
 }
-.sidebar-pane-content { /* VBox interno */
-     -fx-padding: 0 5px 0 10px; /* Adicionado padding direito para evitar corte */
-     -fx-spacing: 2px;
+.sidebar-pane-content { /* O VBox dentro do content */
+     -fx-padding: 0 0 0 10px; /* Leve indentação dos botões */
+     -fx-spacing: 0; /* Sem espaço extra entre botões */
 }
 
-/* Botões dentro da Sidebar */
+/* Botões da Sidebar */
 .sidebar-button {
-     -fx-pref-width: 100%;
-     -fx-padding: 10px 15px;
-     -fx-font-size: 14px;
-     -fx-graphic-text-gap: 12px;
-     -fx-alignment: CENTER_LEFT;
-     -fx-background-color: transparent;
-     /* --- AJUSTE COR TEXTO BOTÃO --- */
-     -fx-text-fill: #BDC3C7; /* Cinza claro */
-     /* --- AJUSTE ELLIPSIS --- */
-     /* Garante que o texto não seja cortado com "..." se houver espaço */
-     -fx-text-overrun: clip;
+    /* Layout e Tamanho */
+    -fx-pref-width: 100%;
+    -fx-min-width: 0;
+    -fx-padding: 15px 15px 15px 25px; /* Padding com indentação */
+    -fx-alignment: CENTER_LEFT;
+    -fx-graphic-text-gap: 15px;
+
+    /* Aparência */
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+
+    /* Texto */
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+    -fx-text-fill: #ECF0F1; /* COR DO TEXTO CLARA */
+    -fx-text-overrun: clip; /* Evita '...' */
 }
-/* Acessa o Label INTERNO do botão (se houver) */
+
+/* Garante que o Label interno também use a cor */
 .sidebar-button .label {
-     -fx-text-fill: inherit; /* Herda a cor do texto do botão */
+    -fx-text-fill: #ECF0F1; /* Cor clara */
+}
+/* Seletor para o nó Text interno (caso exista) */
+.sidebar-button .text {
+    -fx-fill: #ECF0F1; /* Cor clara */
 }
 
+/* Ícone */
+.sidebar-icon {
+    -fx-fill: #ECF0F1; /* Cor do ícone clara */
+}
+
+/* Hover do Botão */
 .sidebar-button:hover {
-    -fx-background-color: #34495e;
-    -fx-text-fill: #FFFFFF; /* Branco no hover */
+    -fx-background-color: #34495e; /* Fundo hover */
+    -fx-text-fill: #FFFFFF; /* Texto branco */
 }
-.sidebar-button:hover .sidebar-icon { -fx-fill: #FFFFFF; } /* Ícone branco no hover */
-/* Cor do texto do Label interno no hover */
-.sidebar-button:hover .label {
-     -fx-text-fill: inherit; /* Herda o branco do botão */
+.sidebar-button:hover .label,
+.sidebar-button:hover .text {
+    -fx-text-fill: #FFFFFF; /* Texto branco */
+    -fx-fill: #FFFFFF; /* Texto branco */
+}
+.sidebar-button:hover .sidebar-icon {
+    -fx-fill: #FFFFFF; /* Ícone branco */
 }
 
-/* Ícone padrão */
-.sidebar-icon { -fx-fill: #BDC3C7; }
-
-/* ======== ADIÇÃO SUGERIDA PARA CORRIGIR COR DO TEXTO ======== */
-/* Força a cor clara no texto do botão da sidebar (MAIOR ESPECIFICIDADE) */
-.sidebar .sidebar-button .label {
-    -fx-text-fill: #ECF0F1; /* Quase branco. Use #FFFFFF se preferir branco puro. */
-}
-/* Força a cor branca no hover (MAIOR ESPECIFICIDADE) */
-.sidebar .sidebar-button:hover .label {
-     -fx-text-fill: #FFFFFF; /* Branco */
-}
-/* =================== FIM DA ADIÇÃO =================== */
-
-
-/* Estado Colapsado */
-.sidebar-button-collapsed {
-    -fx-alignment: CENTER; -fx-padding: 10px;
-    -fx-background-radius: 4px; -fx-min-width: 40px;
-    -fx-text-fill: transparent; /* Esconde texto remanescente */
-}
-.sidebar-button-collapsed .label {
-     -fx-text-fill: transparent; /* Esconde label interno */
-}
-.sidebar-button-collapsed .sidebar-icon { -fx-fill: #ECF0F1; } /* Ícone mais claro */
-.sidebar-button-collapsed:hover { -fx-background-color: #4e5d6c; }
-.sidebar-button-collapsed:hover .sidebar-icon { -fx-fill: #FFFFFF; }
-
-
-/* Tooltip */
-.tooltip {
-    -fx-background-color: rgba(44, 62, 80, 0.9); -fx-text-fill: white;
-    -fx-font-size: 12px; -fx-background-radius: 4px; -fx-padding: 5px 10px;
-}
 
 /* ==========================================================================
-   ESTILOS DOS WIDGETS (CARTÕES) DO DASHBOARD
+   WIDGETS (CARTÕES) DO DASHBOARD
    ========================================================================== */
-/* Cartões de resumo do Dashboard */
 .summary-card {
     -fx-background-radius: 8px;
     -fx-padding: 20px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0.2, 0, 1);
 }
 .summary-card:hover {
-    /* -fx-background-color: #7B3A9B; /* Exemplo: Um roxo um pouco mais escuro */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 2); /* Sombra mais pronunciada no hover */
-    -fx-cursor: hand; /* Muda o cursor do rato para uma mãozinha */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 2);
+    -fx-cursor: hand;
 }
-
-.summary-card-label {
-    -fx-font-size: 18px;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-}
-
-.summary-card-value {
-    -fx-font-size: 40px;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-}
+.summary-card-label { -fx-font-size: 18px; -fx-text-fill: white; -fx-font-weight: bold; }
+.summary-card-value { -fx-font-size: 40px; -fx-text-fill: white; -fx-font-weight: bold; }
 
 .card-green { -fx-background-color: #27AE60; }
 .card-orange { -fx-background-color: #F39C12; }
@@ -283,10 +229,9 @@
 .card-pink { -fx-background-color: #E91E63; }
 .card-yellow { -fx-background-color: #F1C40F; }
 
-/* Efeito de hover específico para cada cor (opcional, mas melhora a UI) */
 .card-green:hover { -fx-background-color: #229954; }
 .card-orange:hover { -fx-background-color: #e67e22; }
 .card-blue:hover { -fx-background-color: #2980b9; }
 .card-purple:hover { -fx-background-color: #7b3a9b; }
 .card-pink:hover { -fx-background-color: #d81b60; }
-.card-yellow:hover { -fx-background-color: #f39c12; } /* Ex: torna-se laranja no hover */
+.card-yellow:hover { -fx-background-color: #f39c12; }

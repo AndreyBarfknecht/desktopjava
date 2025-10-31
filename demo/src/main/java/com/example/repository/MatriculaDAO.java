@@ -48,7 +48,7 @@ public class MatriculaDAO {
 
                 // Cria objeto Turma simplificado apenas com os dados necessários
                 // Usamos o construtor existente, mas com valores nulos/vazios para campos não buscados.
-                Turma turma = new Turma(rs.getString("turma_nome"), null, null, null);
+                Turma turma = new Turma(rs.getString("turma_nome"), null, null, null, sql);
                 turma.setId(rs.getInt("turma_id"));
 
                 // Cria objeto Matricula
@@ -64,6 +64,27 @@ public class MatriculaDAO {
             e.printStackTrace();
         }
         return matriculas;
+    }
+
+    public Integer getMatriculaId(int alunoId, int turmaId) {
+        String sql = "SELECT id_matricula FROM matriculas WHERE id_aluno = ? AND id_turma = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, alunoId);
+            pstmt.setInt(2, turmaId);
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt("id_matricula"); // Encontrou e retorna o ID
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar ID da matrícula: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null; // Não encontrou
     }
 
     public void updateStatus(int matriculaId, String novoStatus) {

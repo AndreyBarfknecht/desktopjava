@@ -64,6 +64,46 @@ public class AlunoDAO {
         return alunos;
     }
 
+    public List<Aluno> getAlunosByTurmaId(int turmaId) {
+        // Este SQL junta Alunos (estudantes) e Matrículas
+        // e filtra pela turma (id_turma)
+        String sql = "SELECT e.*, r.id as resp_id, r.nome_completo as resp_nome, r.cpf as resp_cpf, r.telefone as resp_telefone, r.email as resp_email " +
+                     "FROM estudantes e " +
+                     "JOIN responsaveis r ON e.id_responsavel = r.id " +
+                     "JOIN matriculas m ON e.id = m.id_aluno " +
+                     "WHERE m.id_turma = ?";
+        
+        List<Aluno> alunos = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, turmaId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                // (Este código é igual ao do teu método getAll())
+                Responsavel responsavel = new Responsavel(
+                    rs.getString("resp_nome"), rs.getString("resp_cpf"),
+                    rs.getString("resp_telefone"), rs.getString("resp_email")
+                );
+                responsavel.setId(rs.getInt("resp_id"));
+
+                Aluno aluno = new Aluno(
+                    rs.getString("nome_completo"),
+                    rs.getString("cpf"),
+                    rs.getDate("data_nascimento").toLocalDate(),
+                    responsavel,
+                    rs.getString("telefone")
+                );
+                aluno.setId(rs.getInt("id"));
+                alunos.add(aluno);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return alunos;
+    }
+
     public void update(Aluno aluno) {
         String sql = "UPDATE estudantes SET nome_completo = ?, cpf = ?, data_nascimento = ?, id_responsavel = ?, telefone = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();

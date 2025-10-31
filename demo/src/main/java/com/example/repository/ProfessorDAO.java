@@ -15,7 +15,7 @@ import java.util.List;
 public class ProfessorDAO {
 
     public void save(Professor professor) {
-        String sql = "INSERT INTO professores (nome_completo, cpf, data_nascimento, email, telefone, disciplina_principal) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO professores (nome_completo, cpf, data_nascimento, email, telefone) VALUES (?, ?, ?, ?, ?, )";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -30,7 +30,6 @@ public class ProfessorDAO {
             }
             pstmt.setString(4, professor.getEmail());
             pstmt.setString(5, professor.getTelefone());
-            pstmt.setString(6, professor.getDisciplinaPrincipal());
 
             pstmt.executeUpdate();
 
@@ -62,10 +61,9 @@ public class ProfessorDAO {
 
                 String email = rs.getString("email");
                 String telefone = rs.getString("telefone");
-                String disciplina = rs.getString("disciplina_principal");
 
                 // Cria um objeto Professor com os dados extraídos
-                Professor professor = new Professor(nome, cpf, dataNascimento, email, telefone, disciplina);
+                Professor professor = new Professor(nome, cpf, dataNascimento, email, telefone);
                 professor.setId(id); // Define o ID que veio da base de dados
 
                 // Adiciona o professor à lista
@@ -80,7 +78,7 @@ public class ProfessorDAO {
     }
 
     public void update(Professor professor) {
-        String sql = "UPDATE professores SET nome_completo = ?, cpf = ?, data_nascimento = ?, email = ?, telefone = ?, disciplina_principal = ? WHERE id = ?";
+        String sql = "UPDATE professores SET nome_completo = ?, cpf = ?, data_nascimento = ?, email = ?, telefone = ?, WHERE id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -95,7 +93,6 @@ public class ProfessorDAO {
             pstmt.setString(2, professor.getCpf());
             pstmt.setString(4, professor.getEmail());
             pstmt.setString(5, professor.getTelefone());
-            pstmt.setString(6, professor.getDisciplinaPrincipal());
             pstmt.setInt(7, professor.getId()); // O ID é usado no 'WHERE'
 
             pstmt.executeUpdate();

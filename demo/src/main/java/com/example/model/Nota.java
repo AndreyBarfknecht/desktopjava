@@ -1,31 +1,43 @@
 package com.example.model;
 
 public class Nota {
-    private String disciplina;
-    private double valor;
-    private String avaliacao; // Ex: "Prova Trimestral", "Trabalho"
+    private int id;
+    
+    // Campos ATUALIZADOS para corresponder à tabela 'notas'
+    private int idMatricula; 
+    private int idDisciplina; 
 
-    public Nota(String disciplina, double valor, String avaliacao) {
-        this.disciplina = disciplina;
+    private double valor;
+    private String avaliacao;
+
+    /**
+     * Construtor atualizado para o novo esquema da BD.
+     */
+    public Nota(int idMatricula, int idDisciplina, double valor, String avaliacao) {
+        this.idMatricula = idMatricula;
+        this.idDisciplina = idDisciplina;
         this.valor = valor;
         this.avaliacao = avaliacao;
     }
 
-    public String getDisciplina() {
-        return disciplina;
-    }
+    // Getters e Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public double getValor() {
-        return valor;
-    }
+    // Getters e Setters para os novos campos
+    public int getIdMatricula() { return idMatricula; }
+    public void setIdMatricula(int idMatricula) { this.idMatricula = idMatricula; }
+    public int getIdDisciplina() { return idDisciplina; }
+    public void setIdDisciplina(int idDisciplina) { this.idDisciplina = idDisciplina; }
 
-    public String getAvaliacao() {
-        return avaliacao;
-    }
+    // Getters e Setters para os campos restantes
+    public double getValor() { return valor; }
+    public void setValor(double valor) { this.valor = valor; }
+    public String getAvaliacao() { return avaliacao; }
+    public void setAvaliacao(String avaliacao) { this.avaliacao = avaliacao; }
 
     @Override
     public String toString() {
-        // Formato que aparecerá em listas, se precisarmos
-        return disciplina + " (" + avaliacao + "): " + valor;
+        return "Matrícula ID " + idMatricula + " / Disciplina ID " + idDisciplina + " (" + avaliacao + "): " + valor;
     }
 }

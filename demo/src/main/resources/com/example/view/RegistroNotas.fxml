@@ -60,7 +60,9 @@
                             </rowConstraints>
                             <children>
                                 <Label text="Disciplina:" />
-                                <TextField fx:id="disciplinaField" promptText="Ex: Matemática" GridPane.columnIndex="1" />
+                                
+                                <ComboBox fx:id="disciplinaComboBox" prefWidth="310.0" promptText="Selecione a disciplina" GridPane.columnIndex="1" />
+                                
                                 <Label text="Avaliação:" GridPane.rowIndex="1" />
                                 <TextField fx:id="avaliacaoField" promptText="Ex: Prova 1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                 <Label text="Nota:" GridPane.rowIndex="2" />

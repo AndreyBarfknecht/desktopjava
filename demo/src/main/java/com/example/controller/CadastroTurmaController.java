@@ -1,11 +1,17 @@
 package com.example.controller;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
+import com.example.model.Curso;
+import com.example.model.PeriodoLetivo;
 import com.example.model.Turma; // Importa o modelo
+import com.example.repository.CursoDAO;
+import com.example.repository.PeriodoLetivoDAO;
 import com.example.repository.TurmaDAO; // Importa o DAO
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -18,27 +24,32 @@ public class CadastroTurmaController implements Initializable {
 
     // --- CAMPOS DO FXML ---
     @FXML private TextField nomeTurmaField;
-    @FXML private TextField anoLetivoField;
+    // --- CAMPOS ALTERADOS ---
+    @FXML private ComboBox<Curso> cursoComboBox;
+    @FXML private ComboBox<PeriodoLetivo> periodoLetivoComboBox;
     @FXML private ComboBox<String> turnoComboBox;
     @FXML private TextField salaField;
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
 
     private TurmaDAO turmaDAO; // Adiciona uma instância do DAO
+    // --- DAOs ADICIONAIS ---
+    private CursoDAO cursoDAO;
+    private PeriodoLetivoDAO periodoLetivoDAO;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Inicializa os DAOs
+        this.turmaDAO = new TurmaDAO();
+        this.cursoDAO = new CursoDAO();
+        this.periodoLetivoDAO = new PeriodoLetivoDAO();
+
         // Preenche o ComboBox com as opções de turno
         turnoComboBox.getItems().addAll("Manhã", "Tarde", "Noite");
 
-        // Adiciona um listener para permitir apenas números no ano letivo
-        anoLetivoField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                anoLetivoField.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
-
-        this.turmaDAO = new TurmaDAO(); // Inicializa o DAO
+        // Carrega os dados dos cursos e períodos letivos nos ComboBoxes
+        cursoComboBox.setItems(FXCollections.observableArrayList(cursoDAO.getAll()));
+        periodoLetivoComboBox.setItems(FXCollections.observableArrayList(periodoLetivoDAO.getAll()));
     }
 
     @FXML
@@ -46,16 +57,22 @@ public class CadastroTurmaController implements Initializable {
         if (!isTurmaDataValid()) {
             return;
         }
-        // CORREÇÃO: Passa o valor do turnoComboBox para o construtor
+
         Turma novaTurma = new Turma(
             nomeTurmaField.getText(),
-            anoLetivoField.getText(),
+            cursoComboBox.getValue(),
+            periodoLetivoComboBox.getValue(),
             turnoComboBox.getValue(),
-            salaField.getText() // Adiciona o valor do campo sala
+            salaField.getText()
         );
 
-        turmaDAO.save(novaTurma); // Usa o DAO para salvar no banco de dados
-        System.out.println("Turma " + novaTurma.getNome() + " salva no banco de dados.");
+        try {
+            turmaDAO.save(novaTurma); // Usa o DAO para salvar no banco de dados
+            System.out.println("Turma " + novaTurma.getNome() + " salva no banco de dados.");
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar a turma.");
+            e.printStackTrace();
+        }
 
         showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Turma salva com sucesso!");
         fecharJanela();
@@ -63,18 +80,13 @@ public class CadastroTurmaController implements Initializable {
     
     private boolean isTurmaDataValid() {
         if (nomeTurmaField.getText().trim().isEmpty() || 
-            anoLetivoField.getText().trim().isEmpty() ||
+            cursoComboBox.getValue() == null ||
+            periodoLetivoComboBox.getValue() == null ||
             turnoComboBox.getValue() == null ||
-            salaField.getText().trim().isEmpty()) { // Adiciona validação para a sala
+            salaField.getText().trim().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Todos os campos são obrigatórios.");
             return false;
         }
-
-        if (anoLetivoField.getText().length() != 4) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "O Ano Letivo deve ter 4 dígitos.");
-            return false;
-        }
-
         return true;
     }
     

@@ -20,7 +20,8 @@
          <children>
             <FontAwesomeIconView fill="WHITE" glyphName="BARS" size="2em" />
             <Label text="Painel Administrativo" style="-fx-font-size: 20px; -fx-text-fill: white;" />
-            <HBox HBox.hgrow="ALWAYS" /> <FontAwesomeIconView fill="WHITE" glyphName="BELL" size="2em" />
+            <HBox HBox.hgrow="ALWAYS" />
+            <FontAwesomeIconView fill="WHITE" glyphName="BELL" size="2em" />
             <FontAwesomeIconView fill="WHITE" glyphName="ENVELOPE" size="2em" />
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sistema Acadêmico" />
             <FontAwesomeIconView fill="WHITE" glyphName="USER_CIRCLE" size="2em" />
@@ -28,103 +29,81 @@
       </HBox>
    </top>
 
-   <left>
-       <VBox fx:id="sidebarContainer" alignment="TOP_CENTER" styleClass="sidebar" prefWidth="220.0"> <children>
-            <Button fx:id="toggleSidebarButton" onAction="#handleToggleSidebar" styleClass="toggle-button" prefWidth="Infinity">
-               <graphic>
-                  <FontAwesomeIconView fx:id="toggleIcon" glyphName="BARS" size="1.5em" styleClass="toggle-icon"/>
-               </graphic>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </Button>
+<left>
+       <Accordion fx:id="sidebarAccordion" styleClass="sidebar" prefWidth="190.0">
+         <panes>
+           <TitledPane fx:id="cadastrosPane" text="Cadastros" styleClass="sidebar-titled-pane" expanded="true">
+             <content>
+               <VBox styleClass="sidebar-pane-content">
+                  <Button fx:id="cadastrarAlunoButton" onAction="#handleCadastroAlunoButton" styleClass="sidebar-button" text="Cadastrar Aluno" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="GRADUATION_CAP" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="cadastrarProfessorButton" onAction="#handleCadastroProfessorButton" styleClass="sidebar-button" text="Cadastrar Professor" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="CHALKBOARD_TEACHER" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="cadastrarCursoButton" onAction="#handleCadastroCursoButton" styleClass="sidebar-button" text="Cadastrar Curso" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="BOOK" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="cadastrarDisciplinaButton" onAction="#handleCadastroDisciplinaButton" styleClass="sidebar-button" text="Cadastrar Disciplina" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="PENCIL" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="cadastrarTurmaButton" onAction="#handleCadastroTurmaButton" styleClass="sidebar-button" text="Cadastrar Turma" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="USERS" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="cadastrarPeriodoLetivoButton" onAction="#handleCadastroPeriodoLetivoButton" styleClass="sidebar-button" text="Período Letivo" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="CALENDAR_ALT" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="cadastrarHorarioButton" onAction="#handleCadastroHorarioButton" styleClass="sidebar-button" text="Cadastrar Horário" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="CLOCK_O" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+               </VBox>
+             </content>
+           </TitledPane>
 
-            <Accordion fx:id="sidebarAccordion" VBox.vgrow="ALWAYS">
-              <panes>
-                <TitledPane fx:id="cadastrosPane" text="Cadastros" styleClass="sidebar-titled-pane" expanded="true">
-                  <content>
-                    <VBox styleClass="sidebar-pane-content">
-                        <Button fx:id="cadastrarAlunoButton" onAction="#handleCadastroAlunoButton" styleClass="sidebar-button" text="Aluno" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="GRADUATION_CAP" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Cadastrar Aluno" /></tooltip>
-                        </Button>
-                        <Button fx:id="cadastrarProfessorButton" onAction="#handleCadastroProfessorButton" styleClass="sidebar-button" text="Professor" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="CHALKBOARD_TEACHER" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Cadastrar Professor" /></tooltip>
-                        </Button>
-                         <Button fx:id="cadastrarCursoButton" onAction="#handleCadastroCursoButton" styleClass="sidebar-button" text="Curso" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="BOOK" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Cadastrar Curso" /></tooltip>
-                        </Button>
-                         <Button fx:id="cadastrarDisciplinaButton" onAction="#handleCadastroDisciplinaButton" styleClass="sidebar-button" text="Disciplina" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="PENCIL" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Cadastrar Disciplina" /></tooltip>
-                        </Button>
-                        <Button fx:id="cadastrarTurmaButton" onAction="#handleCadastroTurmaButton" styleClass="sidebar-button" text="Turma" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="USERS" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Cadastrar Turma" /></tooltip>
-                        </Button>
-                        <Button fx:id="cadastrarPeriodoLetivoButton" onAction="#handleCadastroPeriodoLetivoButton" styleClass="sidebar-button" text="Período Letivo" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="CALENDAR_ALT" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Cadastrar Período Letivo" /></tooltip>
-                        </Button>
-                        <Button fx:id="cadastrarHorarioButton" onAction="#handleCadastroHorarioButton" styleClass="sidebar-button" text="Horário" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="CLOCK_O" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Cadastrar Horário" /></tooltip>
-                        </Button>
-                    </VBox>
-                  </content>
-                </TitledPane>
+           <TitledPane fx:id="academicoPane" text="Acadêmico" styleClass="sidebar-titled-pane">
+             <content>
+               <VBox styleClass="sidebar-pane-content">
+                  <Button fx:id="matriculaButton" onAction="#handleMatriculaButton" styleClass="sidebar-button" text="Gerenciar Matrículas" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="ADDRESS_BOOK" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="gestaoGradeButton" onAction="#handleGestaoGradeButton" styleClass="sidebar-button" text="Gerenciar Grade" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="TABLE" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="registroNotasButton" onAction="#handleRegistroNotasButton" styleClass="sidebar-button" text="Registrar Notas" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="EDIT" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+               </VBox>
+             </content>
+           </TitledPane>
 
-                <TitledPane fx:id="academicoPane" text="Acadêmico" styleClass="sidebar-titled-pane">
-                  <content>
-                    <VBox styleClass="sidebar-pane-content">
-                        <Button fx:id="matriculaButton" onAction="#handleMatriculaButton" styleClass="sidebar-button" text="Matrículas" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="ADDRESS_BOOK" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Matrículas" /></tooltip>
-                        </Button>
-                        <Button fx:id="registroNotasButton" onAction="#handleRegistroNotasButton" styleClass="sidebar-button" text="Notas" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="EDIT" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Registrar Notas" /></tooltip>
-                        </Button>
-                        </VBox>
-                  </content>
-                </TitledPane>
+           <TitledPane fx:id="consultasPane" text="Consultas" styleClass="sidebar-titled-pane">
+             <content>
+               <VBox styleClass="sidebar-pane-content">
+                  <Button fx:id="consultarAlunosButton" onAction="#handleConsultarAlunosButton" styleClass="sidebar-button" text="Consultar Alunos" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="SEARCH" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="consultarProfessoresButton" onAction="#handleConsultarProfessoresButton" styleClass="sidebar-button" text="Consultar Professores" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="SEARCH_PLUS" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
+               </VBox>
+             </content>
+           </TitledPane>
 
-                <TitledPane fx:id="consultasPane" text="Consultas" styleClass="sidebar-titled-pane">
-                  <content>
-                    <VBox styleClass="sidebar-pane-content">
-                        <Button fx:id="consultarAlunosButton" onAction="#handleConsultarAlunosButton" styleClass="sidebar-button" text="Alunos" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="SEARCH" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Consultar Alunos" /></tooltip>
-                        </Button>
-                        <Button fx:id="consultarProfessoresButton" onAction="#handleConsultarProfessoresButton" styleClass="sidebar-button" text="Professores" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="SEARCH_PLUS" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                           <tooltip><Tooltip text="Consultar Professores" /></tooltip>
-                        </Button>
-                        </VBox>
-                  </content>
-                </TitledPane>
+           <TitledPane fx:id="sistemaPane" text="Sistema" styleClass="sidebar-titled-pane">
+              <content>
+                <VBox styleClass="sidebar-pane-content">
+                   <Button fx:id="cadastrarUsuarioButton" onAction="#handleCadastroUsuarioButton" styleClass="sidebar-button" text="Cadastrar Usuário" contentDisplay="LEFT">
+                      <graphic><FontAwesomeIconView glyphName="USER_PLUS" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                   </Button>
+                   <Button fx:id="sairButton" onAction="#handleSairButton" styleClass="sidebar-button" text="Sair do Sistema" contentDisplay="LEFT">
+                      <graphic><FontAwesomeIconView glyphName="SIGN_OUT" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                   </Button>
+                </VBox>
+              </content>
+           </TitledPane>
 
-                <TitledPane fx:id="sistemaPane" text="Sistema" styleClass="sidebar-titled-pane">
-                   <content>
-                     <VBox styleClass="sidebar-pane-content">
-                        <Button fx:id="cadastrarUsuarioButton" onAction="#handleCadastroUsuarioButton" styleClass="sidebar-button" text="Usuário" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="USER_PLUS" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                            <tooltip><Tooltip text="Cadastrar Usuário" /></tooltip>
-                        </Button>
-                        <Button fx:id="sairButton" onAction="#handleSairButton" styleClass="sidebar-button" text="Sair" contentDisplay="LEFT">
-                           <graphic><FontAwesomeIconView glyphName="SIGN_OUT" size="1.5em" styleClass="sidebar-icon"/></graphic>
-                            <tooltip><Tooltip text="Sair" /></tooltip>
-                        </Button>
-                     </VBox>
-                   </content>
-                </TitledPane>
-
-              </panes>
-            </Accordion>
-         </children>
-       </VBox>
+         </panes>
+       </Accordion>
    </left>
    
    <center>
@@ -161,7 +140,7 @@
                   <VBox fx:id="professoresWidget" styleClass="summary-card, card-purple" prefWidth="250.0" onMouseClicked="#handleConsultarProfessoresWidget">
                      <children>
                         <Label fx:id="professoresCountLabel" styleClass="summary-card-value" text="0" />
-                        <Label styleClass="summary-card-label" text="Professores Registados&#10; " />
+                        <Label styleClass="summary-card-label" text="Professores Registrados" />
                      </children>
                   </VBox>
                </children>

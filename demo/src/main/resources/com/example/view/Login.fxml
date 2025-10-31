@@ -13,7 +13,7 @@
 
 <StackPane alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.LoginController" stylesheets="@../style.css">
    <children>
-      <VBox styleClass="login-container" alignment="CENTER" maxHeight="500.0" maxWidth="450.0" spacing="20.0">
+      <VBox styleClass="login-container" alignment="CENTER" maxHeight="450.0" maxWidth="450.0" spacing="20.0">
          <children>
             <Label styleClass="login-title" text="Sistema Acadêmico" />
             <Label styleClass="login-subtitle" text="Preencha os campos para entrar" />

@@ -1,23 +1,25 @@
 package com.example.model;
 
-// --- NOVAS IMPORTAÇÕES ---
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class Turma {
     private int id;
     private String nome;
-    private String anoLetivo;
+    // --- CAMPOS ALTERADOS ---
+    private Curso curso;
+    private PeriodoLetivo periodoLetivo;
     private String turno;
-    private String sala; // NOVO CAMPO
+    private String sala;
 
-    // --- NOVA LISTA ---
+    // --- LISTA DE ALUNOS ---
     private final ObservableList<Aluno> alunosMatriculados = FXCollections.observableArrayList();
 
     // Construtor principal
-    public Turma(String nome, String anoLetivo, String turno, String sala) {
+    public Turma(String nome, Curso curso, PeriodoLetivo periodoLetivo, String turno, String sala) {
         this.nome = nome;
-        this.anoLetivo = anoLetivo;
+        this.curso = curso;
+        this.periodoLetivo = periodoLetivo;
         this.turno = turno;
         this.sala = sala;
     }
@@ -42,14 +44,6 @@ public class Turma {
         this.id = id;
     }
 
-    public String getAnoLetivo() {
-        return anoLetivo;
-    }
-
-    public void setAnoLetivo(String anoLetivo) {
-        this.anoLetivo = anoLetivo;
-    }
-
     public String getTurno() {
         return turno;
     }
@@ -58,7 +52,7 @@ public class Turma {
         this.turno = turno;
     }
 
-    // --- GETTER E SETTER PARA O NOVO CAMPO ---
+    // --- GETTER E SETTER PARA O CAMPO SALA ---
     public String getSala() {
         return sala;
     }
@@ -67,7 +61,23 @@ public class Turma {
         this.sala = sala;
     }
 
-    // --- MÉTODOS NOVOS ---
+    // --- GETTERS E SETTERS PARA OS NOVOS CAMPOS ---
+    public Curso getCurso() {
+        return curso;
+    }
+
+    public void setCurso(Curso curso) {
+        this.curso = curso;
+    }
+
+    public PeriodoLetivo getPeriodoLetivo() {
+        return periodoLetivo;
+    }
+
+    public void setPeriodoLetivo(PeriodoLetivo periodoLetivo) {
+        this.periodoLetivo = periodoLetivo;
+    }
+
     public ObservableList<Aluno> getAlunosMatriculados() {
         return alunosMatriculados;
     }
@@ -81,16 +91,9 @@ public class Turma {
     public void desmatricular(Aluno aluno) {
         alunosMatriculados.remove(aluno);
     }
-    // --- FIM DOS MÉTODOS NOVOS ---
 
     @Override
     public String toString() {
         return this.nome; // Simplificado para exibição em ComboBoxes
     }
-
-    public void setAnoLetivo(int ano) {
-        this.anoLetivo = String.valueOf(ano);
-    }
-
-   
 }

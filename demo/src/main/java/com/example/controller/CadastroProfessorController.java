@@ -27,7 +27,6 @@ public class CadastroProfessorController implements Initializable {
     @FXML private DatePicker dataNascimentoPicker;
     @FXML private TextField emailField;
     @FXML private TextField telefoneField;
-    @FXML private TextField disciplinaField;
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
     
@@ -52,7 +51,6 @@ public class CadastroProfessorController implements Initializable {
         dataNascimentoPicker.setValue(professor.getDataNascimento());
         emailField.setText(professor.getEmail());
         telefoneField.setText(professor.getTelefone());
-        disciplinaField.setText(professor.getDisciplinaPrincipal());
     }
 
     @FXML
@@ -66,7 +64,7 @@ public class CadastroProfessorController implements Initializable {
             if (professorParaEditar == null) { // Se não há professor para editar, é um novo registo
                 Professor novoProfessor = new Professor(
                     nomeCompletoField.getText(), cpfField.getText(), dataNascimentoPicker.getValue(),
-                    emailField.getText(), telefoneField.getText(), disciplinaField.getText()
+                    emailField.getText(), telefoneField.getText()
                 );
                 professorDAO.save(novoProfessor);
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Professor salvo com sucesso!");
@@ -76,7 +74,6 @@ public class CadastroProfessorController implements Initializable {
                 professorParaEditar.setDataNascimento(dataNascimentoPicker.getValue());
                 professorParaEditar.setEmail(emailField.getText());
                 professorParaEditar.setTelefone(telefoneField.getText());
-                professorParaEditar.setDisciplinaPrincipal(disciplinaField.getText());
                 
                 professorDAO.update(professorParaEditar);
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Professor atualizado com sucesso!");
@@ -92,9 +89,8 @@ public class CadastroProfessorController implements Initializable {
     
     private boolean isProfessorDataValid() {
         if (nomeCompletoField.getText().trim().isEmpty() || 
-            dataNascimentoPicker.getValue() == null ||
-            disciplinaField.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Nome, Data de Nascimento e Disciplina são obrigatórios.");
+            dataNascimentoPicker.getValue() == null) {
+            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Nome, Data de Nascimento e são obrigatórios.");
             return false;
         }
 

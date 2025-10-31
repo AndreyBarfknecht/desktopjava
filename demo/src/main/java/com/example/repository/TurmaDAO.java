@@ -1,6 +1,8 @@
 package com.example.repository;
 
+import com.example.model.Curso;
 import com.example.model.Turma;
+import com.example.model.PeriodoLetivo;
 import com.example.util.DatabaseConnection;
 
 import java.sql.Connection;
@@ -12,48 +14,69 @@ import java.util.List;
 
 public class TurmaDAO {
 
-    public void save(Turma turma) {
-        // Esta consulta INSERT estava correta, usando 'salaAula'
-        String sql = "INSERT INTO turmas (nome_turma, ano_letivo, turno, salaAula) VALUES (?, ?, ?, ?)";
+    public void save(Turma turma) throws SQLException {
+        String sql = "INSERT INTO turmas (nome_turma, id_curso, id_periodo_letivo, turno, salaAula) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, turma.getNome());
-            pstmt.setString(2, turma.getAnoLetivo());
-            pstmt.setString(3, turma.getTurno());
-            pstmt.setString(4, turma.getSala());
+            pstmt.setInt(2, turma.getCurso().getId());
+            pstmt.setInt(3, turma.getPeriodoLetivo().getId());
+            pstmt.setString(4, turma.getTurno());
+            pstmt.setString(5, turma.getSala());
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Erro ao salvar turma: " + e.getMessage());
             e.printStackTrace();
+            throw e; // Lança a exceção para o controller tratar
         }
     }
 
     public List<Turma> getAll() {
-        
-        // CORREÇÃO: Simplificamos a query para buscar apenas os dados da turma,
-        // removendo o JOIN com professores que não era necessário aqui.
-        String sql = "SELECT id, nome_turma, ano_letivo, turno, salaAula FROM turmas";
+        // Query com JOINs para buscar os dados completos da turma, curso e período letivo
+        String sql = "SELECT " +
+                     "t.id as turma_id, t.nome_turma, t.turno, t.salaAula, " +
+                     "c.id as curso_id, c.nome_curso, c.nivel, c.duracao_semestres, " +
+                     "p.id as periodo_id, p.nome as periodo_nome, p.data_inicio, p.data_fim, p.status " +
+                     "FROM turmas t " +
+                     "JOIN cursos c ON t.id_curso = c.id " +
+                     "JOIN periodos_letivos p ON t.id_periodo_letivo = p.id";
 
         List<Turma> turmas = new ArrayList<>();
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
-
+            
             while (rs.next()) {
-                int id = rs.getInt("id");
+                // 1. Monta o objeto Curso
+                Curso curso = new Curso(
+                    rs.getString("nome_curso"),
+                    rs.getString("nivel"),
+                    rs.getInt("duracao_semestres")
+                );
+                curso.setId(rs.getInt("curso_id"));
                 
-                // CORREÇÃO: Usar o construtor e garantir que o ano letivo seja uma String.
+                // 2. Monta o objeto PeriodoLetivo
+                PeriodoLetivo periodo = new PeriodoLetivo(
+                    rs.getInt("periodo_id"),
+                    rs.getString("periodo_nome"),
+                    rs.getDate("data_inicio").toLocalDate(),
+                    rs.getDate("data_fim").toLocalDate(),
+                    rs.getString("status")
+                );
+                
+                // 3. Monta o objeto Turma com os objetos Curso e PeriodoLetivo
                 Turma turma = new Turma(
                     rs.getString("nome_turma"),
-                    rs.getString("ano_letivo"), // Lendo como String
+                    curso,
+                    periodo,
                     rs.getString("turno"),
-                    rs.getString("salaAula") // <-- Corrigido aqui também
+                    rs.getString("salaAula")
                 );
-                turma.setId(id);
+                turma.setId(rs.getInt("turma_id"));
 
                 turmas.add(turma);
             }
@@ -61,7 +84,6 @@ public class TurmaDAO {
             System.err.println("Erro ao buscar turmas: " + e.getMessage());
             e.printStackTrace();
         }
-
         return turmas;
     }
 }

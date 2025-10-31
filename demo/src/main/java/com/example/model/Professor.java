@@ -9,16 +9,14 @@ public class Professor {
     private LocalDate dataNascimento;
     private String email;
     private String telefone;
-    private String disciplinaPrincipal; // Corresponde à coluna na tabela
 
     // Construtor usado para criar um professor a partir do formulário
-    public Professor(String nomeCompleto, String cpf, LocalDate dataNascimento, String email, String telefone, String disciplinaPrincipal) {
+    public Professor(String nomeCompleto, String cpf, LocalDate dataNascimento, String email, String telefone) {
         this.nomeCompleto = nomeCompleto;
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;
         this.email = email;
         this.telefone = telefone;
-        this.disciplinaPrincipal = disciplinaPrincipal;
     }
 
     // --- Getters e Setters para todos os campos ---
@@ -36,9 +34,7 @@ public class Professor {
     public void setEmail(String email) { this.email = email; }
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
-    public String getDisciplinaPrincipal() { return disciplinaPrincipal; }
-    public void setDisciplinaPrincipal(String disciplinaPrincipal) { this.disciplinaPrincipal = disciplinaPrincipal; }
-
+   
     @Override
     public String toString() {
         return this.nomeCompleto;
