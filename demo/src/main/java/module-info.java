@@ -18,7 +18,7 @@ module com.example {
     
     // --- LINHAS ADICIONADAS ---
     exports com.example.model;
-    exports com.example.service;
+    // exports com.example.service;
     exports com.example.util;       // Torna o pacote 'util' visível
     exports com.example.repository; // Torna o pacote 'repository' visível
     exports com.example.controller; // Exporta o controller

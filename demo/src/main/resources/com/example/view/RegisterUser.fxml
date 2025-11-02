@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="500.0" prefWidth="450.0" spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.RegisterUserController" stylesheets="@../style.css">
+<VBox alignment="CENTER" prefHeight="450.0" prefWidth="450.0" spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.RegisterUserController" stylesheets="@../style.css">
    <children>
       <Label text="Registo de Novo Utilizador">
          <font>

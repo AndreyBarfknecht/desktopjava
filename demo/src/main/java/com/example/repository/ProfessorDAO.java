@@ -15,7 +15,7 @@ import java.util.List;
 public class ProfessorDAO {
 
     public void save(Professor professor) {
-        String sql = "INSERT INTO professores (nome_completo, cpf, data_nascimento, email, telefone) VALUES (?, ?, ?, ?, ?, )";
+        String sql = "INSERT INTO professores (nome_completo, cpf, data_nascimento, email, telefone) VALUES (?, ?, ?, ?, ? )";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -78,7 +78,7 @@ public class ProfessorDAO {
     }
 
     public void update(Professor professor) {
-        String sql = "UPDATE professores SET nome_completo = ?, cpf = ?, data_nascimento = ?, email = ?, telefone = ?, WHERE id = ?";
+        String sql = "UPDATE professores SET nome_completo = ?, cpf = ?, data_nascimento = ?, email = ?, telefone = ? WHERE id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

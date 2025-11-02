@@ -10,26 +10,28 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.GestaoGradeController" stylesheets="@../style.css">
+<BorderPane prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="com.example.controller.GestaoProfessorDisciplinaController" 
+    stylesheets="@../style.css">
     <top>
-        <Label text="Gestão de Grade Curricular" styleClass="titulo-janela" BorderPane.alignment="CENTER">
+        <Label text="Associar Disciplinas ao Professor" styleClass="titulo-janela" BorderPane.alignment="CENTER">
             <padding>
                 <Insets bottom="20.0" top="20.0" />
             </padding>
         </Label>
     </top>
     <center>
-        <HBox alignment="TOP_CENTER" spacing="40.0">
+      <HBox alignment="TOP_CENTER" spacing="40.0">
             <padding>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
             </padding>
             <children>
                 <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                     <children>
-                        <Label text="Selecione o Curso:" />
-                        <ComboBox fx:id="cursoComboBox" prefWidth="300.0" promptText="Escolha um curso" />
+                         <Label text="Selecione o Professor:" />
+                        <ComboBox fx:id="professorComboBox" prefWidth="300.0" promptText="Escolha um professor" />
                         
-                        <Label text="Disciplinas na Grade deste Curso:">
+                        <Label text="Disciplinas Associadas a este Professor:">
                            <VBox.margin>
                               <Insets top="20.0" />
                            </VBox.margin>
@@ -49,29 +51,29 @@
 
                 <VBox spacing="10.0" HBox.hgrow="NEVER" alignment="TOP_CENTER">
                      <children>
-                        <Label text="Adicionar Disciplina à Grade:" />
+                        <Label text="Adicionar Disciplina ao Professor:" />
                         <ComboBox fx:id="disponiveisComboBox" prefWidth="300.0" promptText="Escolha uma disciplina" disable="true" />
-                        <Button fx:id="adicionarButton" onAction="#onAdicionar" text="Adicionar à Grade" styleClass="salvar-button" disable="true">
+                        <Button fx:id="adicionarButton" onAction="#onAdicionar" text="Adicionar ao Professor" styleClass="salvar-button" disable="true">
                            <VBox.margin>
                               <Insets top="10.0" />
                            </VBox.margin>
                         </Button>
                      </children>
-                  <HBox.margin>
-                     <Insets top="30.0" />
-                  </HBox.margin>
+                     <HBox.margin>
+                        <Insets top="30.0" />
+                     </HBox.margin>
                 </VBox>
             </children>
         </HBox>
     </center>
     <bottom>
-        <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+       <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
             <padding>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
             </padding>
             <children>
                 <Button fx:id="fecharButton" onAction="#onFechar" text="Fechar" prefWidth="100.0" />
             </children>
-        </HBox>
+       </HBox>
     </bottom>
 </BorderPane>

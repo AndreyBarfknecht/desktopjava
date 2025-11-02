@@ -1,9 +1,9 @@
 package com.example.controller;
 
-import com.example.SceneNavigator; //
-import com.example.repository.ProfessorDAO; //
-import com.example.repository.TurmaDAO;    //
-import com.example.repository.AlunoDAO;    //
+import com.example.SceneNavigator;
+import com.example.repository.ProfessorDAO;
+import com.example.repository.TurmaDAO;
+import com.example.repository.AlunoDAO;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -11,13 +11,11 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Accordion; // Importa Accordion
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TitledPane; // Importa TitledPane
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
-
-// REMOVIDOS imports de Animação, Map, Tooltip, ContentDisplay, etc.
 
 public class TelaInicialController implements Initializable {
 
@@ -35,7 +33,10 @@ public class TelaInicialController implements Initializable {
     @FXML private Button consultarProfessoresButton;
     @FXML private Button cadastrarCursoButton;
     @FXML private Button cadastrarDisciplinaButton;
-    @FXML private Button gestaoGradeButton; // Botão da Gestão de Grade
+    @FXML private Button gestaoGradeButton;
+    
+    // --- LINHA ADICIONADA ---
+    @FXML private Button associarDisciplinaButton; // Ligação para o novo botão
 
     // --- Widgets do Painel ---
     @FXML private VBox professoresWidget;
@@ -53,7 +54,6 @@ public class TelaInicialController implements Initializable {
     @FXML private TitledPane academicoPane;
     @FXML private TitledPane consultasPane;
     @FXML private TitledPane sistemaPane;
-    // REMOVIDOS: sidebarContainer, toggleSidebarButton, toggleIcon
 
     // --- DAOs ---
     private ProfessorDAO professorDAO;
@@ -61,14 +61,12 @@ public class TelaInicialController implements Initializable {
     private AlunoDAO alunoDAO;
     // private CursoDAO cursoDAO; 
 
-    // REMOVIDAS: Variáveis de controle da Sidebar (isSidebarExpanded, width, maps)
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Inicializa DAOs
-        this.professorDAO = new ProfessorDAO(); //
-        this.turmaDAO = new TurmaDAO();       //
-        this.alunoDAO = new AlunoDAO();       //
+        this.professorDAO = new ProfessorDAO();
+        this.turmaDAO = new TurmaDAO();
+        this.alunoDAO = new AlunoDAO();
         // this.cursoDAO = new CursoDAO();
 
         // Carrega contagens nos widgets
@@ -85,9 +83,7 @@ public class TelaInicialController implements Initializable {
         });
     }
 
-    // REMOVIDOS: storeOriginalTexts(), handleToggleSidebar(), updateSidebarItemsDisplay(), getButtonShortTextFromFXML()
-
-    // --- Métodos de Contagem (Mantidos) ---
+    // --- Métodos de Contagem ---
     private void atualizarContagemCursos() {
         // TODO: Implementar com CursoDAO quando disponível
         cursosCountLabel.setText("0"); // Placeholder
@@ -95,7 +91,7 @@ public class TelaInicialController implements Initializable {
 
     private void atualizarContagemTurmas() {
         try {
-            int contagem = turmaDAO.getAll().size(); //
+            int contagem = turmaDAO.getAll().size();
             turmasCountLabel.setText(String.valueOf(contagem));
         } catch (Exception e) {
             turmasCountLabel.setText("!");
@@ -105,7 +101,7 @@ public class TelaInicialController implements Initializable {
 
     private void atualizarContagemAlunos() {
         try {
-            int contagem = alunoDAO.getAll().size(); //
+            int contagem = alunoDAO.getAll().size();
             alunosCountLabel.setText(String.valueOf(contagem));
         } catch (Exception e) {
             alunosCountLabel.setText("!");
@@ -115,7 +111,7 @@ public class TelaInicialController implements Initializable {
 
     private void atualizarContagemProfessores() {
         try {
-            int contagem = professorDAO.getAll().size(); //
+            int contagem = professorDAO.getAll().size();
             professoresCountLabel.setText(String.valueOf(contagem));
         } catch (Exception e) {
             professoresCountLabel.setText("!");
@@ -123,23 +119,29 @@ public class TelaInicialController implements Initializable {
         }
     }
 
-    // --- Handlers dos botões (Mantidos) ---
-    @FXML private void handleCadastroAlunoButton() { SceneNavigator.openNewWindow("tela_cadastro_aluno", "Cadastro de Novo Aluno"); atualizarContagemAlunos();} //
-    @FXML private void handleCadastroProfessorButton() { SceneNavigator.openNewWindow("CadastroProfessor", "Cadastro de Novo Professor"); atualizarContagemProfessores(); } //
-    @FXML private void handleCadastroCursoButton() { SceneNavigator.openNewWindow("CadastroCurso", "Cadastro de Novo Curso"); atualizarContagemCursos(); } //
-    @FXML private void handleCadastroDisciplinaButton() { SceneNavigator.openNewWindow("CadastroDisciplina", "Cadastro de Disciplina"); } //
-    @FXML private void handleCadastroTurmaButton() { SceneNavigator.openNewWindow("CadastroTurma", "Cadastro de Nova Turma"); atualizarContagemTurmas(); } //
-    @FXML private void handleCadastroPeriodoLetivoButton() { SceneNavigator.openNewWindow("CadastroPeriodoLetivo", "Cadastro de Período Letivo"); } //
-    @FXML private void handleCadastroHorarioButton() { SceneNavigator.openNewWindow("CadastroHorario", "Cadastro de Horário"); } //
-    @FXML private void handleCadastroUsuarioButton() { SceneNavigator.openNewWindow("RegisterUser", "Cadastro de Novo Usuário"); } //
+    // --- Handlers dos botões ---
+    @FXML private void handleCadastroAlunoButton() { SceneNavigator.openNewWindow("tela_cadastro_aluno", "Cadastro de Novo Aluno"); atualizarContagemAlunos();}
+    @FXML private void handleCadastroProfessorButton() { SceneNavigator.openNewWindow("CadastroProfessor", "Cadastro de Novo Professor"); atualizarContagemProfessores(); }
+    @FXML private void handleCadastroCursoButton() { SceneNavigator.openNewWindow("CadastroCurso", "Cadastro de Novo Curso"); atualizarContagemCursos(); }
+    @FXML private void handleCadastroDisciplinaButton() { SceneNavigator.openNewWindow("CadastroDisciplina", "Cadastro de Disciplina"); }
+    @FXML private void handleCadastroTurmaButton() { SceneNavigator.openNewWindow("CadastroTurma", "Cadastro de Nova Turma"); atualizarContagemTurmas(); }
+    @FXML private void handleCadastroPeriodoLetivoButton() { SceneNavigator.openNewWindow("CadastroPeriodoLetivo", "Cadastro de Período Letivo"); }
+    @FXML private void handleCadastroHorarioButton() { SceneNavigator.openNewWindow("CadastroHorario", "Cadastro de Horário"); }
+    @FXML private void handleCadastroUsuarioButton() { SceneNavigator.openNewWindow("RegisterUser", "Cadastro de Novo Usuário"); }
     @FXML private void handleSairButton() { Platform.exit(); }
-    @FXML private void handleMatriculaButton() { SceneNavigator.openNewWindow("Matricula", "Matrícula de Alunos"); atualizarContagemAlunos(); } //
-    @FXML private void handleGestaoGradeButton() { SceneNavigator.openNewWindow("GestaoGrade", "Gerenciar Grade Curricular"); } //
-    @FXML private void handleRegistroNotasButton() { SceneNavigator.openNewWindow("RegistroNotas", "Registro de Notas"); } //
-    @FXML private void handleConsultarAlunosButton() { SceneNavigator.openNewWindow("ConsultaAlunos", "Consulta de Alunos"); atualizarContagemAlunos(); } //
-    @FXML private void handleConsultarProfessoresButton() { SceneNavigator.openNewWindow("ConsultaProfessores", "Consulta de Professores"); atualizarContagemProfessores(); } //
+    @FXML private void handleMatriculaButton() { SceneNavigator.openNewWindow("Matricula", "Matrícula de Alunos"); atualizarContagemAlunos(); }
+    @FXML private void handleGestaoGradeButton() { SceneNavigator.openNewWindow("GestaoGrade", "Gerenciar Grade Curricular"); }
+    
+    // --- NOVO MÉTODO ADICIONADO ---
+    @FXML private void handleAssociarDisciplinaButton() {
+        SceneNavigator.openNewWindow("GestaoProfessorDisciplina", "Associar Disciplinas ao Professor");
+    }
 
-    // --- Handlers dos Widgets Clicáveis (Mantidos) ---
+    @FXML private void handleRegistroNotasButton() { SceneNavigator.openNewWindow("RegistroNotas", "Registro de Notas"); }
+    @FXML private void handleConsultarAlunosButton() { SceneNavigator.openNewWindow("ConsultaAlunos", "Consulta de Alunos"); atualizarContagemAlunos(); }
+    @FXML private void handleConsultarProfessoresButton() { SceneNavigator.openNewWindow("ConsultaProfessores", "Consulta de Professores"); atualizarContagemProfessores(); }
+
+    // --- Handlers dos Widgets Clicáveis ---
     @FXML private void handleConsultarProfessoresWidget() { handleConsultarProfessoresButton(); }
     @FXML private void handleConsultarAlunosWidget() { handleConsultarAlunosButton(); }
 }

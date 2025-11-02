@@ -43,9 +43,6 @@
                 <TableColumn prefWidth="200.0" text="E-mail">
                     <cellValueFactory><PropertyValueFactory property="email" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="150.0" text="Disciplina Principal">
-                    <cellValueFactory><PropertyValueFactory property="disciplinaPrincipal" /></cellValueFactory>
-                </TableColumn>
             </columns>
         </TableView>
     </center>

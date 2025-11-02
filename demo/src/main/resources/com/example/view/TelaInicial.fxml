@@ -69,6 +69,10 @@
                   <Button fx:id="gestaoGradeButton" onAction="#handleGestaoGradeButton" styleClass="sidebar-button" text="Gerenciar Grade" contentDisplay="LEFT">
                      <graphic><FontAwesomeIconView glyphName="TABLE" size="1.5em" styleClass="sidebar-icon"/></graphic>
                   </Button>
+                  
+                  <Button fx:id="associarDisciplinaButton" onAction="#handleAssociarDisciplinaButton" styleClass="sidebar-button" text="Professor-Disciplina" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="LINK" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                  </Button>
                   <Button fx:id="registroNotasButton" onAction="#handleRegistroNotasButton" styleClass="sidebar-button" text="Registrar Notas" contentDisplay="LEFT">
                      <graphic><FontAwesomeIconView glyphName="EDIT" size="1.5em" styleClass="sidebar-icon"/></graphic>
                   </Button>
