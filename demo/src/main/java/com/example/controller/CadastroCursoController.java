@@ -22,6 +22,7 @@ public class CadastroCursoController implements Initializable {
     @FXML private Button cancelarButton;
 
     private CursoDAO cursoDAO;
+    private Curso cursoParaEditar;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -38,6 +39,14 @@ public class CadastroCursoController implements Initializable {
         });
     }
 
+    public void setCursoParaEdicao(Curso curso) {
+        this.cursoParaEditar = curso;
+        nomeCursoField.setText(curso.getNomeCurso());
+        nivelComboBox.setValue(curso.getNivel());
+        duracaoField.setText(String.valueOf(curso.getDuracaoSemestres()));
+        salvarButton.setText("Atualizar");
+    }
+
     @FXML
     private void onSalvar() {
         if (!isDataValid()) {
@@ -48,11 +57,18 @@ public class CadastroCursoController implements Initializable {
         String nivel = nivelComboBox.getValue();
         int duracao = Integer.parseInt(duracaoField.getText());
 
-        Curso novoCurso = new Curso(nome, nivel, duracao);
-
         try {
-            cursoDAO.save(novoCurso);
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Curso salvo com sucesso!");
+            if (cursoParaEditar == null) { // Modo de Criação
+                Curso novoCurso = new Curso(nome, nivel, duracao);
+                cursoDAO.save(novoCurso);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Curso salvo com sucesso!");
+            } else { // Modo de Edição
+                cursoParaEditar.setNomeCurso(nome);
+                cursoParaEditar.setNivel(nivel);
+                cursoParaEditar.setDuracaoSemestres(duracao);
+                cursoDAO.update(cursoParaEditar);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Curso atualizado com sucesso!");
+            }
             fecharJanela();
 
         } catch (SQLException e) {
@@ -60,7 +76,7 @@ public class CadastroCursoController implements Initializable {
             if (e.getErrorCode() == 1062) {
                  showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Já existe um curso com este nome.");
             } else {
-                 showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar o curso.");
+                 showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar/atualizar o curso.");
             }
         }
     }

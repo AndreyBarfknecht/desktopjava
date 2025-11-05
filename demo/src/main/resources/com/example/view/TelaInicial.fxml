@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -27,11 +32,11 @@
             <FontAwesomeIconView fill="WHITE" glyphName="USER_CIRCLE" size="2em" />
          </children>
       </HBox>
+   
    </top>
 
 <left>
-       <Accordion fx:id="sidebarAccordion" styleClass="sidebar" prefWidth="190.0">
-         <panes>
+       <Accordion fx:id="sidebarAccordion" styleClass="sidebar" prefWidth="210.0"> <panes>
            <TitledPane fx:id="cadastrosPane" text="Cadastros" styleClass="sidebar-titled-pane" expanded="true">
              <content>
                <VBox styleClass="sidebar-pane-content">
@@ -39,7 +44,7 @@
                      <graphic><FontAwesomeIconView glyphName="GRADUATION_CAP" size="1.5em" styleClass="sidebar-icon"/></graphic>
                   </Button>
                   <Button fx:id="cadastrarProfessorButton" onAction="#handleCadastroProfessorButton" styleClass="sidebar-button" text="Cadastrar Professor" contentDisplay="LEFT">
-                     <graphic><FontAwesomeIconView glyphName="CHALKBOARD_TEACHER" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                     <graphic><FontAwesomeIconView glyphName="USER" size="1.5em" styleClass="sidebar-icon"/></graphic>
                   </Button>
                   <Button fx:id="cadastrarCursoButton" onAction="#handleCadastroCursoButton" styleClass="sidebar-button" text="Cadastrar Curso" contentDisplay="LEFT">
                      <graphic><FontAwesomeIconView glyphName="BOOK" size="1.5em" styleClass="sidebar-icon"/></graphic>
@@ -54,7 +59,7 @@
                      <graphic><FontAwesomeIconView glyphName="CALENDAR_ALT" size="1.5em" styleClass="sidebar-icon"/></graphic>
                   </Button>
                   <Button fx:id="cadastrarHorarioButton" onAction="#handleCadastroHorarioButton" styleClass="sidebar-button" text="Cadastrar Horário" contentDisplay="LEFT">
-                     <graphic><FontAwesomeIconView glyphName="CLOCK_O" size="1.5em" styleClass="sidebar-icon"/></graphic>
+                     <graphic><FontAwesomeIconView glyphName="CLOCK_ALT" size="1.5em" styleClass="sidebar-icon"/></graphic>
                   </Button>
                </VBox>
              </content>
@@ -89,12 +94,18 @@
                   <Button fx:id="consultarProfessoresButton" onAction="#handleConsultarProfessoresButton" styleClass="sidebar-button" text="Consultar Professores" contentDisplay="LEFT">
                      <graphic><FontAwesomeIconView glyphName="SEARCH_PLUS" size="1.5em" styleClass="sidebar-icon"/></graphic>
                   </Button>
+                  <Button fx:id="consultarCursosButton" onAction="#handleConsultarCursosButton" styleClass="sidebar-button" text="Consultar Cursos" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="SEARCH" size="1.5em" styleClass="sidebar-icon" /></graphic>
+                  </Button>
+                  <Button fx:id="consultarTurmasButton" onAction="#handleConsultarTurmasButton" styleClass="sidebar-button" text="Consultar Turmas" contentDisplay="LEFT">
+                     <graphic><FontAwesomeIconView glyphName="SEARCH_PLUS" size="1.5em" styleClass="sidebar-icon" /></graphic>
+                  </Button>
                </VBox>
              </content>
            </TitledPane>
 
            <TitledPane fx:id="sistemaPane" text="Sistema" styleClass="sidebar-titled-pane">
-              <content>
+             <content>
                 <VBox styleClass="sidebar-pane-content">
                    <Button fx:id="cadastrarUsuarioButton" onAction="#handleCadastroUsuarioButton" styleClass="sidebar-button" text="Cadastrar Usuário" contentDisplay="LEFT">
                       <graphic><FontAwesomeIconView glyphName="USER_PLUS" size="1.5em" styleClass="sidebar-icon"/></graphic>
@@ -116,39 +127,69 @@
             <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
          </padding>
          <children>
-            <Label text="Painel Inicial" style="-fx-font-size: 22px;" />
+            <Label text="Painel Inicial" style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #2c3e50;"/>
             
             <FlowPane hgap="20.0" vgap="20.0">
                <children>
-                  <VBox fx:id="cursosWidget" styleClass="summary-card, card-green" prefWidth="250.0">
+                  <VBox fx:id="cursosWidget" onMouseClicked="#handleConsultarCursosWidget" styleClass="summary-card" prefWidth="250.0">
                      <children>
                         <Label fx:id="cursosCountLabel" styleClass="summary-card-value" text="0" />
                         <Label styleClass="summary-card-label" text="Cursos Ativos" />
                      </children>
                   </VBox>
                   
-                  <VBox fx:id="turmasWidget" styleClass="summary-card, card-orange" prefWidth="250.0">
+                  <VBox fx:id="turmasWidget" onMouseClicked="#handleConsultarTurmasWidget" styleClass="summary-card" prefWidth="250.0">
                      <children>
                         <Label fx:id="turmasCountLabel" styleClass="summary-card-value" text="0" />
-                        <Label styleClass="summary-card-label" text="Turmas Ativas" />
+                        <Label styleClass="summary-card-label" text="Turmas Abertas" />
                      </children>
                   </VBox>
                   
-                  <VBox fx:id="alunosWidget" onMouseClicked="#handleConsultarAlunosWidget" styleClass="summary-card, card-blue" prefWidth="250.0">
+                  <VBox fx:id="alunosWidget" onMouseClicked="#handleConsultarAlunosWidget" styleClass="summary-card" prefWidth="250.0">
                      <children>
                         <Label fx:id="alunosCountLabel" styleClass="summary-card-value" text="0" />
                         <Label styleClass="summary-card-label" text="Alunos Matriculados" />
                      </children>
                   </VBox>
-                  
-                  <VBox fx:id="professoresWidget" styleClass="summary-card, card-purple" prefWidth="250.0" onMouseClicked="#handleConsultarProfessoresWidget">
+            
+                  <VBox fx:id="professoresWidget" styleClass="summary-card" prefWidth="250.0" onMouseClicked="#handleConsultarProfessoresWidget">
                      <children>
                         <Label fx:id="professoresCountLabel" styleClass="summary-card-value" text="0" />
-                        <Label styleClass="summary-card-label" text="Professores Registrados" />
+                        <Label styleClass="summary-card-label" text="Professores" />
                      </children>
                   </VBox>
                </children>
             </FlowPane>
+            
+            <Label text="Visão Geral" style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #2c3e50;">
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin>
+            </Label>
+            
+            <HBox spacing="20.0" prefHeight="400.0" VBox.vgrow="ALWAYS">
+               <VBox HBox.hgrow="ALWAYS">
+                  <children>
+                     <Label styleClass="chart-title" text="Alunos por Curso" />
+                     <PieChart fx:id="alunosPorCursoChart" legendVisible="true" VBox.vgrow="ALWAYS" />
+                  </children>
+               </VBox>
+               
+               <VBox HBox.hgrow="ALWAYS">
+                  <children>
+                     <Label styleClass="chart-title" text="Turmas por Turno" />
+                     <BarChart fx:id="turmasPorTurnoChart" legendVisible="false" VBox.vgrow="ALWAYS">
+                       <xAxis>
+                         <CategoryAxis label="Turno" />
+                       </xAxis>
+                       <yAxis>
+                         <NumberAxis label="Nº de Turmas" side="LEFT" />
+                       </yAxis>
+                     </BarChart>
+                  </children>
+               </VBox>
+            </HBox>
+            
          </children>
       </VBox>
    </center>

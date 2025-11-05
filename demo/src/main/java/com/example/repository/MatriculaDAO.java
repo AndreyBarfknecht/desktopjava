@@ -43,7 +43,7 @@ public class MatriculaDAO {
             while (rs.next()) {
                 // Cria objeto Aluno simplificado apenas com os dados necessários para a matrícula
                 // Usamos o construtor existente, mas com valores nulos/vazios para campos não buscados.
-                Aluno aluno = new Aluno(rs.getString("aluno_nome"), null, null, null, null);
+                Aluno aluno = new Aluno(rs.getString("aluno_nome"), null, null, null, null, null);
                 aluno.setId(rs.getInt("aluno_id"));
 
                 // Cria objeto Turma simplificado apenas com os dados necessários

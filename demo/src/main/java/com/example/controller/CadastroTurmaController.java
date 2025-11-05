@@ -24,7 +24,6 @@ public class CadastroTurmaController implements Initializable {
 
     // --- CAMPOS DO FXML ---
     @FXML private TextField nomeTurmaField;
-    // --- CAMPOS ALTERADOS ---
     @FXML private ComboBox<Curso> cursoComboBox;
     @FXML private ComboBox<PeriodoLetivo> periodoLetivoComboBox;
     @FXML private ComboBox<String> turnoComboBox;
@@ -32,10 +31,12 @@ public class CadastroTurmaController implements Initializable {
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
 
-    private TurmaDAO turmaDAO; // Adiciona uma instância do DAO
-    // --- DAOs ADICIONAIS ---
+    private TurmaDAO turmaDAO; 
     private CursoDAO cursoDAO;
     private PeriodoLetivoDAO periodoLetivoDAO;
+
+    // --- NOVO: Variável para Edição ---
+    private Turma turmaParaEditar;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -52,30 +53,65 @@ public class CadastroTurmaController implements Initializable {
         periodoLetivoComboBox.setItems(FXCollections.observableArrayList(periodoLetivoDAO.getAll()));
     }
 
+    // --- NOVO MÉTODO: Para popular os campos no modo de edição ---
+    public void setTurmaParaEdicao(Turma turma) {
+        this.turmaParaEditar = turma;
+        
+        nomeTurmaField.setText(turma.getNome());
+        salaField.setText(turma.getSala());
+        turnoComboBox.setValue(turma.getTurno());
+        salvarButton.setText("Atualizar");
+
+        // Para ComboBoxes de objetos, precisamos encontrar o objeto correspondente na lista
+        // (Não podemos simplesmente usar setValue(turma.getCurso()) se a instância for diferente)
+        cursoComboBox.getItems().stream()
+            .filter(c -> c.getId() == turma.getCurso().getId())
+            .findFirst()
+            .ifPresent(cursoComboBox::setValue);
+
+        periodoLetivoComboBox.getItems().stream()
+            .filter(p -> p.getId() == turma.getPeriodoLetivo().getId())
+            .findFirst()
+            .ifPresent(periodoLetivoComboBox::setValue);
+    }
+
     @FXML
-        private void onSalvar() {
+    private void onSalvar() {
         if (!isTurmaDataValid()) {
             return;
         }
 
-        Turma novaTurma = new Turma(
-            nomeTurmaField.getText(),
-            cursoComboBox.getValue(),
-            periodoLetivoComboBox.getValue(),
-            turnoComboBox.getValue(),
-            salaField.getText()
-        );
-
         try {
-            turmaDAO.save(novaTurma); // Usa o DAO para salvar no banco de dados
-            System.out.println("Turma " + novaTurma.getNome() + " salva no banco de dados.");
+            if (turmaParaEditar == null) { 
+                // --- MODO CRIAÇÃO ---
+                Turma novaTurma = new Turma(
+                    nomeTurmaField.getText(),
+                    cursoComboBox.getValue(),
+                    periodoLetivoComboBox.getValue(),
+                    turnoComboBox.getValue(),
+                    salaField.getText()
+                );
+                turmaDAO.save(novaTurma);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Turma salva com sucesso!");
+            
+            } else {
+                // --- MODO ATUALIZAÇÃO ---
+                turmaParaEditar.setNome(nomeTurmaField.getText());
+                turmaParaEditar.setCurso(cursoComboBox.getValue());
+                turmaParaEditar.setPeriodoLetivo(periodoLetivoComboBox.getValue());
+                turmaParaEditar.setTurno(turnoComboBox.getValue());
+                turmaParaEditar.setSala(salaField.getText());
+                
+                turmaDAO.update(turmaParaEditar);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Turma atualizada com sucesso!");
+            }
+            
+            fecharJanela();
+
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar a turma.");
             e.printStackTrace();
         }
-
-        showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Turma salva com sucesso!");
-        fecharJanela();
     }
     
     private boolean isTurmaDataValid() {

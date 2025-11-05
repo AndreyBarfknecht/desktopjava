@@ -102,7 +102,8 @@ public class CadastroAlunoController implements Initializable {
                 Aluno novoAluno = new Aluno(
                     nomeCompletoField.getText(), cpfField.getText(),
                     dataNascimentoPicker.getValue(), responsavel,
-                    telefoneField.getText() // Adiciona o telefone do aluno
+                    telefoneField.getText(),
+                    emailField.getText() // Adiciona o telefone do aluno
                 );
 
                 alunoDAO.save(novoAluno);

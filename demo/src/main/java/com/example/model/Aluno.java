@@ -11,15 +11,17 @@ public class Aluno {
     private LocalDate dataNascimento;
     private Responsavel responsavel;
     private String telefone;
+    private String email;
     private final ObservableList<Nota> notas = FXCollections.observableArrayList();
 
     // Construtor principal
-    public Aluno(String nomeCompleto, String cpf, LocalDate dataNascimento, Responsavel responsavel, String telefone) {
+    public Aluno(String nomeCompleto, String cpf, LocalDate dataNascimento, Responsavel responsavel, String telefone, String email) {
         this.nomeCompleto = nomeCompleto;
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;
         this.responsavel = responsavel;
         this.telefone = telefone;
+        this.email = email;
     }
 
     // Getters e Setters

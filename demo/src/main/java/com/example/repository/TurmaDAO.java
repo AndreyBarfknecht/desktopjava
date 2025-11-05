@@ -86,4 +86,43 @@ public class TurmaDAO {
         }
         return turmas;
     }
+
+    // --- NOVO MÉTODO UPDATE ---
+    public void update(Turma turma) throws SQLException {
+        String sql = "UPDATE turmas SET nome_turma = ?, id_curso = ?, id_periodo_letivo = ?, turno = ?, salaAula = ? WHERE id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, turma.getNome());
+            pstmt.setInt(2, turma.getCurso().getId());
+            pstmt.setInt(3, turma.getPeriodoLetivo().getId());
+            pstmt.setString(4, turma.getTurno());
+            pstmt.setString(5, turma.getSala());
+            pstmt.setInt(6, turma.getId()); // ID para a cláusula WHERE
+            
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar turma: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    // --- NOVO MÉTODO DELETE ---
+    public void delete(int id) throws SQLException {
+        String sql = "DELETE FROM turmas WHERE id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao excluir turma: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Lança para o controller tratar (ex: turma com alunos)
+        }
+    }
 }
