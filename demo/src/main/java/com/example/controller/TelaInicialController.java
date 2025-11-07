@@ -32,12 +32,15 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ScrollPane;
 
 
+
 public class TelaInicialController implements Initializable {
 
     // --- Botões da barra lateral (Existentes) ---
     @FXML private Button cadastrarAlunoButton;
     @FXML private Button sairButton;
     @FXML private Button consultarHorariosButton;
+    @FXML private Button consultarMatriculasButton;
+    
     // ... (todos os seus outros botões FXML) ...
     @FXML private Button associarDisciplinaButton;
 
@@ -218,5 +221,9 @@ public class TelaInicialController implements Initializable {
     private void handleConsultarHorariosButton() {
         SceneNavigator.openNewWindow("ConsultaHorarios", "Consulta de Horários");
     }
+    @FXML
+private void handleConsultarMatriculasButton() {
+    SceneNavigator.openNewWindow("ConsultaMatriculas", "Consulta de Matrículas");
+}
     
 }
