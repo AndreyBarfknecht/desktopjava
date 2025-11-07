@@ -117,7 +117,7 @@ public class AlunoDAO {
             pstmt.setInt(4, aluno.getResponsavel().getId());
             pstmt.setString(5, aluno.getTelefone());
             pstmt.setString(6, aluno.getEmail());
-            pstmt.setInt(6, aluno.getId());
+            pstmt.setInt(7, aluno.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
