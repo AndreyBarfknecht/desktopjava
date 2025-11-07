@@ -1,18 +1,23 @@
 package com.example.model;
 
+// --- NOVA IMPORTAÇÃO ---
+import com.example.model.Disciplina;
+
 public class Horario {
     
     private int id;
-    private PeriodoLetivo periodoLetivo;
+    // --- ALTERADO ---
+    private Disciplina disciplina; // Substituímos PeriodoLetivo por Disciplina
     private Turma turma;
     private Professor professor;
     private String diaSemana;
     private String horaInicio; 
     private String horaFim;    
 
-    public Horario(PeriodoLetivo periodoLetivo, Turma turma, Professor professor, 
+    // --- CONSTRUTOR ALTERADO ---
+    public Horario(Disciplina disciplina, Turma turma, Professor professor, 
                    String diaSemana, String horaInicio, String horaFim) {
-        this.periodoLetivo = periodoLetivo;
+        this.disciplina = disciplina; // Alterado
         this.turma = turma;
         this.professor = professor;
         this.diaSemana = diaSemana;
@@ -23,8 +28,12 @@ public class Horario {
     // Getters e Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-    public PeriodoLetivo getPeriodoLetivo() { return periodoLetivo; }
-    public void setPeriodoLetivo(PeriodoLetivo periodoLetivo) { this.periodoLetivo = periodoLetivo; }
+    
+    // --- GETTERS E SETTERS ALTERADOS ---
+    public Disciplina getDisciplina() { return disciplina; }
+    public void setDisciplina(Disciplina disciplina) { this.disciplina = disciplina; }
+    
+    // (O resto dos getters/setters para turma, professor, etc., continuam iguais)
     public Turma getTurma() { return turma; }
     public void setTurma(Turma turma) { this.turma = turma; }
     public Professor getProfessor() { return professor; }
@@ -35,4 +44,26 @@ public class Horario {
     public void setHoraInicio(String horaInicio) { this.horaInicio = horaInicio; }
     public String getHoraFim() { return horaFim; }
     public void setHoraFim(String horaFim) { this.horaFim = horaFim; }
+
+    // --- MÉTODOS DE CONVENIÊNCIA PARA A TABLEVIEW ---
+
+    public String getNomeTurma() {
+        return turma != null ? turma.getNome() : "";
+    }
+
+    public String getNomeProfessor() {
+        return professor != null ? professor.getNomeCompleto() : "";
+    }
+
+    // --- LÓGICA ALTERADA ---
+    // O Período Letivo agora é obtido através da Turma
+    public String getNomePeriodoLetivo() {
+        return (turma != null && turma.getPeriodoLetivo() != null) 
+               ? turma.getPeriodoLetivo().getNome() : "";
+    }
+    
+    // --- NOVO MÉTODO (precisamos dele para o FXML) ---
+    public String getNomeDisciplina() {
+        return disciplina != null ? disciplina.getNomeDisciplina() : "";
+    }
 }

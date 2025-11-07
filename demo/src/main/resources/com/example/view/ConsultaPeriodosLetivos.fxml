@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="500.0" prefWidth="800.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.ConsultaPeriodosLetivosController">
+    <top>
+        <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Consulta de Períodos Letivos">
+                    <styleClass>
+                        <String fx:value="label" />
+                        <String fx:value="titulo-janela" />
+                    </styleClass>
+                </Label>
+                <TextField fx:id="searchField" maxWidth="400.0" promptText="Buscar por nome ou status..." />
+            </children>
+            <padding>
+                <Insets bottom="20.0" top="20.0" />
+            </padding>
+        </VBox>
+    </top>
+    <center>
+        <TableView fx:id="periodosTableView" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn prefWidth="250.0" text="Nome do Período">
+                    <cellValueFactory><PropertyValueFactory property="nome" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="150.0" text="Data de Início">
+                    <cellValueFactory><PropertyValueFactory property="dataInicio" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="150.0" text="Data de Fim">
+                     <cellValueFactory><PropertyValueFactory property="dataFim" /></cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="200.0" text="Status">
+                    <cellValueFactory><PropertyValueFactory property="status" /></cellValueFactory>
+                </TableColumn>
+            </columns>
+        </TableView>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button onAction="#onEditar" prefWidth="120.0" text="Editar" styleClass="salvar-button" />
+                <Button onAction="#onExcluir" prefWidth="120.0" text="Excluir" styleClass="cancel-button" />
+                <Button onAction="#onFechar" prefWidth="120.0" text="Fechar" />
+            </children>
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+        </HBox>
+    </bottom>
+</BorderPane>

@@ -37,8 +37,8 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <Label text="Período Letivo:" />
-                        <ComboBox fx:id="periodoLetivoComboBox" prefWidth="450.0" promptText="Selecione o período letivo" GridPane.columnIndex="1" />
+                        <Label text="Disciplina:" />
+                        <ComboBox fx:id="disciplinaComboBox" prefWidth="450.0" promptText="Selecione a disciplina" GridPane.columnIndex="1" />
                         <Label text="Turma:" GridPane.rowIndex="1" />
                         <ComboBox fx:id="turmaComboBox" prefWidth="450.0" promptText="Selecione a turma" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Professor:" GridPane.rowIndex="2" />

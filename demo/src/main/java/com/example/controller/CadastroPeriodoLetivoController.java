@@ -27,10 +27,23 @@ public class CadastroPeriodoLetivoController implements Initializable {
 
     private PeriodoLetivoDAO periodoDAO; 
 
+    private PeriodoLetivo periodoParaEditar;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         statusComboBox.getItems().addAll("Aberto para Matrículas", "Em Andamento", "Encerrado");
         this.periodoDAO = new PeriodoLetivoDAO(); 
+    }
+
+    public void setPeriodoParaEdicao(PeriodoLetivo periodo) {
+        this.periodoParaEditar = periodo;
+
+        nomePeriodoField.setText(periodo.getNome());
+        dataInicioPicker.setValue(periodo.getDataInicio());
+        dataFimPicker.setValue(periodo.getDataFim());
+        statusComboBox.setValue(periodo.getStatus());
+
+        salvarButton.setText("Atualizar");
     }
 
     @FXML
@@ -39,17 +52,27 @@ public class CadastroPeriodoLetivoController implements Initializable {
             return;
         }
 
-        PeriodoLetivo novoPeriodo = new PeriodoLetivo(
-            nomePeriodoField.getText(),
-            dataInicioPicker.getValue(),
-            dataFimPicker.getValue(),
-            statusComboBox.getValue()
-        );
-
         try {
-            periodoDAO.save(novoPeriodo); 
-            System.out.println("Período Letivo " + novoPeriodo.getNome() + " salvo no banco de dados.");
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Período Letivo salvo com sucesso!");
+            if (periodoParaEditar == null) {
+                // Modo Criação
+                PeriodoLetivo novoPeriodo = new PeriodoLetivo(
+                    nomePeriodoField.getText(),
+                    dataInicioPicker.getValue(),
+                    dataFimPicker.getValue(),
+                    statusComboBox.getValue()
+                );
+                periodoDAO.save(novoPeriodo);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Período Letivo salvo com sucesso!");
+            } else {
+                // Modo Edição
+                periodoParaEditar.setNome(nomePeriodoField.getText());
+                periodoParaEditar.setDataInicio(dataInicioPicker.getValue());
+                periodoParaEditar.setDataFim(dataFimPicker.getValue());
+                periodoParaEditar.setStatus(statusComboBox.getValue());
+                periodoDAO.update(periodoParaEditar);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Período Letivo atualizado com sucesso!");
+            }
+
             fecharJanela();
             
         } catch (SQLException e) {
@@ -57,7 +80,7 @@ public class CadastroPeriodoLetivoController implements Initializable {
             if (e.getErrorCode() == 1062) { 
                  showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Já existe um período letivo com este nome.");
             } else {
-                 showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar o período.");
+                 showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar/atualizar o período.");
             }
         }
     }

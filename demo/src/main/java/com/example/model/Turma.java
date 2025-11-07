@@ -2,6 +2,7 @@ package com.example.model;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 
 public class Turma {
     private int id;
@@ -95,5 +96,10 @@ public class Turma {
     @Override
     public String toString() {
         return this.nome; // Simplificado para exibição em ComboBoxes
+    }
+
+    public Node toLowerCase() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'toLowerCase'");
     }
 }

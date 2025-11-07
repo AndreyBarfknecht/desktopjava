@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="550.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.MatriculaController">
+<AnchorPane prefHeight="450.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.MatriculaController">
    <children>
       <VBox layoutX="25.0" layoutY="25.0" spacing="15.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="25.0">
          <children>
@@ -66,6 +66,7 @@
       <HBox alignment="CENTER_RIGHT" layoutX="575.0" layoutY="551.0" spacing="10.0" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="25.0">
          <children>
             <Button fx:id="excluirButton" mnemonicParsing="false" onAction="#onExcluir" style="-fx-background-color: #f44336;" text="Excluir Matrícula" textFill="WHITE" />
+            <Button fx:id="fecharButton" onAction="#onFechar" text="Fechar" prefWidth="100.0" />
          </children>
       </HBox>
    </children>

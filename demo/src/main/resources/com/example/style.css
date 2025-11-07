@@ -1,86 +1,62 @@
 /* ==========================================================================
-   TEMA AZUL MODERNO - SISTEMA ACADÊMICO (COM GRÁFICOS)
-   VERSÃO CORRIGIDA (Removido @import e comentários inline)
+   TEMA AZUL MODERNO - SISTEMA ACADÊMICO (SEM VARIÁVEIS)
+   VERSÃO COMPILADA PARA COMPATIBILIDADE
    ========================================================================== */
 
-/* --- VARIÁVEIS DE COR E GERAL (AGORA NUM SÓ BLOCO) --- */
+/* --- GERAL --- */
 .root {
-    /* Fonte (Roboto removido para compatibilidade) */
     -fx-font-family: "Segoe UI", Arial, sans-serif;
     -fx-font-size: 14px;
-    
-    /* Cores Principais */
-    --cor-principal: #3498DB;
-    --cor-principal-hover: #2980B9;
-    --cor-fundo: #F4F7FC;
-    --cor-texto: #333333;
-    --cor-borda: #BDC3C7;
-    
-    /* Cores da Sidebar (Menu Lateral) */
-    --cor-sidebar: #2c3e50;
-    --cor-sidebar-hover: #34495e;
-    --cor-texto-sidebar: #ECF0F1;
-    
-    /* Cores de Ação */
-    --cor-salvar: var(--cor-principal);
-    --cor-salvar-hover: var(--cor-principal-hover);
-    --cor-cancelar: #E74C3C;
-    --cor-cancelar-hover: #C0392B;
-    
-    /* --- PROPRIEDADE GERAL MOVIDA PARA AQUI --- */
-    -fx-background-color: var(--cor-fundo);
+    -fx-background-color: #F4F7FC; /* --cor-fundo */
 }
 
-
-/* --- GERAL (O .root foi removido daqui) --- */
-
 .label {
-    -fx-text-fill: var(--cor-texto);
+    -fx-text-fill: #333333; /* --cor-texto */
     -fx-font-weight: bold;
 }
 
 .titulo-janela {
     -fx-font-size: 24px;
     -fx-font-weight: 700; 
-    -fx-text-fill: var(--cor-sidebar);
+    -fx-text-fill: #2c3e50; /* --cor-sidebar */
 }
 
-/* --- BOTÕES PADRÃO (AGORA USAM A COR PRINCIPAL) --- */
+/* --- BOTÕES PADRÃO --- */
 .button {
-    -fx-background-color: var(--cor-principal);
+    -fx-background-color: #3498DB; /* --cor-principal */
     -fx-text-fill: #FFFFFF;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-background-radius: 5px; /* Cantos arredondados, como pedido */
+    -fx-background-radius: 5px; 
     -fx-padding: 10px 20px;
     -fx-cursor: hand;
 }
-.button:hover { -fx-background-color: var(--cor-principal-hover); }
+.button:hover { -fx-background-color: #2980B9; /* --cor-principal-hover */ }
 
-/* Botão Salvar (agora segue o padrão) */
-.salvar-button { -fx-background-color: var(--cor-salvar); }
-.salvar-button:hover { -fx-background-color: var(--cor-salvar-hover); }
+/* Botão Salvar */
+.salvar-button { -fx-background-color: #3498DB; /* --cor-salvar */ }
+.salvar-button:hover { -fx-background-color: #2980B9; /* --cor-salvar-hover */ }
 
-/* Botão Cancelar (mantido vermelho por convenção) */
-.cancel-button { -fx-background-color: var(--cor-cancelar); }
-.cancel-button:hover { -fx-background-color: var(--cor-cancelar-hover); }
+/* Botão Cancelar */
+.cancel-button { -fx-background-color: #E74C3C; /* --cor-cancelar */ }
+.cancel-button:hover { -fx-background-color: #C0392B; /* --cor-cancelar-hover */ }
 
 /* --- CAMPOS DE FORMULÁRIO --- */
 .text-field, .password-field, .date-picker, .combo-box {
     -fx-background-color: #FFFFFF;
-    -fx-text-fill: var(--cor-texto);
+    -fx-text-fill: #333333; /* --cor-texto */
     -fx-background-radius: 5px;
-    -fx-border-color: var(--cor-borda);
+    -fx-border-color: #BDC3C7; /* --cor-borda */
     -fx-border-radius: 5px;
     -fx-border-width: 1px;
     -fx-font-size: 14px;
 }
 .text-field:focused, .password-field:focused, .date-picker:focused, .combo-box:focused {
-    -fx-border-color: var(--cor-principal);
+    -fx-border-color: #3498DB; /* --cor-principal */
     -fx-border-width: 2px;
 }
 .text-field-error {
-    -fx-border-color: var(--cor-cancelar);
+    -fx-border-color: #E74C3C; /* --cor-cancelar */
     -fx-border-width: 2px;
 }
 
@@ -93,10 +69,10 @@
     -fx-padding: 30px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.5, 0, 0);
 }
-.login-title { -fx-font-size: 28px; -fx-text-fill: var(--cor-texto); }
+.login-title { -fx-font-size: 28px; -fx-text-fill: #333333; /* --cor-texto */ }
 .login-subtitle { -fx-font-size: 14px; -fx-text-fill: #777; -fx-font-weight: normal; }
-.login-hyperlink { -fx-font-size: 14px; -fx-text-fill: var(--cor-principal); -fx-font-weight: normal; }
-.login-hyperlink:hover { -fx-text-fill: var(--cor-principal-hover); -fx-underline: true; }
+.login-hyperlink { -fx-font-size: 14px; -fx-text-fill: #3498DB; /* --cor-principal */ -fx-font-weight: normal; }
+.login-hyperlink:hover { -fx-text-fill: #2980B9; /* --cor-principal-hover */ -fx-underline: true; }
 .text-field-icon { -fx-fill: #AAAAAA; }
 
 /* ==========================================================================
@@ -105,7 +81,7 @@
 
 /* --- CABEÇALHO (HEADER) --- */
 .header-bar {
-    -fx-background-color: var(--cor-principal); /* Cor principal azul */
+    -fx-background-color: #3498DB; /* --cor-principal */
     -fx-padding: 10px 20px;
 }
 .header-bar .label, .header-bar .text {
@@ -119,10 +95,9 @@
 /* SIDEBAR (O NOVO MENU LATERAL)                 */
 /* ============================================= */
 
-/* Aplicado ao Accordion no FXML */
 .sidebar { 
     -fx-padding: 0;
-    -fx-background-color: var(--cor-sidebar);
+    -fx-background-color: #2c3e50; /* --cor-sidebar */
     -fx-alignment: top-center;
 }
 .sidebar .accordion {
@@ -131,21 +106,21 @@
 
 /* Título de cada seção (TitledPane) */
 .sidebar-titled-pane {
-    -fx-text-fill: var(--cor-texto-sidebar);
+    -fx-text-fill: #ECF0F1; /* --cor-texto-sidebar */
 }
 .sidebar-titled-pane > .title {
     -fx-background-color: transparent;
-    -fx-border-color: transparent transparent var(--cor-sidebar-hover) transparent;
+    -fx-border-color: transparent transparent #34495e transparent; /* --cor-sidebar-hover */
     -fx-border-width: 0 0 1 0;
     -fx-padding: 15px 25px;
 }
 .sidebar-titled-pane > .title > .text {
-    -fx-fill: var(--cor-texto-sidebar) !important;
+    -fx-fill: #ECF0F1 !important; /* --cor-texto-sidebar */
     -fx-font-size: 16px;
     -fx-font-weight: 700;
 }
 .sidebar-titled-pane > .title > .arrow-button .arrow {
-     -fx-background-color: var(--cor-texto-sidebar);
+     -fx-background-color: #ECF0F1; /* --cor-texto-sidebar */
      -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
      -fx-scale-x: 0.8;
      -fx-scale-y: 0.8;
@@ -154,9 +129,9 @@
 /* Hover e Foco no Título */
 .sidebar-titled-pane:hover > .title,
 .sidebar-titled-pane:focused > .title {
-     -fx-background-color: var(--cor-sidebar-hover);
-     -fx-color: var(--cor-sidebar-hover);
-     -fx-border-color: transparent transparent var(--cor-sidebar-hover) transparent;
+     -fx-background-color: #34495e; /* --cor-sidebar-hover */
+     -fx-color: #34495e; /* --cor-sidebar-hover */
+     -fx-border-color: transparent transparent #34495e transparent; /* --cor-sidebar-hover */
      -fx-background-insets: 0;
 }
 .sidebar-titled-pane:hover > .title > .text,
@@ -180,9 +155,14 @@
 }
 
 /* Botões da Sidebar */
+/* Botões da Sidebar */
 .sidebar-button {
-    -fx-pref-width: 100%;
-    -fx-min-width: 0;
+    /* MUDANÇA AQUI: Permite que o VBox estique o botão */
+    -fx-max-width: infinity; 
+    
+    /* MUDANÇA AQUI: Impede o botão de encolher e cortar o texto */
+    -fx-min-width: use-pref-size; 
+    
     -fx-padding: 15px 15px 15px 25px;
     -fx-alignment: CENTER_LEFT;
     -fx-graphic-text-gap: 15px;
@@ -191,20 +171,20 @@
     -fx-border-width: 0;
     -fx-font-size: 16px;
     -fx-font-weight: normal;
-    -fx-text-fill: var(--cor-texto-sidebar);
+    -fx-text-fill: #ECF0F1; /* --cor-texto-sidebar */
     -fx-text-overrun: clip;
 }
 .sidebar-button .label, .sidebar-button .text {
-    -fx-text-fill: var(--cor-texto-sidebar);
-    -fx-fill: var(--cor-texto-sidebar);
+    -fx-text-fill: #ECF0F1; /* --cor-texto-sidebar */
+    -fx-fill: #ECF0F1; /* --cor-texto-sidebar */
 }
 .sidebar-icon {
-    -fx-fill: var(--cor-texto-sidebar);
+    -fx-fill: #ECF0F1; /* --cor-texto-sidebar */
 }
 
 /* Hover do Botão */
 .sidebar-button:hover {
-    -fx-background-color: var(--cor-sidebar-hover);
+    -fx-background-color: #34495e; /* --cor-sidebar-hover */
     -fx-text-fill: #FFFFFF;
 }
 .sidebar-button:hover .label,
@@ -218,52 +198,38 @@
 
 
 /* ==========================================================================
-   WIDGETS (CARTÕES) DO DASHBOARD - RENOVAÇÃO
+   WIDGETS (CARTÕES) DO DASHBOARD
    ========================================================================== */
 
 .summary-card {
-    -fx-background-radius: 8px; /* Cantos um pouco mais arredondados */
+    -fx-background-radius: 8px; 
     -fx-padding: 20px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0.2, 0, 1);
     -fx-cursor: hand;
-    -fx-background-color: #FFFFFF; /* Fundo branco para os cartões */
+    -fx-background-color: #FFFFFF; 
 }
 .summary-card:hover {
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 2);
-    -fx-border-color: var(--cor-principal);
+    -fx-border-color: #3498DB; /* --cor-principal */
     -fx-border-width: 1px;
 }
 
-/* Título do cartão (ex: "Cursos Ativos") */
 .summary-card-label { 
     -fx-font-size: 18px; 
-    -fx-text-fill: #555555; /* Texto escuro */
+    -fx-text-fill: #555555; 
     -fx-font-weight: bold; 
 }
-/* Número (ex: "0") */
 .summary-card-value { 
     -fx-font-size: 40px; 
-    -fx-text-fill: var(--cor-principal); /* NÚMERO COM A COR PRINCIPAL */
+    -fx-text-fill: #3498DB; /* --cor-principal */
     -fx-font-weight: 700; 
 }
 
-/* Removemos as cores de fundo (verde, laranja, etc.) dos cartões. */
-.card-green,
-.card-orange,
-.card-blue,
-.card-purple,
-.card-pink,
-.card-yellow { 
-    -fx-background-color: #FFFFFF; /* Todos os cartões são brancos */
+.card-green, .card-orange, .card-blue, .card-purple, .card-pink, .card-yellow { 
+    -fx-background-color: #FFFFFF; 
 }
-
-.card-green:hover,
-.card-orange:hover,
-.card-blue:hover,
-.card-purple:hover,
-.card-pink:hover,
-.card-yellow:hover { 
-    -fx-background-color: #FFFFFF; /* Mantêm-se brancos no hover */
+.card-green:hover, .card-orange:hover, .card-blue:hover, .card-purple:hover, .card-pink:hover, .card-yellow:hover { 
+    -fx-background-color: #FFFFFF; 
 }
 
 
@@ -274,39 +240,193 @@
 .chart-title {
     -fx-font-size: 18px;
     -fx-font-weight: 700;
-    -fx-text-fill: var(--cor-sidebar);
+    -fx-text-fill: #2c3e50; /* --cor-sidebar */
     -fx-padding: 0 0 10px 5px;
 }
 
-/* --- Gráfico de Tarte (PieChart) --- */
-.chart-pie-label-line {
-    -fx-stroke: #888888;
-}
-.chart-pie-label {
-    -fx-fill: var(--cor-texto);
-    -fx-font-size: 12px;
+.chart-pie-label-line { -fx-stroke: #888888; }
+.chart-pie-label { -fx-fill: #333333; /* --cor-texto */ -fx-font-size: 12px; }
+
+.chart-bar { -fx-bar-fill: #3498DB; /* --cor-principal */ }
+.chart-bar:hover { -fx-bar-fill: #2980B9; /* --cor-principal-hover */ }
+
+.default-color0.chart-pie { -fx-pie-color: #3498DB; /* --cor-principal */ }
+.default-color1.chart-pie { -fx-pie-color: #E74C3C; } 
+.default-color2.chart-pie { -fx-pie-color: #2ECC71; } 
+.default-color3.chart-pie { -fx-pie-color: #F39C12; } 
+.default-color4.chart-pie { -fx-pie-color: #9B59B6; } 
+.default-color5.chart-pie { -fx-pie-color: #34495e; /* --cor-sidebar-hover */ }
+
+.chart-plot-background { -fx-background-color: transparent; }
+.chart-content { -fx-padding: 10px; }
+
+
+/* ==========================================================================
+   AJUSTE SCROLLPANE (ADICIONADO PARA CORRIGIR SCROLL)
+   ========================================================================== */
+
+/* Remove o fundo e as bordas do ScrollPane na tela inicial */
+.scroll-pane-transparent {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
 }
 
-/* --- Gráfico de Barras (BarChart) --- */
-.chart-bar {
-    -fx-bar-fill: var(--cor-principal); /* Cor principal azul para as barras */
-}
-.chart-bar:hover {
-    -fx-bar-fill: var(--cor-principal-hover);
-}
-
-/* Cores das fatias do gráfico de tarte (usando as cores do tema) */
-.default-color0.chart-pie { -fx-pie-color: var(--cor-principal); }
-.default-color1.chart-pie { -fx-pie-color: #E74C3C; } /* Vermelho */
-.default-color2.chart-pie { -fx-pie-color: #2ECC71; } /* Verde Esmeralda */
-.default-color3.chart-pie { -fx-pie-color: #F39C12; } /* Laranja */
-.default-color4.chart-pie { -fx-pie-color: #9B59B6; } /* Roxo */
-.default-color5.chart-pie { -fx-pie-color: var(--cor-sidebar-hover); }
-
-/* Remove o fundo branco dos gráficos para misturar com o painel */
-.chart-plot-background {
+/* Remove o fundo da área interna (viewport) */
+.scroll-pane-transparent > .viewport {
     -fx-background-color: transparent;
 }
-.chart-content {
-    -fx-padding: 10px;
+
+/* ==========================================================================
+   AÇÕES RÁPIDAS (DASHBOARD)
+   ========================================================================== */
+
+.acao-rapida-button {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #2c3e50; /* --cor-sidebar */
+    -fx-font-weight: 700;
+    -fx-background-radius: 8px;
+    -fx-padding: 15px 25px; /* Padding maior para parecerem "widgets" */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0.2, 0, 1);
+    -fx-alignment: CENTER_LEFT;
+    -fx-graphic-text-gap: 10px;
+    -fx-cursor: hand;
+}
+
+.acao-rapida-icon {
+    -fx-fill: #3498DB; /* MUDANÇA AQUI: Agora os ícones são brancos */
+}
+
+.acao-rapida-button:hover {
+    -fx-background-color: #3c5e99; /* --cor-fundo (um cinza muito claro) */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 2);
+}
+
+.acao-rapida-button:hover .acao-rapida-icon {
+    -fx-fill: WHITE; /* MUDANÇA AQUI: Ícones continuam brancos no hover */
+}
+
+/* ==========================================================================
+   SCROLLPANE DA SIDEBAR (NOVO)
+   ========================================================================== */
+
+/* Remove o fundo, bordas e padding do ScrollPane */
+.sidebar-scroll-pane {
+    -fx-background-color: #2c3e50; /* --cor-sidebar */
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-transition: pref-width 0.5s ease-in-out;
+}
+/* Remove o fundo da "viewport" (área de conteúdo) */
+.sidebar-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* --- Estilização da Barra de Scroll --- */
+
+/* Esconde as setas de cima e baixo (increment/decrement) */
+.sidebar-scroll-pane .scroll-bar .increment-button,
+.sidebar-scroll-pane .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+.sidebar-scroll-pane .scroll-bar .increment-arrow,
+.sidebar-scroll-pane .scroll-bar .decrement-arrow {
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+/* Cor de fundo da barra de scroll (onde o "polegar" corre) */
+.sidebar-scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: #2c3e50; /* --cor-sidebar */
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+/* O "polegar" (thumb) - a parte que se move */
+.sidebar-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #34495e; /* --cor-sidebar-hover */
+    -fx-background-insets: 2;
+    -fx-background-radius: 4px;
+}
+
+/* Efeito Hover: Deixa o "polegar" mais claro ao passar o rato */
+.sidebar-scroll-pane .scroll-bar:vertical:hover .thumb {
+    -fx-background-color: #ECF0F1; /* --cor-texto-sidebar */
+}
+
+/* ==========================================================================
+   SIDEBAR RETRÁTIL (NOVO)
+   ========================================================================== */
+
+/* --- Ajuste de Alinhamento (Títulos: "Cadastros", "Acadêmico") --- */
+.sidebar-titled-pane > .title {
+    -fx-alignment: CENTER_LEFT; /* Garante alinhamento à esquerda */
+    -fx-padding: 15px 20px; /* Ajusta o padding */
+}
+.sidebar-titled-pane > .title > .text {
+    -fx-opacity: 1;
+    -fx-transition: -fx-opacity 0.2s ease-in-out;
+}
+.sidebar-titled-pane > .title > .arrow-button {
+    -fx-padding: 0 0 0 10px;
+}
+
+/* --- Ajuste de Alinhamento (Botões) --- */
+.sidebar-button {
+    -fx-alignment: CENTER_LEFT; /* MUDANÇA: Voltamos para CENTER_LEFT */
+    -fx-max-width: infinity; 
+    -fx-min-width: use-pref-size; 
+    -fx-padding: 15px 20px; /* Padding ajustado */
+    -fx-graphic-text-gap: 15px;
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+    -fx-text-fill: #ECF0F1;
+    -fx-text-overrun: clip;
+}
+/* Oculta o texto do botão (o ".text") com uma transição suave */
+.sidebar-button .text {
+    -fx-opacity: 1;
+    -fx-transition: -fx-opacity 0.2s ease-in-out;
+}
+/* Novo: O "embrulho" (wrapper) do ícone */
+.sidebar-icon-pane {
+    -fx-min-width: 25px; /* Largura fixa para o ícone */
+    -fx-alignment: CENTER;
+}
+
+
+/* --- ESTADO ENCOLHIDO (sidebar-collapsed) --- */
+
+/* Esconde o texto do Título ("Cadastros", etc) */
+.sidebar-collapsed .sidebar-titled-pane > .title > .text {
+    -fx-opacity: 0;
+}
+/* Centraliza a seta do Título */
+.sidebar-collapsed .sidebar-titled-pane > .title {
+    -fx-alignment: CENTER;
+    -fx-padding: 15px;
+}
+.sidebar-collapsed .sidebar-titled-pane > .title > .arrow-button {
+    -fx-padding: 0;
+}
+
+
+/* Esconde o texto do Botão */
+.sidebar-collapsed .sidebar-button .text {
+    -fx-opacity: 0;
+}
+/* Centraliza o ícone do Botão */
+.sidebar-collapsed .sidebar-button {
+    -fx-alignment: CENTER;
+    -fx-padding: 15px;
+    -fx-graphic-text-gap: 0;
+}
+/* Oculta o padding do VBox interno */
+.sidebar-collapsed .sidebar-pane-content {
+     -fx-padding: 0;
 }

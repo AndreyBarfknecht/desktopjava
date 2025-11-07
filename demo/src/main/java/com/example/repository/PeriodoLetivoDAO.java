@@ -51,4 +51,34 @@ public class PeriodoLetivoDAO {
         }
         return periodos;
     }
+
+    public void update(PeriodoLetivo periodo) throws SQLException {
+        String sql = "UPDATE periodos_letivos SET nome = ?, data_inicio = ?, data_fim = ?, status = ? WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, periodo.getNome());
+            pstmt.setDate(2, Date.valueOf(periodo.getDataInicio()));
+            pstmt.setDate(3, Date.valueOf(periodo.getDataFim()));
+            pstmt.setString(4, periodo.getStatus());
+            pstmt.setInt(5, periodo.getId());
+            pstmt.executeUpdate();
+        }
+    }
+
+    public void delete(int id) throws SQLException {
+        String sql = "DELETE FROM periodos_letivos WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao excluir período letivo: " + e.getMessage());
+            throw e;
+        }
+    }
 }

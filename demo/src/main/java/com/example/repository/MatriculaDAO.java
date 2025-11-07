@@ -28,7 +28,8 @@ public class MatriculaDAO {
     }
 
     public List<Matricula> getAll() {
-        String sql = "SELECT m.id, m.data_matricula, m.status, " +
+        // --- CORREÇÃO 1: Alterado de 'm.id' para 'm.id_matricula' ---
+        String sql = "SELECT m.id_matricula, m.data_matricula, m.status, " +
                      "a.id as aluno_id, a.nome_completo as aluno_nome, " +
                      "t.id as turma_id, t.nome_turma as turma_nome " +
                      "FROM matriculas m " +
@@ -41,21 +42,23 @@ public class MatriculaDAO {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                // Cria objeto Aluno simplificado apenas com os dados necessários para a matrícula
-                // Usamos o construtor existente, mas com valores nulos/vazios para campos não buscados.
+                // Cria objeto Aluno simplificado
                 Aluno aluno = new Aluno(rs.getString("aluno_nome"), null, null, null, null, null);
                 aluno.setId(rs.getInt("aluno_id"));
 
-                // Cria objeto Turma simplificado apenas com os dados necessários
-                // Usamos o construtor existente, mas com valores nulos/vazios para campos não buscados.
-                Turma turma = new Turma(rs.getString("turma_nome"), null, null, null, sql);
+                // --- CORREÇÃO 2 (Menor): Corrigido construtor da Turma ---
+                // O último parâmetro é 'sala', estava a passar a string SQL inteira por engano.
+                // Passamos null pois não buscamos a sala nesta query.
+                Turma turma = new Turma(rs.getString("turma_nome"), null, null, null, null);
                 turma.setId(rs.getInt("turma_id"));
 
                 // Cria objeto Matricula
                 LocalDate dataMatricula = rs.getDate("data_matricula").toLocalDate();
                 String status = rs.getString("status");
                 Matricula matricula = new Matricula(aluno, turma, dataMatricula, status);
-                matricula.setId(rs.getInt("id"));
+                
+                // --- CORREÇÃO 3: Alterado de 'id' para 'id_matricula' ---
+                matricula.setId(rs.getInt("id_matricula"));
 
                 matriculas.add(matricula);
             }
@@ -78,7 +81,7 @@ public class MatriculaDAO {
             ResultSet rs = pstmt.executeQuery();
             
             if (rs.next()) {
-                return rs.getInt("id_matricula"); // Encontrou e retorna o ID
+                return rs.getInt("id_matricula"); // (Este já estava correto)
             }
         } catch (SQLException e) {
             System.err.println("Erro ao buscar ID da matrícula: " + e.getMessage());
@@ -88,7 +91,8 @@ public class MatriculaDAO {
     }
 
     public void updateStatus(int matriculaId, String novoStatus) {
-        String sql = "UPDATE matriculas SET status = ? WHERE id = ?";
+        // --- CORREÇÃO 4: Alterado de 'id = ?' para 'id_matricula = ?' ---
+        String sql = "UPDATE matriculas SET status = ? WHERE id_matricula = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -104,7 +108,8 @@ public class MatriculaDAO {
     }
 
     public void delete(int matriculaId) {
-        String sql = "DELETE FROM matriculas WHERE id = ?";
+        // --- CORREÇÃO 5: Alterado de 'id = ?' para 'id_matricula = ?' ---
+        String sql = "DELETE FROM matriculas WHERE id_matricula = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
