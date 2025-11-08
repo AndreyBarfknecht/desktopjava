@@ -40,6 +40,7 @@ public class TelaInicialController implements Initializable {
     @FXML private Button sairButton;
     @FXML private Button consultarHorariosButton;
     @FXML private Button consultarMatriculasButton;
+    @FXML private Button consultarDisciplinasButton;
     
     // ... (todos os seus outros botões FXML) ...
     @FXML private Button associarDisciplinaButton;
@@ -224,6 +225,11 @@ public class TelaInicialController implements Initializable {
     @FXML
 private void handleConsultarMatriculasButton() {
     SceneNavigator.openNewWindow("ConsultaMatriculas", "Consulta de Matrículas");
+}
+
+    @FXML
+private void handleConsultarDisciplinasButton() {
+    SceneNavigator.openNewWindow("ConsultaDisciplinas", "Consulta de Disciplinas");
 }
     
 }

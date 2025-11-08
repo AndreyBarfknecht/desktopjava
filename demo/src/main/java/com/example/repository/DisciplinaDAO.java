@@ -1,5 +1,6 @@
 package com.example.repository;
 
+import com.example.model.Curso;
 import com.example.model.Disciplina;
 import com.example.util.DatabaseConnection; //
 import java.sql.Connection;
@@ -47,5 +48,31 @@ public class DisciplinaDAO {
             e.printStackTrace();
         }
         return disciplinas;
+    }
+
+    public void update(Disciplina disciplina) throws SQLException {
+        String sql = "UPDATE disciplinas SET nome_disciplina = ?, carga_horaria = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, disciplina.getNomeDisciplina());
+            pstmt.setInt(2, disciplina.getCargaHoraria());
+            pstmt.setInt(3, disciplina.getId());
+            pstmt.executeUpdate();
+        }
+    }
+
+    public void delete(int id) throws SQLException {
+        // Antes de excluir, verificar se o curso está sendo usado em 'turmas' ou 'grade_curricular'
+        // Esta é uma simplificação. O ideal seria tratar a exceção de chave estrangeira.
+        // falta fazer <<<
+        String sql = "DELETE FROM disciplinas WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Erro ao excluir disciplina: " + e.getMessage());
+            throw e; // Lança para o controller tratar (ex: mostrar alerta)
+        }
     }
 }

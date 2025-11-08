@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.model.Curso;
 import com.example.model.Disciplina;
 import com.example.repository.DisciplinaDAO; // O DAO que criámos
 import java.net.URL;
@@ -20,6 +21,8 @@ public class CadastroDisciplinaController implements Initializable {
     @FXML private Button cancelarButton;
 
     private DisciplinaDAO disciplinaDAO;
+    private Disciplina disciplinaParaEditar;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -32,6 +35,13 @@ public class CadastroDisciplinaController implements Initializable {
                 cargaHorariaField.setText(newValue.replaceAll("[^\\d]", ""));
             }
         });
+    }
+
+      public void setDisciplinaParaEdicao(Disciplina disciplina) {
+        this.disciplinaParaEditar = disciplina;
+        nomeDisciplinaField.setText(disciplina.getNomeDisciplina());
+        cargaHorariaField.setText(String.valueOf(disciplina.getCargaHoraria()));
+        salvarButton.setText("Atualizar");
     }
 
     @FXML

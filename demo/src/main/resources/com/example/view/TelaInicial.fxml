@@ -191,6 +191,13 @@
                                         </StackPane>
                                     </graphic>
                                 </Button>
+                                <Button fx:id="consultarDsiciplinaButton" onAction="#handleConsultarDisciplinasButton" styleClass="sidebar-button" text="Consultar Disciplinas" contentDisplay="LEFT">
+                                    <graphic>
+                                        <StackPane styleClass="sidebar-icon-pane">
+                                            <FontAwesomeIconView glyphName="SEARCH_PLUS" size="1.5em" styleClass="sidebar-icon" />
+                                        </StackPane>
+                                    </graphic>
+                                </Button>
                             </VBox>
                         </content>
                     </TitledPane>

@@ -37,8 +37,8 @@ public class Aluno {
     public void setResponsavel(Responsavel responsavel) { this.responsavel = responsavel; }
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
-    public String getEmail() { return responsavel.getEmail(); }
-    public void setEmail(String email) { this.responsavel.setEmail(email); }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
     // Métodos para notas
     public ObservableList<Nota> getNotas() {

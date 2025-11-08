@@ -103,7 +103,7 @@ public class CadastroAlunoController implements Initializable {
                     nomeCompletoField.getText(), cpfField.getText(),
                     dataNascimentoPicker.getValue(), responsavel,
                     telefoneField.getText(),
-                    emailField.getText() // Adiciona o telefone do aluno
+                    emailField.getText()
                 );
 
                 alunoDAO.save(novoAluno);
@@ -120,6 +120,8 @@ public class CadastroAlunoController implements Initializable {
                 alunoParaEditar.setNomeCompleto(nomeCompletoField.getText());
                 alunoParaEditar.setCpf(cpfField.getText());
                 alunoParaEditar.setDataNascimento(dataNascimentoPicker.getValue());
+                alunoParaEditar.setTelefone(telefoneField.getText());
+                alunoParaEditar.setEmail(emailField.getText());
                 alunoDAO.update(alunoParaEditar);
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Aluno e Responsável atualizados com sucesso!");
             }
