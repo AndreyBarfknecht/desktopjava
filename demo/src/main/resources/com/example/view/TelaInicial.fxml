@@ -91,6 +91,14 @@
                                     </graphic>
                                 </Button>
 
+                                <Button onAction="#handleMenuDisciplinas" styleClass="sidebar-button" text="Disciplinas" contentDisplay="LEFT">
+                                    <graphic>
+                                        <StackPane styleClass="sidebar-icon-pane">
+                                            <FontAwesomeIconView glyphName="LIST_ALT" size="1.5em" styleClass="sidebar-icon"/>
+                                        </StackPane>
+                                    </graphic>
+                                </Button>
+
                                 </VBox>
                         </content>
                     </TitledPane>

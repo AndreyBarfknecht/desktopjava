@@ -196,6 +196,13 @@ public class TelaInicialController implements Initializable {
         loadView("GestaoTurmas");
     }
 
+    @FXML
+    private void handleMenuDisciplinas() {
+        loadView("GestaoDisciplinas");
+    }
+
+
+
 
     // --- HANDLERS ANTIGOS MANTIDOS (Para "Ações Rápidas" e menu "Sistema") ---
     // Estes métodos continuam a abrir POPUPS como faziam antes.
