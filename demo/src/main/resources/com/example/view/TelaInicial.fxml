@@ -99,6 +99,14 @@
                                     </graphic>
                                 </Button>
 
+                                <Button onAction="#handleMenuPeriodosLetivos" styleClass="sidebar-button" text="Períodos Letivos" contentDisplay="LEFT">
+                                    <graphic>
+                                        <StackPane styleClass="sidebar-icon-pane">
+                                            <FontAwesomeIconView glyphName="CALENDAR" size="1.5em" styleClass="sidebar-icon"/>
+                                        </StackPane>
+                                    </graphic>
+                                </Button>
+
                                 </VBox>
                         </content>
                     </TitledPane>

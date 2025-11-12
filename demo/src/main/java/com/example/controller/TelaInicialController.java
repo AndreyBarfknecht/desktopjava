@@ -201,7 +201,10 @@ public class TelaInicialController implements Initializable {
         loadView("GestaoDisciplinas");
     }
 
-
+    @FXML
+    private void handleMenuPeriodosLetivos() {
+        loadView("GestaoPeriodosLetivos");
+    }
 
 
     // --- HANDLERS ANTIGOS MANTIDOS (Para "Ações Rápidas" e menu "Sistema") ---
