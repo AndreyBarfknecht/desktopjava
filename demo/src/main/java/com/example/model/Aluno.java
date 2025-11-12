@@ -53,4 +53,8 @@ public class Aluno {
     public String toString() {
         return this.nomeCompleto;
     }
+
+    public String getTelefoneResponsavel() {
+    return responsavel != null ? responsavel.getTelefone() : "";
+    }
 }

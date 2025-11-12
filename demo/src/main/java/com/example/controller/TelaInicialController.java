@@ -35,6 +35,7 @@ public class TelaInicialController implements Initializable {
     @FXML private Label lblTotalAlunos;
     @FXML private Label lblTotalCursos;
     @FXML private Label lblTotalTurmas;
+    @FXML private Label lblTotalProfessores;
     
     // --- @FXML PARA O MENU RETRÁTIL ---
     @FXML private ScrollPane sidebarScrollPane;
@@ -123,6 +124,7 @@ public class TelaInicialController implements Initializable {
             lblTotalAlunos.setText(String.valueOf(alunoDAO.getAll().size()));
             lblTotalCursos.setText(String.valueOf(cursoDAO.getAll().size()));
             lblTotalTurmas.setText(String.valueOf(turmaDAO.getAll().size()));
+            lblTotalProfessores.setText(String.valueOf(professorDAO.getAll().size()));
         } catch (Exception e) {
             e.printStackTrace();
             // Define um valor de erro se a base de dados falhar
@@ -176,22 +178,22 @@ public class TelaInicialController implements Initializable {
     private void handleMenuProfessores() {
         // Esta tela ainda não existe, então mostramos um alerta.
         // Quando criar o "GestaoProfessores.fxml", basta trocar
-        // o conteúdo deste método por: loadView("GestaoProfessores");
-        showAlert(Alert.AlertType.INFORMATION, "Em Breve", "A tela de Gestão de Professores será criada a seguir.");
+        // o conteúdo deste método por: loadView("GestaoProfessores")
+        loadView("GestaoProfessores");
     }
     
     @FXML
     private void handleMenuCursos() {
         // (Quando criar o GestaoCursos.fxml)
         // loadView("GestaoCursos"); 
-        showAlert(Alert.AlertType.INFORMATION, "Em Breve", "A tela de Gestão de Cursos será criada a seguir.");
+        loadView("GestaoCurso");
     }
     
     @FXML
     private void handleMenuTurmas() {
         // (Quando criar o GestaoTurmas.fxml)
         // loadView("GestaoTurmas"); 
-        showAlert(Alert.AlertType.INFORMATION, "Em Breve", "A tela de Gestão de Turmas será criada a seguir.");
+        loadView("GestaoTurmas");
     }
 
 

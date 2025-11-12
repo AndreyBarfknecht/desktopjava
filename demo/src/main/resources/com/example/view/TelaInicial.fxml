@@ -75,6 +75,22 @@
                                     </graphic>
                                 </Button>
 
+                                <Button onAction="#handleMenuCursos" styleClass="sidebar-button" text="Cursos" contentDisplay="LEFT">
+                                    <graphic>
+                                        <StackPane styleClass="sidebar-icon-pane">
+                                            <FontAwesomeIconView glyphName="BOOK" size="1.5em" styleClass="sidebar-icon"/>
+                                        </StackPane>
+                                    </graphic>
+                                </Button>
+
+                                <Button onAction="#handleMenuTurmas" styleClass="sidebar-button" text="Turmas" contentDisplay="LEFT">
+                                    <graphic>
+                                        <StackPane styleClass="sidebar-icon-pane">
+                                            <FontAwesomeIconView glyphName="USERS" size="1.5em" styleClass="sidebar-icon"/>
+                                        </StackPane>
+                                    </graphic>
+                                </Button>
+
                                 </VBox>
                         </content>
                     </TitledPane>
@@ -159,6 +175,15 @@
                                 <VBox spacing="10.0">
                                     <Label styleClass="summary-card-label" text="Alunos Registados" />
                                     <Label fx:id="lblTotalAlunos" styleClass="summary-card-value" text="0" />
+                                </VBox>
+                            </graphic>
+                        </Button>
+
+                        <Button fx:id="cardProfessores" onAction="#handleMenuProfessores" styleClass="summary-card" HBox.hgrow="ALWAYS">
+                            <graphic>
+                                <VBox spacing="10.0">
+                                    <Label styleClass="summary-card-label" text="Professores Ativos" />
+                                    <Label fx:id="lblTotalProfessores" styleClass="summary-card-value" text="0" />
                                 </VBox>
                             </graphic>
                         </Button>
