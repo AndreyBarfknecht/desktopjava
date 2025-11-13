@@ -137,6 +137,7 @@ public class GestaoPeriodosLetivosController implements Initializable {
             stage.setTitle("Editar Período Letivo");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(periodosTableView.getScene().getWindow());
             stage.showAndWait(); 
 
             carregarPeriodos(); // Atualiza a tabela

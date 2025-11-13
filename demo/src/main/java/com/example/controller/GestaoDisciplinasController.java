@@ -141,6 +141,7 @@ public class GestaoDisciplinasController implements Initializable {
             stage.setTitle("Editar Disciplina");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(disciplinasTableView.getScene().getWindow());
             stage.showAndWait(); 
 
             carregarDisciplinas(); // Atualiza a tabela

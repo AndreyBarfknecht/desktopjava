@@ -139,6 +139,7 @@ public class GestaoProfessoresController implements Initializable {
             stage.setTitle("Editar Professor");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(professoresTableView.getScene().getWindow());
             stage.showAndWait(); // Espera a janela de edição fechar
 
             carregarProfessores(); // Atualiza a tabela

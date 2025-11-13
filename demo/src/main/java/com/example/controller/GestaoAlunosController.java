@@ -1,12 +1,12 @@
 package com.example.controller;
 
-import com.example.SceneNavigator; // Usaremos para abrir os popups
+import com.example.SceneNavigator;
 import com.example.model.Aluno;
-import com.example.model.Responsavel; // Precisamos para o onExcluir
+import com.example.model.Responsavel; 
 import com.example.repository.AlunoDAO;
 import com.example.repository.ResponsavelDAO;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView; // Para os ícones
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView; 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
+// REMOVIDO: FilteredList não é mais usado
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -24,123 +24,234 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableCell; // Importante
-import javafx.scene.control.TableColumn; // Importante
+import javafx.scene.control.Label; // NOVO: Para o status da paginação
+import javafx.scene.control.TableCell; 
+import javafx.scene.control.TableColumn; 
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox; // Para os botões na célula
+import javafx.scene.control.Tooltip; // NOVO: Para as dicas
+import javafx.scene.layout.HBox; 
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-// Este novo controller combina a lógica de ConsultaAlunosController
-// com a navegação para as ações
 public class GestaoAlunosController implements Initializable {
 
-    // --- FXML da Tabela e Pesquisa (Igual ao ConsultaAlunosController) ---
+    // --- FXML da Tabela e Pesquisa ---
     @FXML private TableView<Aluno> alunosTableView;
     @FXML private TextField searchField;
-
-    // --- NOVA COLUNA DE AÇÕES (Decisão 3) ---
     @FXML private TableColumn<Aluno, Void> colAcoes;
 
-    // --- DAOs e Listas (Igual ao ConsultaAlunosController) ---
+    // --- NOVOS FXML DE PAGINAÇÃO ---
+    @FXML private Button btnPaginaAnterior;
+    @FXML private Button btnPaginaProxima;
+    @FXML private Label lblStatusPaginacao;
+
+    // --- DAOs e Listas ---
     private AlunoDAO alunoDAO;
     private ResponsavelDAO responsavelDAO;
+    // masterData agora guarda apenas a PÁGINA ATUAL
     private ObservableList<Aluno> masterData = FXCollections.observableArrayList();
+
+    // --- NOVAS VARIÁVEIS DE ESTADO DA PAGINAÇÃO ---
+    private int paginaAtual = 1;
+    private final int limitePorPagina = 15; // Define quantos alunos por página
+    private String termoBuscaAtual = "";
+    private int totalPaginas = 1;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.alunoDAO = new AlunoDAO();
         this.responsavelDAO = new ResponsavelDAO();
         
-        // Configura a coluna de ações (Passo 3 da sua decisão)
         configurarColunaAcoes();
         
-        carregarAlunos(); // Carrega os dados
+        // --- LÓGICA DE FILTRO REMOVIDA ---
+        // A FilteredList foi removida.
+        
+        // A tabela agora é preenchida diretamente pela masterData (que conterá apenas 15 itens)
+        alunosTableView.setItems(masterData);
 
-        // Lógica de filtro (copiada de ConsultaAlunosController)
-        FilteredList<Aluno> filteredData = new FilteredList<>(masterData, p -> true);
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(aluno -> {
-                if (newValue == null || newValue.isEmpty()) return true;
-                String lowerCaseFilter = newValue.toLowerCase();
-                if (aluno.getNomeCompleto().toLowerCase().contains(lowerCaseFilter)) return true;
-                if (aluno.getCpf() != null && aluno.getCpf().contains(lowerCaseFilter)) return true;
-                if (aluno.getResponsavel().getNomeCompleto().toLowerCase().contains(lowerCaseFilter)) return true;
-                return false;
-            });
-        });
-        alunosTableView.setItems(filteredData);
+        // A busca agora é acionada pelo método onBuscar() (ligado ao Enter no FXML)
+        // E o carregamento inicial é feito aqui:
+        carregarAlunos(); 
     }
     
+    /**
+     * MÉTODO CENTRAL REESCRITO
+     * Carrega os alunos do banco de dados de forma paginada e filtrada.
+     */
     private void carregarAlunos() {
-        masterData.clear();
-        List<Aluno> alunosList = alunoDAO.getAll();
-        masterData.addAll(alunosList);
+        try {
+            // 1. Busca o total de alunos (filtrado) para calcular as páginas
+            int totalAlunos = alunoDAO.countAlunosFiltrados(termoBuscaAtual);
+            
+            // 2. Calcula o total de páginas
+            totalPaginas = (int) Math.ceil((double) totalAlunos / limitePorPagina);
+            if (totalPaginas == 0) {
+                totalPaginas = 1; // Garante que sempre temos pelo menos a página 1
+            }
+            
+            // 3. Busca a lista de alunos da página atual
+            List<Aluno> alunos = alunoDAO.getAlunosPaginadoEFiltrado(
+                termoBuscaAtual, 
+                paginaAtual, 
+                limitePorPagina
+            );
+            
+            // 4. Atualiza a tabela
+            masterData.setAll(alunos);
+
+            // 5. Atualiza os controlos de paginação
+            atualizarControlesPaginacao();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Não foi possível carregar os alunos.");
+        }
     }
 
-    // --- NOVOS MÉTODOS PARA OS BLOCOS DE AÇÃO (Decisão 4) ---
+    @FXML
+    private void onConsultarMatriculas() {
+        SceneNavigator.openNewWindow("ConsultaMatriculas", "Consulta de Matrículas");
+    }
+    
+    /**
+     * NOVO: Atualiza o texto da legenda e o estado dos botões de paginação.
+     */
+    private void atualizarControlesPaginacao() {
+        lblStatusPaginacao.setText("Página " + paginaAtual + " de " + totalPaginas);
+        btnPaginaAnterior.setDisable(paginaAtual == 1);
+        btnPaginaProxima.setDisable(paginaAtual >= totalPaginas);
+    }
+    
+    /**
+     * NOVO: Chamado quando o utilizador pressiona Enter no campo de busca.
+     */
+    @FXML
+    private void onBuscar() {
+        termoBuscaAtual = searchField.getText();
+        paginaAtual = 1; // Sempre volta para a página 1 ao buscar
+        carregarAlunos();
+    }
+
+    /**
+     * NOVO: Chamado pelo botão "Anterior".
+     */
+    @FXML
+    private void onPaginaAnterior() {
+        if (paginaAtual > 1) {
+            paginaAtual--;
+            carregarAlunos();
+        }
+    }
+
+    /**
+     * NOVO: Chamado pelo botão "Próxima".
+     */
+    @FXML
+    private void onPaginaProxima() {
+        if (paginaAtual < totalPaginas) {
+            paginaAtual++;
+            carregarAlunos();
+        }
+    }
+
+    // --- MÉTODOS DE AÇÃO (Topo) ---
     
     @FXML
     private void onCadastrarNovoAluno() {
-        // Abre o popup de cadastro que já existe
         SceneNavigator.openNewWindow("tela_cadastro_aluno", "Cadastro de Novo Aluno");
-        // Atualiza a tabela caso um novo aluno tenha sido salvo
+        
+        // Após cadastrar, limpa a busca e volta para a página 1
+        termoBuscaAtual = "";
+        searchField.clear();
+        paginaAtual = 1;
         carregarAlunos(); 
     }
 
-    @FXML
-    private void onMatricularAluno() {
-        // Abre o popup de matrícula que já existe
-        SceneNavigator.openNewWindow("Matricula", "Matrícula de Alunos");
-        // Não precisamos recarregar os alunos aqui, mas é uma boa prática
-    }
+    // O método onMatricularAluno() foi removido (agora está na linha)
+
     
-    // --- LÓGICA DE AÇÕES NA TABELA (Decisão 3) ---
+    // --- LÓGICA DE AÇÕES NA TABELA (COM TOOLTIPS) ---
 
     private void configurarColunaAcoes() {
-        // 1. Define uma "Cell Factory" (Fábrica de Células) para a coluna
         colAcoes.setCellFactory(param -> new TableCell<Aluno, Void>() {
             
-            // Criamos os botões com ícones
+            private final Button btnMatricular = new Button("", new FontAwesomeIconView(FontAwesomeIcon.ADDRESS_BOOK));
             private final Button btnEditar = new Button("", new FontAwesomeIconView(FontAwesomeIcon.PENCIL));
             private final Button btnExcluir = new Button("", new FontAwesomeIconView(FontAwesomeIcon.TRASH));
-            private final HBox painelBotoes = new HBox(5, btnEditar, btnExcluir);
+            private final HBox painelBotoes = new HBox(5, btnMatricular, btnEditar, btnExcluir);
 
             {
-                // Adiciona classes de estilo (do style.css)
+                btnMatricular.getStyleClass().add("salvar-button");
                 btnEditar.getStyleClass().add("salvar-button");
                 btnExcluir.getStyleClass().add("cancel-button");
                 painelBotoes.setPadding(new Insets(5));
                 
-                // 3. Define as ações dos botões
+                // Adiciona Tooltips (dicas de texto)
+                Tooltip.install(btnMatricular, new Tooltip("Matricular este aluno"));
+                Tooltip.install(btnEditar, new Tooltip("Editar dados do aluno"));
+                Tooltip.install(btnExcluir, new Tooltip("Excluir aluno e responsável"));
+                
+                // Ações dos botões
+                btnMatricular.setOnAction(event -> {
+                    Aluno aluno = getTableView().getItems().get(getIndex());
+                    handleMatricular(aluno);
+                });
+                
                 btnEditar.setOnAction(event -> {
                     Aluno aluno = getTableView().getItems().get(getIndex());
-                    handleEditar(aluno); // Chama a lógica de edição
+                    handleEditar(aluno); 
                 });
                 
                 btnExcluir.setOnAction(event -> {
                     Aluno aluno = getTableView().getItems().get(getIndex());
-                    handleExcluir(aluno); // Chama a lógica de exclusão
+                    handleExcluir(aluno); 
                 });
             }
 
-            // 2. Este método é chamado para desenhar a célula
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null); // Se a linha estiver vazia, não mostra nada
-                } else {
-                    setGraphic(painelBotoes); // Mostra os botões
-                }
+                setGraphic(empty ? null : painelBotoes);
             }
         });
     }
 
-    // --- LÓGICA MOVIDA DE "ConsultaAlunosController" ---
-    // (Note que mudei os nomes para "handleEditar" e "handleExcluir"
-    // e eles agora recebem o Aluno como parâmetro)
+    /**
+     * NOVO: Ação para o botão de matricular na linha.
+     */
+    private void handleMatricular(Aluno aluno) {
+        if (aluno == null) {
+            showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Aluno não encontrado.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/view/Matricula.fxml"));
+            Parent root = loader.load();
+            MatriculaController controller = loader.getController();
+            
+            // Injeta o aluno no controlador do popup
+            controller.setAlunoParaMatricular(aluno);
+
+            Stage stage = new Stage();
+            stage.setTitle("Matricular Aluno: " + aluno.getNomeCompleto());
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            // Define o "dono" para corrigir o problema do Tiling Window Manager
+            stage.initOwner(alunosTableView.getScene().getWindow()); 
+            stage.showAndWait();
+            
+            // Não precisa recarregar, pois a matrícula não afeta esta lista.
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de matrícula.");
+        }
+    }
+
 
     private void handleEditar(Aluno alunoSelecionado) {
         if (alunoSelecionado == null) {
@@ -151,17 +262,20 @@ public class GestaoAlunosController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/view/tela_cadastro_aluno.fxml"));
             Parent root = loader.load();
-
             CadastroAlunoController controller = loader.getController();
-            controller.setAlunoParaEdicao(alunoSelecionado); // Passa o aluno para a tela
+            controller.setAlunoParaEdicao(alunoSelecionado); 
 
             Stage stage = new Stage();
             stage.setTitle("Editar Aluno");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            // Define o "dono" para corrigir o problema do Tiling Window Manager
+            stage.initOwner(alunosTableView.getScene().getWindow());
             stage.showAndWait();
 
-            carregarAlunos(); // Atualiza a tabela após a edição
+            // Atualiza a página atual após a edição
+            carregarAlunos(); 
+            
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de edição.");
@@ -174,7 +288,6 @@ public class GestaoAlunosController implements Initializable {
             return;
         }
 
-        // Lógica de exclusão (exatamente a mesma que estava em ConsultaAlunosController)
         int responsavelId = alunoSelecionado.getResponsavel().getId();
         int numFilhos = alunoDAO.countAlunosByResponsavelId(responsavelId);
 
@@ -187,7 +300,6 @@ public class GestaoAlunosController implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 alunoDAO.delete(alunoSelecionado.getId());
-                masterData.remove(alunoSelecionado);
             }
         } else {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -204,16 +316,20 @@ public class GestaoAlunosController implements Initializable {
                 if (result.get() == btnExcluirAmbos) {
                     alunoDAO.delete(alunoSelecionado.getId());
                     responsavelDAO.delete(responsavelId);
-                    masterData.remove(alunoSelecionado);
                 } else if (result.get() == btnExcluirApenasAluno) {
                     alunoDAO.delete(alunoSelecionado.getId());
-                    masterData.remove(alunoSelecionado);
                 }
             }
         }
+        
+        // Após a exclusão, recarrega a página
+        // (Verifica se a página ficou vazia e volta uma)
+        if (masterData.size() == 1 && paginaAtual > 1) {
+            paginaAtual--;
+        }
+        carregarAlunos();
     }
 
-    // Método utilitário (copiado de ConsultaAlunosController)
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

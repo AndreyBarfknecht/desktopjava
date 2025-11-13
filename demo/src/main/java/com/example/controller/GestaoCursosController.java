@@ -138,6 +138,7 @@ public class GestaoCursosController implements Initializable {
             stage.setTitle("Editar Curso");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(cursosTableView.getScene().getWindow());
             stage.showAndWait(); 
 
             carregarCursos(); // Atualiza a tabela
