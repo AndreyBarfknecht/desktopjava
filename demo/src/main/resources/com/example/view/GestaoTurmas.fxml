@@ -24,12 +24,12 @@
                         <graphic><FontAwesomeIconView glyphName="PLUS" styleClass="acao-rapida-icon" size="1.5em"/></graphic>
                         </Button>
                         
-                        <Button onAction="#onDefinirHorarios" text="Definir Horários" styleClass="acao-rapida-button">
+                        <!-- <Button onAction="#onDefinirHorarios" text="Definir Horários" styleClass="acao-rapida-button">
                         <graphic><FontAwesomeIconView glyphName="CALENDAR" styleClass="acao-rapida-icon" size="1.5em"/></graphic>
-                        </Button>
+                        </Button> -->
                         
                         <Button onAction="#onConsultarHorarios" text="Consultar Horários" styleClass="acao-rapida-button">
-                        <graphic><FontAwesomeIconView glyphName="CLOCK_O" styleClass="acao-rapida-icon" size="1.5em"/></graphic>
+                        <graphic><FontAwesomeIconView glyphName="LIST_ALT" styleClass="acao-rapida-icon" size="1.5em"/></graphic>
                         </Button>
                         
                     </children>
@@ -67,7 +67,7 @@
                             <TableColumn prefWidth="100.0" text="Sala">
                                 <cellValueFactory><PropertyValueFactory property="sala" />
                             </cellValueFactory></TableColumn>
-                            <TableColumn fx:id="colAcoes" prefWidth="120.0" text="Ações" />
+                            <TableColumn fx:id="colAcoes" prefWidth="180.0" text="Ações" />
                         </columns>
                     </TableView>
                 </children>

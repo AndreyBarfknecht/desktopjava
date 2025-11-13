@@ -181,4 +181,14 @@ public class CadastroHorarioController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    public void setTurmaParaHorario(Turma turma) {
+    if (turmaComboBox != null) {
+        // Define a turma no ComboBox
+        turmaComboBox.setValue(turma);
+        
+        // Desabilita o ComboBox para que o usuário não possa trocar
+        turmaComboBox.setDisable(true);
+    }
+}
 }

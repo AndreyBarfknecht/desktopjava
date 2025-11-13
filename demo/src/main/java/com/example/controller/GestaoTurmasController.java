@@ -32,6 +32,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.control.Tooltip; // NOVO: Para as dicas de texto
+import com.example.controller.CadastroHorarioController; // NOVO: Para o popup
 
 public class GestaoTurmasController implements Initializable {
 
@@ -155,32 +157,55 @@ private void onConsultarHorarios() {
     SceneNavigator.openNewWindow("ConsultaHorarios", "Consulta de Horários");
 }
     
-    @FXML
-    private void onDefinirHorarios() {
-        SceneNavigator.openNewWindow("CadastroHorario", "Definição de Horários"); 
-    }
+    // @FXML
+    // private void onDefinirHorarios() {
+    //     SceneNavigator.openNewWindow("CadastroHorario", "Definição de Horários"); 
+    // }
     
     // --- LÓGICA DE AÇÕES NA TABELA (Turmas) ---
 
-    private void configurarColunaAcoes() {
+    // SUBSTITUA O MÉTODO "configurarColunaAcoes" INTEIRO POR ESTE BLOCO
+private void configurarColunaAcoes() {
         colAcoes.setCellFactory(param -> new TableCell<Turma, Void>() {
+            
+            // --- NOVO BOTÃO ADICIONADO ---
+            private final Button btnDefinirHorario = new Button("", new FontAwesomeIconView(FontAwesomeIcon.CALENDAR));
             private final Button btnEditar = new Button("", new FontAwesomeIconView(FontAwesomeIcon.PENCIL));
             private final Button btnExcluir = new Button("", new FontAwesomeIconView(FontAwesomeIcon.TRASH));
-            private final HBox painelBotoes = new HBox(5, btnEditar, btnExcluir);
+            
+            // --- ORDEM ATUALIZADA NO HBOX ---
+            private final HBox painelBotoes = new HBox(5, btnDefinirHorario, btnEditar, btnExcluir);
+
             {
-                btnEditar.getStyleClass().add("salvar-button");
-                btnExcluir.getStyleClass().add("cancel-button");
+                // --- ESTILOS ---
+                btnDefinirHorario.getStyleClass().add("salvar-button"); // Azul
+                btnEditar.getStyleClass().add("salvar-button"); // Azul
+                btnExcluir.getStyleClass().add("cancel-button"); // Vermelho
                 painelBotoes.setPadding(new Insets(5));
+
+                // --- ADICIONA OS TOOLTIPS (DICAS DE TEXTO) ---
+                Tooltip.install(btnDefinirHorario, new Tooltip("Definir horários desta turma"));
+                Tooltip.install(btnEditar, new Tooltip("Editar dados da turma"));
+                Tooltip.install(btnExcluir, new Tooltip("Excluir turma"));
+
+                
+                // --- NOVAS AÇÕES ---
+                btnDefinirHorario.setOnAction(event -> {
+                    Turma turma = getTableView().getItems().get(getIndex());
+                    handleDefinirHorario(turma); // Chama o novo método
+                });
                 
                 btnEditar.setOnAction(event -> {
                     Turma turma = getTableView().getItems().get(getIndex());
                     handleEditar(turma);
                 });
+                
                 btnExcluir.setOnAction(event -> {
                     Turma turma = getTableView().getItems().get(getIndex());
                     handleExcluir(turma);
                 });
             }
+
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -277,6 +302,38 @@ private void onConsultarHorarios() {
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de edição.");
+        }
+    }
+
+    // ADICIONE ESTE NOVO MÉTODO
+private void handleDefinirHorario(Turma turma) {
+        if (turma == null) {
+            showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Turma não encontrada.");
+            return;
+        }
+
+        try {
+            // Carrega o FXML do cadastro de horário manualmente
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/view/CadastroHorario.fxml"));
+            Parent root = loader.load();
+
+            // Pega o controlador do popup
+            CadastroHorarioController controller = loader.getController();
+            
+            // *** A MÁGICA: Injeta a turma no controlador do popup ***
+            controller.setTurmaParaHorario(turma);
+
+            // Configura e exibe o popup
+            Stage stage = new Stage();
+            stage.setTitle("Definir Horários para: " + turma.getNome());
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(turmasTableView.getScene().getWindow()); // Corrige o "tiling"
+            stage.showAndWait();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de cadastro de horários.");
         }
     }
 
