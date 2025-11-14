@@ -38,11 +38,11 @@
                     </rowConstraints>
                     <children>
                         <Label text="Disciplina:" />
-                        <ComboBox fx:id="disciplinaComboBox" prefWidth="450.0" promptText="Selecione a disciplina" GridPane.columnIndex="1" />
+                        <ComboBox fx:id="disciplinaComboBox" editable="true" prefWidth="450.0" promptText="Selecione a disciplina" GridPane.columnIndex="1" />
                         <Label text="Turma:" GridPane.rowIndex="1" />
                         <ComboBox fx:id="turmaComboBox" prefWidth="450.0" promptText="Selecione a turma" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Professor:" GridPane.rowIndex="2" />
-                        <ComboBox fx:id="professorComboBox" prefWidth="450.0" promptText="Selecione o professor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <ComboBox fx:id="professorComboBox" editable="true" prefWidth="450.0" promptText="Selecione o professor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         
                         <Label text="Dia da Semana:" GridPane.rowIndex="3" />
                         <ComboBox fx:id="diaSemanaComboBox" prefWidth="450.0" promptText="Selecione o dia" GridPane.columnIndex="1" GridPane.rowIndex="3" />

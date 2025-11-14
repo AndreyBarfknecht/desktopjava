@@ -78,4 +78,43 @@ public class GradeCurricularDAO {
         }
         return disciplinas;
     }
+
+    public void addDisciplina(int cursoId, int disciplinaId) throws SQLException {
+        // SQL para inserir, ignorando se a chave (curso_id, disciplina_id) já existir
+        // "ON DUPLICATE KEY UPDATE" é uma forma de evitar um "crash" se a disciplina já 
+        // estiver lá. Ele basicamente não faz nada se o par já existir.
+        String sql = "INSERT INTO grade_curricular (id_curso, id_disciplina) " +
+                     "VALUES (?, ?) " +
+                     "ON DUPLICATE KEY UPDATE id_curso = id_curso"; // Não faz nada se já existir
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, cursoId);
+            pstmt.setInt(2, disciplinaId);
+            pstmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao adicionar disciplina à grade: " + e.getMessage());
+            // Lança a exceção para que o GestaoGradeController possa apanhá-la e mostrar um alerta
+            throw e; 
+        }
+    }
+    
+    public void removerDisciplina(int cursoId, int disciplinaId) throws SQLException {
+        String sql = "DELETE FROM grade_curricular WHERE id_curso = ? AND id_disciplina = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, cursoId);
+            pstmt.setInt(2, disciplinaId);
+            pstmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao remover disciplina da grade: " + e.getMessage());
+            // Lança a exceção para que o GestaoGradeController possa apanhá-la e mostrar um alerta
+            throw e; 
+        }
+    }
 }

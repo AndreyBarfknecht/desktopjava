@@ -118,4 +118,111 @@ public class ProfessorDAO {
             e.printStackTrace();
         }
     }
+
+    public List<Professor> searchByName(String nome) {
+        String sql = "SELECT * FROM professores WHERE nome_completo LIKE ? LIMIT 10";
+        List<Professor> professores = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, "%" + nome + "%"); 
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                // Suposição de que o construtor do Professor lida com data nula
+                java.sql.Date sqlDate = rs.getDate("data_nascimento");
+                LocalDate dataNascimento = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+
+                Professor professor = new Professor(
+                    rs.getString("nome_completo"), 
+                    rs.getString("cpf"), 
+                    dataNascimento, 
+                    rs.getString("email"), 
+                    rs.getString("telefone")
+                );
+                professor.setId(rs.getInt("id"));
+                professores.add(professor);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar professores por nome: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return professores; 
+    }
+
+    public int countProfessoresFiltrados(String termoBusca) {
+        String sqlBase = "SELECT COUNT(*) FROM professores ";
+        String termoLike = "%" + termoBusca + "%";
+        String sqlWhere = "WHERE nome_completo LIKE ? OR cpf LIKE ? OR email LIKE ? OR telefone LIKE ?";
+        
+        String sqlFinal = termoBusca.isEmpty() ? sqlBase : sqlBase + sqlWhere;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlFinal)) {
+
+            if (!termoBusca.isEmpty()) {
+                pstmt.setString(1, termoLike);
+                pstmt.setString(2, termoLike);
+                pstmt.setString(3, termoLike);
+                pstmt.setString(4, termoLike);
+            }
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1); // Retorna a contagem
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Professor> getProfessoresPaginadoEFiltrado(String termoBusca, int pagina, int limitePorPagina) {
+        List<Professor> professores = new ArrayList<>();
+        
+        String sqlBase = "SELECT * FROM professores ";
+        String termoLike = "%" + termoBusca + "%";
+        String sqlWhere = "WHERE nome_completo LIKE ? OR cpf LIKE ? OR email LIKE ? OR telefone LIKE ? ";
+        
+        int offset = (pagina - 1) * limitePorPagina;
+        
+        String sqlFinal = termoBusca.isEmpty() ? 
+                          sqlBase + "LIMIT ? OFFSET ?" : 
+                          sqlBase + sqlWhere + "LIMIT ? OFFSET ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlFinal)) {
+
+            int paramIndex = 1;
+            if (!termoBusca.isEmpty()) {
+                pstmt.setString(paramIndex++, termoLike);
+                pstmt.setString(paramIndex++, termoLike);
+                pstmt.setString(paramIndex++, termoLike);
+                pstmt.setString(paramIndex++, termoLike);
+            }
+            pstmt.setInt(paramIndex++, limitePorPagina);
+            pstmt.setInt(paramIndex++, offset);
+
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                 java.sql.Date sqlDate = rs.getDate("data_nascimento");
+                 LocalDate dataNascimento = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+
+                 Professor professor = new Professor(
+                     rs.getString("nome_completo"), 
+                     rs.getString("cpf"), 
+                     dataNascimento, 
+                     rs.getString("email"), 
+                     rs.getString("telefone")
+                 );
+                 professor.setId(rs.getInt("id"));
+                 professores.add(professor);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return professores;
+    }
 }

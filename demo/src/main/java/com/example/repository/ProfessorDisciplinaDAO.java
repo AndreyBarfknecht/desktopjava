@@ -85,4 +85,38 @@ public class ProfessorDisciplinaDAO {
         }
         return disciplinas;
     }
+
+    public void addDisciplina(int professorId, int disciplinaId) throws SQLException {
+        String sql = "INSERT INTO professor_disciplina (id_professor, id_disciplina) " +
+                     "VALUES (?, ?) " +
+                     "ON DUPLICATE KEY UPDATE id_professor = id_professor"; // Não faz nada se já existir
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, professorId);
+            pstmt.setInt(2, disciplinaId);
+            pstmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao associar disciplina ao professor: " + e.getMessage());
+            throw e; 
+        }
+    }
+
+    public void removerDisciplina(int professorId, int disciplinaId) throws SQLException {
+        String sql = "DELETE FROM professor_disciplina WHERE id_professor = ? AND id_disciplina = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, professorId);
+            pstmt.setInt(2, disciplinaId);
+            pstmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao remover disciplina do professor: " + e.getMessage());
+            throw e; 
+        }
+    }
 }

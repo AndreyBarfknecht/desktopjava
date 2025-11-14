@@ -6,6 +6,7 @@ import com.example.model.Turma;
 import com.example.repository.AlunoDAO;
 import com.example.repository.MatriculaDAO;
 import com.example.repository.TurmaDAO;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,6 +17,8 @@ import javafx.util.StringConverter;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List; // NOVO
+import java.util.ArrayList; // NOVO
 import java.util.ResourceBundle;
 
 public class MatriculaController implements Initializable {
@@ -24,16 +27,13 @@ public class MatriculaController implements Initializable {
     @FXML private ComboBox<Turma> turmaComboBox;
     @FXML private DatePicker dataMatriculaPicker;
     @FXML private Button salvarButton;
-    @FXML private Button cancelarButton;
-    
-    // NOVO: Campo FXML para o Status
+    @FXML private Button cancelarButton; 
     @FXML private ComboBox<String> statusComboBox;
 
     private AlunoDAO alunoDAO;
     private TurmaDAO turmaDAO;
     private MatriculaDAO matriculaDAO;
 
-    // NOVO: Variável para o modo de edição
     private Matricula matriculaParaEditar;
 
     @Override
@@ -42,34 +42,131 @@ public class MatriculaController implements Initializable {
         this.turmaDAO = new TurmaDAO();
         this.matriculaDAO = new MatriculaDAO();
 
-        configurarComboBoxes();
-        carregarDados();
+        // --- MUDANÇA PRINCIPAL ---
+        // Removemos o carregamento de "getAll()"
+        // carregarDados(); // Método antigo removido
+        
+        // Configura os ComboBoxes para o autocompletar
+        setupAutocompleteAluno(alunoComboBox);
+        setupAutocompleteTurma(turmaComboBox);
 
-        // NOVO: Preenche o ComboBox de Status
         statusComboBox.getItems().addAll("Ativo", "Trancado", "Concluído", "Cancelado");
         dataMatriculaPicker.setValue(LocalDate.now());
     }
     
     /**
-     * Usado pelo GestaoAlunosController para pré-selecionar o aluno.
+     * NOVO: Configura o autocompletar para o ComboBox de Alunos.
+     */
+    private void setupAutocompleteAluno(ComboBox<Aluno> comboBox) {
+        comboBox.setEditable(true);
+        
+        comboBox.setConverter(new StringConverter<Aluno>() {
+            @Override
+            public String toString(Aluno object) {
+                return object == null ? "" : object.getNomeCompleto();
+            }
+            @Override
+            public Aluno fromString(String string) {
+                return comboBox.getItems().stream()
+                         .filter(item -> item.getNomeCompleto().equals(string))
+                         .findFirst().orElse(null);
+            }
+        });
+
+        comboBox.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+            if (newText == null || newText.isEmpty()) {
+                comboBox.setItems(FXCollections.observableArrayList());
+                return;
+            }
+
+            Aluno selecionado = comboBox.getSelectionModel().getSelectedItem();
+            if (selecionado != null && selecionado.toString().equals(newText)) {
+                return;
+            }
+
+            List<Aluno> sugestoes = alunoDAO.searchByName(newText);
+            Aluno itemSelecionado = comboBox.getSelectionModel().getSelectedItem();
+            comboBox.setItems(FXCollections.observableArrayList(sugestoes));
+            
+            if (itemSelecionado != null && sugestoes.contains(itemSelecionado)) {
+                comboBox.getSelectionModel().select(itemSelecionado);
+            }
+            comboBox.show();
+        });
+    }
+
+    /**
+     * NOVO: Configura o autocompletar para o ComboBox de Turmas.
+     */
+    private void setupAutocompleteTurma(ComboBox<Turma> comboBox) {
+        comboBox.setEditable(true);
+        
+        comboBox.setConverter(new StringConverter<Turma>() {
+            @Override
+            public String toString(Turma object) {
+                return object == null ? "" : object.getNome();
+            }
+            @Override
+            public Turma fromString(String string) {
+                return comboBox.getItems().stream()
+                         .filter(item -> item.getNome().equals(string))
+                         .findFirst().orElse(null);
+            }
+        });
+
+        comboBox.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+            if (newText == null || newText.isEmpty()) {
+                comboBox.setItems(FXCollections.observableArrayList());
+                return;
+            }
+
+            Turma selecionada = comboBox.getSelectionModel().getSelectedItem();
+            if (selecionada != null && selecionada.toString().equals(newText)) {
+                return;
+            }
+
+            List<Turma> sugestoes = turmaDAO.searchByName(newText);
+            Turma itemSelecionado = comboBox.getSelectionModel().getSelectedItem();
+            comboBox.setItems(FXCollections.observableArrayList(sugestoes));
+            
+            if (itemSelecionado != null && sugestoes.contains(itemSelecionado)) {
+                comboBox.getSelectionModel().select(itemSelecionado);
+            }
+            comboBox.show();
+        });
+    }
+
+    /**
+     * ATUALIZADO: Chamado pelo GestaoAlunosController para pré-selecionar o aluno.
      */
     public void setAlunoParaMatricular(Aluno aluno) {
-        if (alunoComboBox != null) {
-            alunoComboBox.setValue(aluno);
+        if (alunoComboBox != null && aluno != null) {
+            // Adiciona o aluno à lista (que estaria vazia) e seleciona-o
+            alunoComboBox.getItems().setAll(aluno);
+            alunoComboBox.getSelectionModel().select(aluno);
+            
             alunoComboBox.setDisable(true); // Bloqueia a troca
             statusComboBox.setValue("Ativo"); // Define status padrão
         }
     }
 
     /**
-     * NOVO: Usado pelo ConsultaMatriculasController para o modo de edição.
+     * ATUALIZADO: Usado pelo ConsultaMatriculasController para o modo de edição.
      */
     public void setMatriculaParaEdicao(Matricula matricula) {
         this.matriculaParaEditar = matricula;
+        if (matricula == null) return;
 
         // Preenche todos os campos
-        alunoComboBox.setValue(matricula.getAluno());
-        turmaComboBox.setValue(matricula.getTurma());
+        if (matricula.getAluno() != null) {
+            alunoComboBox.getItems().setAll(matricula.getAluno());
+            alunoComboBox.getSelectionModel().select(matricula.getAluno());
+        }
+        if (matricula.getTurma() != null) {
+            turmaComboBox.getItems().setAll(matricula.getTurma());
+            turmaComboBox.getSelectionModel().select(matricula.getTurma());
+        }
+        
         dataMatriculaPicker.setValue(matricula.getDataMatricula());
         statusComboBox.setValue(matricula.getStatus());
 
@@ -83,45 +180,38 @@ public class MatriculaController implements Initializable {
         salvarButton.setText("Atualizar Status");
     }
 
-    private void configurarComboBoxes() {
-        // (Este método permanece igual)
-        alunoComboBox.setConverter(new StringConverter<>() {
-            @Override public String toString(Aluno aluno) { return aluno == null ? "" : aluno.getNomeCompleto(); }
-            @Override public Aluno fromString(String string) { return null; }
-        });
-        turmaComboBox.setConverter(new StringConverter<>() {
-            @Override public String toString(Turma turma) { return turma == null ? "" : turma.getNome(); }
-            @Override public Turma fromString(String string) { return null; }
-        });
-    }
-
-    private void carregarDados() {
-        alunoComboBox.setItems(FXCollections.observableArrayList(alunoDAO.getAll()));
-        turmaComboBox.setItems(FXCollections.observableArrayList(turmaDAO.getAll()));
-    }
+    // REMOVIDO: carregarDados() não é mais necessário
 
     @FXML
     private void onSalvar() {
+        // --- CORREÇÃO: Usar .getSelectedItem() ---
+        Aluno aluno = alunoComboBox.getSelectionModel().getSelectedItem();
+        Turma turma = turmaComboBox.getSelectionModel().getSelectedItem();
+        LocalDate data = dataMatriculaPicker.getValue();
+        String status = statusComboBox.getValue();
+
         try {
             // --- MODO DE EDIÇÃO ---
             if (matriculaParaEditar != null) {
-                String novoStatus = statusComboBox.getValue();
-                if (novoStatus == null) {
+                if (status == null) {
                     showAlert(Alert.AlertType.WARNING, "Dados Incompletos", "Por favor, selecione um status.");
                     return;
                 }
-                // Usamos o método específico do DAO para atualizar SÓ o status
-                matriculaDAO.updateStatus(matriculaParaEditar.getId(), novoStatus);
+                matriculaDAO.updateStatus(matriculaParaEditar.getId(), status);
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Status da matrícula atualizado!");
             
             // --- MODO DE CRIAÇÃO ---
             } else {
-                Aluno aluno = alunoComboBox.getSelectionModel().getSelectedItem();
-                Turma turma = turmaComboBox.getSelectionModel().getSelectedItem();
-                LocalDate data = dataMatriculaPicker.getValue();
-                String status = statusComboBox.getValue(); // Usa o novo ComboBox
-
                 if (aluno == null || turma == null || data == null || status == null) {
+                     // Feedback melhor se o utilizador digitou mas não selecionou
+                    if (aluno == null && !alunoComboBox.getEditor().getText().isEmpty()) {
+                        showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Aluno inválido. Por favor, selecione um aluno da lista.");
+                        return;
+                    }
+                    if (turma == null && !turmaComboBox.getEditor().getText().isEmpty()) {
+                        showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Turma inválida. Por favor, selecione uma turma da lista.");
+                        return;
+                    }
                     showAlert(Alert.AlertType.WARNING, "Dados Incompletos", "Todos os campos são obrigatórios.");
                     return;
                 }
@@ -137,7 +227,7 @@ public class MatriculaController implements Initializable {
             if (e.getErrorCode() == 1062) { 
                 showAlert(Alert.AlertType.ERROR, "Erro", "Este aluno já está matriculado nesta turma.");
             } else {
-                showAlert(Alert.AlertType.ERROR, "Erro de Banco de Dados", "Ocorreu um erro ao salvar a matrícula.");
+                showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar a matrícula.");
                 e.printStackTrace();
             }
         }

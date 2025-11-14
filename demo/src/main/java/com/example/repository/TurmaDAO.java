@@ -125,4 +125,152 @@ public class TurmaDAO {
             throw e; // Lança para o controller tratar (ex: turma com alunos)
         }
     }
+
+    public List<Turma> searchByName(String nome) {
+        List<Turma> turmas = new ArrayList<>();
+        
+        // SQL com JOINs para construir os objetos Curso e PeriodoLetivo
+        String sqlCompleto = "SELECT t.id as turma_id, t.nome_turma, t.turno, t.salaAula, " +
+                   "c.id as curso_id, c.nome_curso, c.nivel, c.duracao_semestres, " +
+                   "p.id as pl_id, p.nome as pl_nome, p.data_inicio, p.data_fim, p.status " +
+                   "FROM turmas t " +
+                   "JOIN cursos c ON t.id_curso = c.id " +
+                   "JOIN periodos_letivos p ON t.id_periodo_letivo = p.id " +
+                   "WHERE t.nome_turma LIKE ? LIMIT 10";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlCompleto)) {
+            
+            pstmt.setString(1, "%" + nome + "%"); 
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    // (Lógica copiada do seu método 'getTurmaById')
+                    Curso curso = new Curso(
+                        rs.getString("nome_curso"),
+                        rs.getString("nivel"),
+                        rs.getInt("duracao_semestres")
+                    );
+                    curso.setId(rs.getInt("curso_id"));
+                    
+                    PeriodoLetivo periodo = new PeriodoLetivo(
+                        rs.getInt("pl_id"),
+                        rs.getString("pl_nome"),
+                        rs.getDate("data_inicio").toLocalDate(),
+                        rs.getDate("data_fim").toLocalDate(),
+                        rs.getString("status")
+                    );
+                    
+                    Turma turma = new Turma(
+                        rs.getString("nome_turma"),
+                        curso,
+                        periodo,
+                        rs.getString("turno"),
+                        rs.getString("salaAula")
+                    );
+                    turma.setId(rs.getInt("turma_id"));
+                    turmas.add(turma);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar turmas por nome: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return turmas;
+    }
+
+    public int countTurmasFiltradas(String termoBusca) {
+        String sqlBase = "SELECT COUNT(t.id) " +
+                         "FROM turmas t " +
+                         "JOIN cursos c ON t.id_curso = c.id " +
+                         "JOIN periodos_letivos p ON t.id_periodo_letivo = p.id ";
+        
+        String termoLike = "%" + termoBusca + "%";
+        String sqlWhere = "WHERE t.nome_turma LIKE ? OR c.nome_curso LIKE ? OR t.turno LIKE ? OR p.nome LIKE ?";
+        
+        String sqlFinal = termoBusca.isEmpty() ? sqlBase : sqlBase + sqlWhere;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlFinal)) {
+
+            if (!termoBusca.isEmpty()) {
+                pstmt.setString(1, termoLike);
+                pstmt.setString(2, termoLike);
+                pstmt.setString(3, termoLike);
+                pstmt.setString(4, termoLike);
+            }
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1); // Retorna a contagem
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Turma> getTurmasPaginadoEFiltrado(String termoBusca, int pagina, int limitePorPagina) {
+        List<Turma> turmas = new ArrayList<>();
+        
+        // SQL base (o mesmo do seu getAll())
+        String sqlBase = "SELECT t.id as turma_id, t.nome_turma, t.turno, t.salaAula, " +
+                   "c.id as curso_id, c.nome_curso, c.nivel, c.duracao_semestres, " +
+                   "p.id as pl_id, p.nome as pl_nome, p.data_inicio, p.data_fim, p.status " +
+                   "FROM turmas t " +
+                   "JOIN cursos c ON t.id_curso = c.id " +
+                   "JOIN periodos_letivos p ON t.id_periodo_letivo = p.id ";
+        
+        String termoLike = "%" + termoBusca + "%";
+        String sqlWhere = "WHERE t.nome_turma LIKE ? OR c.nome_curso LIKE ? OR t.turno LIKE ? OR p.nome LIKE ? ";
+        
+        int offset = (pagina - 1) * limitePorPagina;
+        
+        String sqlFinal = termoBusca.isEmpty() ? 
+                          sqlBase + "LIMIT ? OFFSET ?" : 
+                          sqlBase + sqlWhere + "LIMIT ? OFFSET ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlFinal)) {
+
+            int paramIndex = 1;
+            if (!termoBusca.isEmpty()) {
+                pstmt.setString(paramIndex++, termoLike);
+                pstmt.setString(paramIndex++, termoLike);
+                pstmt.setString(paramIndex++, termoLike);
+                pstmt.setString(paramIndex++, termoLike);
+            }
+            pstmt.setInt(paramIndex++, limitePorPagina);
+            pstmt.setInt(paramIndex++, offset);
+
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                // (Lógica de construção de objeto copiada do seu getAll())
+                Curso curso = new Curso(rs.getString("nome_curso"), rs.getString("nivel"), rs.getInt("duracao_semestres"));
+                curso.setId(rs.getInt("curso_id"));
+
+                PeriodoLetivo periodoLetivo = new PeriodoLetivo(
+                        rs.getInt("pl_id"),
+                        rs.getString("pl_nome"),
+                        rs.getDate("data_inicio").toLocalDate(),
+                        rs.getDate("data_fim").toLocalDate(),
+                        rs.getString("status")
+                );
+
+                Turma turma = new Turma(
+                        rs.getString("nome_turma"),
+                        curso,
+                        periodoLetivo,
+                        rs.getString("turno"),
+                        rs.getString("salaAula")
+                );
+                turma.setId(rs.getInt("turma_id"));
+                turmas.add(turma);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return turmas;
+    }
 }

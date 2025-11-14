@@ -23,13 +23,13 @@
             <VBox spacing="5.0">
                <children>
                   <Label text="Aluno" />
-                  <ComboBox fx:id="alunoComboBox" prefWidth="250.0" promptText="Selecione o Aluno" />
+                  <ComboBox fx:id="alunoComboBox" editable="true" prefWidth="250.0" promptText="Selecione o Aluno" />
                </children>
             </VBox>
             <VBox spacing="5.0">
                <children>
                   <Label text="Turma" />
-                  <ComboBox fx:id="turmaComboBox" prefWidth="250.0" promptText="Selecione a Turma" />
+                  <ComboBox fx:id="turmaComboBox" editable="true" prefWidth="250.0" promptText="Selecione a Turma" />
                </children>
             </VBox>
          </children>

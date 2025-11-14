@@ -75,4 +75,96 @@ public class DisciplinaDAO {
             throw e; // Lança para o controller tratar (ex: mostrar alerta)
         }
     }
+
+    public List<Disciplina> searchByName(String nome) {
+        String sql = "SELECT * FROM disciplinas WHERE nome_disciplina LIKE ? LIMIT 10";
+        List<Disciplina> disciplinas = new ArrayList<>();
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, "%" + nome + "%"); // Procura por qualquer disciplina que contenha o nome
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Disciplina disciplina = new Disciplina(
+                        rs.getString("nome_disciplina"),
+                        rs.getInt("carga_horaria")
+                    );
+                    disciplina.setId(rs.getInt("id"));
+                    disciplinas.add(disciplina);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar disciplinas por nome: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return disciplinas;
+    }
+
+    public int countDisciplinasFiltradas(String termoBusca) {
+        String sqlBase = "SELECT COUNT(*) FROM disciplinas ";
+        String termoLike = "%" + termoBusca + "%";
+        // Busca por nome ou carga horária (convertendo para texto)
+        String sqlWhere = "WHERE nome_disciplina LIKE ? OR CAST(carga_horaria AS CHAR) LIKE ?";
+        
+        String sqlFinal = termoBusca.isEmpty() ? sqlBase : sqlBase + sqlWhere;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlFinal)) {
+
+            if (!termoBusca.isEmpty()) {
+                pstmt.setString(1, termoLike);
+                pstmt.setString(2, termoLike);
+            }
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1); // Retorna a contagem
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Disciplina> getDisciplinasPaginadoEFiltrado(String termoBusca, int pagina, int limitePorPagina) {
+        List<Disciplina> disciplinas = new ArrayList<>();
+        
+        String sqlBase = "SELECT * FROM disciplinas ";
+        String termoLike = "%" + termoBusca + "%";
+        String sqlWhere = "WHERE nome_disciplina LIKE ? OR CAST(carga_horaria AS CHAR) LIKE ? ";
+        
+        int offset = (pagina - 1) * limitePorPagina;
+        
+        String sqlFinal = termoBusca.isEmpty() ? 
+                          sqlBase + "LIMIT ? OFFSET ?" : 
+                          sqlBase + sqlWhere + "LIMIT ? OFFSET ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlFinal)) {
+
+            int paramIndex = 1;
+            if (!termoBusca.isEmpty()) {
+                pstmt.setString(paramIndex++, termoLike);
+                pstmt.setString(paramIndex++, termoLike);
+            }
+            pstmt.setInt(paramIndex++, limitePorPagina);
+            pstmt.setInt(paramIndex++, offset);
+
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                 Disciplina disciplina = new Disciplina(
+                     rs.getString("nome_disciplina"),
+                     rs.getInt("carga_horaria")
+                 );
+                 disciplina.setId(rs.getInt("id"));
+                 disciplinas.add(disciplina);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return disciplinas;
+    }
 }

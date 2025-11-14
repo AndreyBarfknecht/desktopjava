@@ -29,7 +29,7 @@
                 <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                     <children>
                          <Label text="Selecione o Professor:" />
-                        <ComboBox fx:id="professorComboBox" prefWidth="300.0" promptText="Escolha um professor" />
+                        <ComboBox fx:id="professorComboBox" editable="true" prefWidth="300.0" promptText="Escolha um professor" />
                         
                         <Label text="Disciplinas Associadas a este Professor:">
                            <VBox.margin>
@@ -52,7 +52,7 @@
                 <VBox spacing="10.0" HBox.hgrow="NEVER" alignment="TOP_CENTER">
                      <children>
                         <Label text="Adicionar Disciplina ao Professor:" />
-                        <ComboBox fx:id="disponiveisComboBox" prefWidth="300.0" promptText="Escolha uma disciplina" disable="true" />
+                        <ComboBox fx:id="disponiveisComboBox" editable="true" prefWidth="300.0" promptText="Escolha uma disciplina" disable="true" />
                         <Button fx:id="adicionarButton" onAction="#onAdicionar" text="Adicionar ao Professor" styleClass="salvar-button" disable="true">
                            <VBox.margin>
                               <Insets top="10.0" />

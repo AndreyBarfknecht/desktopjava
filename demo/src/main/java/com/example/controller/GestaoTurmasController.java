@@ -1,9 +1,9 @@
 package com.example.controller;
 
 import com.example.SceneNavigator;
-import com.example.model.Aluno; // NOVO
+import com.example.model.Aluno; 
 import com.example.model.Turma; 
-import com.example.repository.AlunoDAO; // NOVO
+import com.example.repository.AlunoDAO; 
 import com.example.repository.TurmaDAO; 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.FilteredList; // Ainda precisamos disto para a lista de Alunos
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -25,15 +25,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label; // NOVO
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip; // NOVO
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.control.Tooltip; // NOVO: Para as dicas de texto
-import com.example.controller.CadastroHorarioController; // NOVO: Para o popup
 
 public class GestaoTurmasController implements Initializable {
 
@@ -42,45 +42,48 @@ public class GestaoTurmasController implements Initializable {
     @FXML private TextField searchField;
     @FXML private TableColumn<Turma, Void> colAcoes;
 
-    // --- NOVO: FXML da Tabela de Detalhe (Alunos) ---
+    // --- FXML da Tabela de Detalhe (Alunos) ---
     @FXML private TableView<Aluno> alunosTableView;
     @FXML private TextField alunoSearchField;
     @FXML private TableColumn<Aluno, Void> colAcoesAluno;
 
+    // --- NOVOS FXML DE PAGINAÇÃO (Para a tabela de Turmas) ---
+    @FXML private Button btnPaginaAnterior;
+    @FXML private Button btnPaginaProxima;
+    @FXML private Label lblStatusPaginacao;
+
     // --- DAOs ---
     private TurmaDAO turmaDAO;
-    private AlunoDAO alunoDAO; // NOVO
+    private AlunoDAO alunoDAO; 
 
     // --- Listas de Dados ---
-    private ObservableList<Turma> masterData = FXCollections.observableArrayList();
-    private ObservableList<Aluno> alunosMasterData = FXCollections.observableArrayList(); // NOVO
+    private final ObservableList<Turma> masterData = FXCollections.observableArrayList();
+    private final ObservableList<Aluno> alunosMasterData = FXCollections.observableArrayList(); 
+
+    // --- NOVAS VARIÁVEIS DE ESTADO DA PAGINAÇÃO (Para Turmas) ---
+    private int paginaAtual = 1;
+    private final int limitePorPagina = 15;
+    private String termoBuscaAtual = "";
+    private int totalPaginas = 1;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.turmaDAO = new TurmaDAO();
-        this.alunoDAO = new AlunoDAO(); // NOVO
+        this.alunoDAO = new AlunoDAO(); 
         
         configurarColunaAcoes();
-        carregarTurmas(); 
-
-        // --- Filtro da Tabela Principal (Turmas) ---
-        FilteredList<Turma> filteredData = new FilteredList<>(masterData, p -> true);
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(turma -> {
-                if (newValue == null || newValue.isEmpty()) return true;
-                String lowerCaseFilter = newValue.toLowerCase();
-                if (turma.getNome().toLowerCase().contains(lowerCaseFilter)) return true;
-                if (turma.getCurso().getNomeCurso().toLowerCase().contains(lowerCaseFilter)) return true;
-                if (turma.getTurno().toLowerCase().contains(lowerCaseFilter)) return true;
-                if (turma.getPeriodoLetivo().getNome().toLowerCase().contains(lowerCaseFilter)) return true;
-                return false;
-            });
-        });
-        turmasTableView.setItems(filteredData);
-
-        // --- NOVO: Configuração da Tabela de Alunos ---
         
-        // 1. Configurar o filtro (search) da tabela de alunos
+        // --- LÓGICA DE FILTRO REMOVIDA PARA TURMAS ---
+        // A FilteredList de Turmas foi removida.
+        
+        turmasTableView.setItems(masterData);
+        carregarTurmas(); // Carregamento inicial paginado
+
+        
+        // --- LÓGICA DA TABELA DE ALUNOS (MESTRE-DETALHE) ---
+        // Esta parte permanece 100% igual.
+        
+        // 1. Configurar o filtro (search) da tabela de alunos (Client-side, pois são poucos)
         FilteredList<Aluno> alunosFilteredData = new FilteredList<>(alunosMasterData, p -> true);
         alunoSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
             alunosFilteredData.setPredicate(aluno -> {
@@ -95,10 +98,8 @@ public class GestaoTurmasController implements Initializable {
         turmasTableView.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, turmaSelecionada) -> {
                 if (turmaSelecionada != null) {
-                    // Se uma turma for selecionada, carrega os alunos dela
                     carregarAlunosDaTurma(turmaSelecionada);
                 } else {
-                    // Se nenhuma turma for selecionada, limpa a tabela de alunos
                     alunosMasterData.clear();
                 }
             }
@@ -108,13 +109,70 @@ public class GestaoTurmasController implements Initializable {
         configurarColunaAcoesAluno();
     }
     
+    /**
+     * MÉTODO CENTRAL REESCRITO (Para Turmas)
+     */
     private void carregarTurmas() {
-        masterData.clear();
-        List<Turma> turmasList = turmaDAO.getAll(); 
-        masterData.addAll(turmasList);
+        try {
+            int totalTurmas = turmaDAO.countTurmasFiltradas(termoBuscaAtual);
+            totalPaginas = (int) Math.ceil((double) totalTurmas / limitePorPagina);
+            if (totalPaginas == 0) totalPaginas = 1;
+
+            List<Turma> turmas = turmaDAO.getTurmasPaginadoEFiltrado(
+                termoBuscaAtual, paginaAtual, limitePorPagina
+            );
+            
+            masterData.setAll(turmas);
+            atualizarControlesPaginacao();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Não foi possível carregar as turmas.");
+        }
+    }
+
+    /**
+     * NOVO: Atualiza a legenda e os botões de paginação.
+     */
+    private void atualizarControlesPaginacao() {
+        lblStatusPaginacao.setText("Página " + paginaAtual + " de " + totalPaginas);
+        btnPaginaAnterior.setDisable(paginaAtual == 1);
+        btnPaginaProxima.setDisable(paginaAtual >= totalPaginas);
+    }
+
+    /**
+     * NOVO: Chamado quando o utilizador pressiona Enter no campo de busca de Turmas.
+     */
+    @FXML
+    private void onBuscar() {
+        termoBuscaAtual = searchField.getText();
+        paginaAtual = 1; // Sempre volta para a página 1 ao buscar
+        carregarTurmas();
+    }
+
+    /**
+     * NOVO: Chamado pelo botão "Anterior" (Paginação de Turmas).
+     */
+    @FXML
+    private void onPaginaAnterior() {
+        if (paginaAtual > 1) {
+            paginaAtual--;
+            carregarTurmas();
+        }
+    }
+
+    /**
+     * NOVO: Chamado pelo botão "Próxima" (Paginação de Turmas).
+     */
+    @FXML
+    private void onPaginaProxima() {
+        if (paginaAtual < totalPaginas) {
+            paginaAtual++;
+            carregarTurmas();
+        }
     }
     
-    // --- NOVO: Método para carregar os alunos da turma selecionada ---
+    // --- LÓGICA DOS ALUNOS (Não mexe) ---
     private void carregarAlunosDaTurma(Turma turma) {
         if (turma == null) {
             alunosMasterData.clear();
@@ -135,64 +193,48 @@ public class GestaoTurmasController implements Initializable {
     @FXML
     private void onCadastrarNovaTurma() {
         SceneNavigator.openNewWindow("CadastroTurma", "Cadastro de Nova Turma"); 
-        carregarTurmas(); // Atualiza a tabela
+        
+        // Após cadastrar, limpa a busca e volta para a página 1
+        termoBuscaAtual = "";
+        searchField.clear();
+        paginaAtual = 1;
+        carregarTurmas(); 
     }
 
-    // @FXML
-    // private void onMatricularAluno() {
-    //     // Esta ação agora pode ser mais inteligente
-    //     Turma turmaSelecionada = turmasTableView.getSelectionModel().getSelectedItem();
-        
-    //     SceneNavigator.openNewWindow("Matricula", "Matrícula de Alunos");
-        
-    //     // Se uma turma estava selecionada, atualiza a lista de alunos
-    //     if (turmaSelecionada != null) {
-    //         carregarAlunosDaTurma(turmaSelecionada);
-    //     }
-    // }
-
-    @FXML
-private void onConsultarHorarios() {
-    // Abre o popup de consulta que já existe
-    SceneNavigator.openNewWindow("ConsultaHorarios", "Consulta de Horários");
-}
+    // onMatricularAluno() foi removido
     
-    // @FXML
-    // private void onDefinirHorarios() {
-    //     SceneNavigator.openNewWindow("CadastroHorario", "Definição de Horários"); 
-    // }
+    @FXML
+    private void onConsultarHorarios() {
+        SceneNavigator.openNewWindow("ConsultaHorarios", "Consulta de Horários");
+    }
+    
+    // onDefinirHorarios() foi removido (agora está na linha)
+    
     
     // --- LÓGICA DE AÇÕES NA TABELA (Turmas) ---
+    // (Atualizado com Tooltips e o novo botão de Horário)
 
-    // SUBSTITUA O MÉTODO "configurarColunaAcoes" INTEIRO POR ESTE BLOCO
-private void configurarColunaAcoes() {
+    private void configurarColunaAcoes() {
         colAcoes.setCellFactory(param -> new TableCell<Turma, Void>() {
             
-            // --- NOVO BOTÃO ADICIONADO ---
             private final Button btnDefinirHorario = new Button("", new FontAwesomeIconView(FontAwesomeIcon.CALENDAR));
             private final Button btnEditar = new Button("", new FontAwesomeIconView(FontAwesomeIcon.PENCIL));
             private final Button btnExcluir = new Button("", new FontAwesomeIconView(FontAwesomeIcon.TRASH));
-            
-            // --- ORDEM ATUALIZADA NO HBOX ---
             private final HBox painelBotoes = new HBox(5, btnDefinirHorario, btnEditar, btnExcluir);
 
             {
-                // --- ESTILOS ---
-                btnDefinirHorario.getStyleClass().add("salvar-button"); // Azul
-                btnEditar.getStyleClass().add("salvar-button"); // Azul
-                btnExcluir.getStyleClass().add("cancel-button"); // Vermelho
+                btnDefinirHorario.getStyleClass().add("salvar-button");
+                btnEditar.getStyleClass().add("salvar-button");
+                btnExcluir.getStyleClass().add("cancel-button");
                 painelBotoes.setPadding(new Insets(5));
 
-                // --- ADICIONA OS TOOLTIPS (DICAS DE TEXTO) ---
                 Tooltip.install(btnDefinirHorario, new Tooltip("Definir horários desta turma"));
                 Tooltip.install(btnEditar, new Tooltip("Editar dados da turma"));
                 Tooltip.install(btnExcluir, new Tooltip("Excluir turma"));
 
-                
-                // --- NOVAS AÇÕES ---
                 btnDefinirHorario.setOnAction(event -> {
                     Turma turma = getTableView().getItems().get(getIndex());
-                    handleDefinirHorario(turma); // Chama o novo método
+                    handleDefinirHorario(turma);
                 });
                 
                 btnEditar.setOnAction(event -> {
@@ -214,22 +256,21 @@ private void configurarColunaAcoes() {
         });
     }
 
-    // --- NOVO: LÓGICA DE AÇÕES NA TABELA DE ALUNOS ---
+    // --- LÓGICA DE AÇÕES NA TABELA DE ALUNOS (Não mexe) ---
 
     private void configurarColunaAcoesAluno() {
         colAcoesAluno.setCellFactory(param -> new TableCell<Aluno, Void>() {
-            // Criamos apenas o botão "Lançar Notas"
-            // LINHA CORRIGIDA
-            private final Button btnLancarNota = new Button("", new FontAwesomeIconView(FontAwesomeIcon.EDIT)); // Ícone de nota (corrigido)
+            private final Button btnLancarNota = new Button("", new FontAwesomeIconView(FontAwesomeIcon.EDIT)); // Ícone EDIT
             private final HBox painelBotoes = new HBox(5, btnLancarNota);
 
             {
-                btnLancarNota.getStyleClass().add("salvar-button"); // Estilo azul
+                btnLancarNota.getStyleClass().add("salvar-button"); 
                 painelBotoes.setPadding(new Insets(5));
+                Tooltip.install(btnLancarNota, new Tooltip("Lançar notas para este aluno"));
                 
                 btnLancarNota.setOnAction(event -> {
                     Aluno aluno = getTableView().getItems().get(getIndex());
-                    handleLancarNota(aluno); // Chama a nova ação
+                    handleLancarNota(aluno); 
                 });
             }
 
@@ -241,14 +282,33 @@ private void configurarColunaAcoes() {
         });
     }
     
-    // --- NOVO: Método para o botão "Lançar Notas" ---
-    private void handleLancarNota(Aluno aluno) {
-        if (aluno == null) {
-            showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Aluno não encontrado.");
-            return;
+    // --- MÉTODOS DE AÇÃO (handle...) ---
+    // (A lógica interna deles não muda, apenas a correção do initOwner)
+
+    private void handleDefinirHorario(Turma turma) {
+        if (turma == null) return;
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/view/CadastroHorario.fxml"));
+            Parent root = loader.load();
+            CadastroHorarioController controller = loader.getController();
+            controller.setTurmaParaHorario(turma); // Método que já criámos
+
+            Stage stage = new Stage();
+            stage.setTitle("Definir Horários para: " + turma.getNome());
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(turmasTableView.getScene().getWindow()); 
+            stage.showAndWait();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de cadastro de horários.");
         }
+    }
+    
+    private void handleLancarNota(Aluno aluno) {
+        if (aluno == null) return;
         
-        // Pega a turma que já está selecionada no painel esquerdo
         Turma turmaSelecionada = turmasTableView.getSelectionModel().getSelectedItem();
         if (turmaSelecionada == null) {
             showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Nenhuma turma selecionada.");
@@ -256,17 +316,11 @@ private void configurarColunaAcoes() {
         }
 
         try {
-            // 1. Carrega o FXML manualmente (como fazemos no handleEditar)
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/view/RegistroNotas.fxml"));
             Parent root = loader.load();
-
-            // 2. Pega o controlador da nova janela
             RegistroNotasController controller = loader.getController();
-            
-            // 3. CHAMA O NOVO MÉTODO: Injeta os dados da turma e do aluno
-            controller.initData(turmaSelecionada, aluno);
+            controller.initData(turmaSelecionada, aluno); // Método que já criámos
 
-            // 4. Cria e exibe a nova janela (popup)
             Stage stage = new Stage();
             stage.setTitle("Lançar Nota para " + aluno.getNomeCompleto());
             stage.setScene(new Scene(root));
@@ -279,8 +333,6 @@ private void configurarColunaAcoes() {
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de registro de notas.");
         }
     }
-
-    // --- LÓGICA MOVIDA DE "ConsultaTurmasController" ---
 
     private void handleEditar(Turma turmaSelecionada) {
         if (turmaSelecionada == null) return; 
@@ -295,45 +347,13 @@ private void configurarColunaAcoes() {
             stage.setTitle("Editar Turma");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(turmasTableView.getScene().getWindow());
+            stage.initOwner(turmasTableView.getScene().getWindow()); 
             stage.showAndWait(); 
 
-            carregarTurmas(); // Atualiza a tabela
+            carregarTurmas(); // Recarrega a página atual
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de edição.");
-        }
-    }
-
-    // ADICIONE ESTE NOVO MÉTODO
-private void handleDefinirHorario(Turma turma) {
-        if (turma == null) {
-            showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Turma não encontrada.");
-            return;
-        }
-
-        try {
-            // Carrega o FXML do cadastro de horário manualmente
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/view/CadastroHorario.fxml"));
-            Parent root = loader.load();
-
-            // Pega o controlador do popup
-            CadastroHorarioController controller = loader.getController();
-            
-            // *** A MÁGICA: Injeta a turma no controlador do popup ***
-            controller.setTurmaParaHorario(turma);
-
-            // Configura e exibe o popup
-            Stage stage = new Stage();
-            stage.setTitle("Definir Horários para: " + turma.getNome());
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(turmasTableView.getScene().getWindow()); // Corrige o "tiling"
-            stage.showAndWait();
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de cadastro de horários.");
         }
     }
 
@@ -349,8 +369,13 @@ private void handleDefinirHorario(Turma turma) {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 turmaDAO.delete(turmaSelecionada.getId()); 
-                masterData.remove(turmaSelecionada); // Atualiza a UI
+                
+                if (masterData.size() == 1 && paginaAtual > 1) {
+                    paginaAtual--;
+                }
+                carregarTurmas();
                 alunosMasterData.clear(); // Limpa a tabela de alunos
+                
             } catch (SQLException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro de Exclusão", "Não foi possível excluir a turma. Verifique se ela não está associada a matrículas ou horários.");
             }

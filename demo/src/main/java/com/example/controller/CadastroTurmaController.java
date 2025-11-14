@@ -2,14 +2,15 @@ package com.example.controller;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import com.example.model.Curso;
 import com.example.model.PeriodoLetivo;
-import com.example.model.Turma; // Importa o modelo
+import com.example.model.Turma; 
 import com.example.repository.CursoDAO;
 import com.example.repository.PeriodoLetivoDAO;
-import com.example.repository.TurmaDAO; // Importa o DAO
+import com.example.repository.TurmaDAO; 
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -19,10 +20,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.util.StringConverter; // Importar o StringConverter
 
 public class CadastroTurmaController implements Initializable {
 
-    // --- CAMPOS DO FXML ---
     @FXML private TextField nomeTurmaField;
     @FXML private ComboBox<Curso> cursoComboBox;
     @FXML private ComboBox<PeriodoLetivo> periodoLetivoComboBox;
@@ -35,25 +36,116 @@ public class CadastroTurmaController implements Initializable {
     private CursoDAO cursoDAO;
     private PeriodoLetivoDAO periodoLetivoDAO;
 
-    // --- NOVO: Variável para Edição ---
     private Turma turmaParaEditar;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Inicializa os DAOs
         this.turmaDAO = new TurmaDAO();
         this.cursoDAO = new CursoDAO();
         this.periodoLetivoDAO = new PeriodoLetivoDAO();
 
-        // Preenche o ComboBox com as opções de turno
         turnoComboBox.getItems().addAll("Manhã", "Tarde", "Noite");
 
-        // Carrega os dados dos cursos e períodos letivos nos ComboBoxes
-        cursoComboBox.setItems(FXCollections.observableArrayList(cursoDAO.getAll()));
-        periodoLetivoComboBox.setItems(FXCollections.observableArrayList(periodoLetivoDAO.getAll()));
+        // Configura os ComboBoxes para terem o autocompletar
+        setupAutocompleteCurso(cursoComboBox);
+        setupAutocompletePeriodo(periodoLetivoComboBox);
+    }
+    
+    /**
+     * NOVO: Configura o autocompletar para o ComboBox de Cursos.
+     */
+    private void setupAutocompleteCurso(ComboBox<Curso> comboBox) {
+        comboBox.setEditable(true); 
+
+        // Define como o objeto Curso deve ser mostrado como texto
+        comboBox.setConverter(new StringConverter<Curso>() {
+            @Override
+            public String toString(Curso object) {
+                return object == null ? "" : object.getNomeCurso();
+            }
+            @Override
+            public Curso fromString(String string) {
+                // Isto é crucial: se o texto for uma string, tentamos encontrar
+                // o objeto correspondente na lista de itens.
+                return comboBox.getItems().stream()
+                         .filter(item -> item.getNomeCurso().equals(string))
+                         .findFirst().orElse(null);
+            }
+        });
+
+        comboBox.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+            if (newText == null || newText.isEmpty()) {
+                comboBox.setItems(FXCollections.observableArrayList()); // Limpa
+                return;
+            }
+
+            // Evita buscar no banco se o usuário apenas selecionou um item
+            Curso selecionado = comboBox.getSelectionModel().getSelectedItem();
+            if (selecionado != null && selecionado.toString().equals(newText)) {
+                return;
+            }
+
+            // Busca no DAO (com limite)
+            List<Curso> sugestoes = cursoDAO.searchByName(newText);
+            
+            // Guarda o item selecionado (se houver)
+            Curso itemSelecionado = comboBox.getSelectionModel().getSelectedItem();
+            
+            comboBox.setItems(FXCollections.observableArrayList(sugestoes));
+            
+            // Restaura a seleção se ainda for válida
+            if (itemSelecionado != null && sugestoes.contains(itemSelecionado)) {
+                comboBox.getSelectionModel().select(itemSelecionado);
+            }
+            
+            comboBox.show(); // Mostra o dropdown com os resultados
+        });
     }
 
-    // --- NOVO MÉTODO: Para popular os campos no modo de edição ---
+    /**
+     * NOVO: Configura o autocompletar para o ComboBox de Períodos Letivos.
+     */
+    private void setupAutocompletePeriodo(ComboBox<PeriodoLetivo> comboBox) {
+        comboBox.setEditable(true); 
+
+        // Define como o objeto PeriodoLetivo deve ser mostrado como texto
+        comboBox.setConverter(new StringConverter<PeriodoLetivo>() {
+            @Override
+            public String toString(PeriodoLetivo object) {
+                return object == null ? "" : object.getNome();
+            }
+            @Override
+            public PeriodoLetivo fromString(String string) {
+                return comboBox.getItems().stream()
+                         .filter(item -> item.getNome().equals(string))
+                         .findFirst().orElse(null);
+            }
+        });
+
+        comboBox.getEditor().textProperty().addListener((obs, oldText, newText) -> {
+            if (newText == null || newText.isEmpty()) {
+                comboBox.setItems(FXCollections.observableArrayList());
+                return;
+            }
+            
+            PeriodoLetivo selecionado = comboBox.getSelectionModel().getSelectedItem();
+            if (selecionado != null && selecionado.toString().equals(newText)) {
+                return;
+            }
+
+            List<PeriodoLetivo> sugestoes = periodoLetivoDAO.searchByName(newText);
+            
+            PeriodoLetivo itemSelecionado = comboBox.getSelectionModel().getSelectedItem();
+            comboBox.setItems(FXCollections.observableArrayList(sugestoes));
+            if (itemSelecionado != null && sugestoes.contains(itemSelecionado)) {
+                comboBox.getSelectionModel().select(itemSelecionado);
+            }
+            
+            comboBox.show();
+        });
+    }
+
+
     public void setTurmaParaEdicao(Turma turma) {
         this.turmaParaEditar = turma;
         
@@ -62,69 +154,79 @@ public class CadastroTurmaController implements Initializable {
         turnoComboBox.setValue(turma.getTurno());
         salvarButton.setText("Atualizar");
 
-        // Para ComboBoxes de objetos, precisamos encontrar o objeto correspondente na lista
-        // (Não podemos simplesmente usar setValue(turma.getCurso()) se a instância for diferente)
-        cursoComboBox.getItems().stream()
-            .filter(c -> c.getId() == turma.getCurso().getId())
-            .findFirst()
-            .ifPresent(cursoComboBox::setValue);
+        // CORREÇÃO: Adiciona e seleciona o item
+        if (turma.getCurso() != null) {
+            // Adiciona o item à lista (mesmo que vazia) e depois seleciona
+            cursoComboBox.getItems().setAll(turma.getCurso());
+            cursoComboBox.getSelectionModel().select(turma.getCurso());
+        }
 
-        periodoLetivoComboBox.getItems().stream()
-            .filter(p -> p.getId() == turma.getPeriodoLetivo().getId())
-            .findFirst()
-            .ifPresent(periodoLetivoComboBox::setValue);
+        if (turma.getPeriodoLetivo() != null) {
+            periodoLetivoComboBox.getItems().setAll(turma.getPeriodoLetivo());
+            periodoLetivoComboBox.getSelectionModel().select(turma.getPeriodoLetivo());
+        }
     }
 
     @FXML
     private void onSalvar() {
-        if (!isTurmaDataValid()) {
+        
+        // --- CORREÇÃO DEFINITIVA ---
+        // Pegamos o *item selecionado* (o objeto) e não o *valor* (que pode ser String)
+        Curso cursoSelecionado = cursoComboBox.getSelectionModel().getSelectedItem();
+        PeriodoLetivo periodoSelecionado = periodoLetivoComboBox.getSelectionModel().getSelectedItem();
+        String turnoSelecionado = turnoComboBox.getValue();
+
+        // Validação (usando as novas variáveis)
+        if (nomeTurmaField.getText().trim().isEmpty() || 
+            cursoSelecionado == null ||
+            periodoSelecionado == null ||
+            turnoSelecionado == null ||
+            salaField.getText().trim().isEmpty()) {
+            
+            // Feedback melhor se o utilizador digitou mas não selecionou
+            if (cursoSelecionado == null && !cursoComboBox.getEditor().getText().isEmpty()) {
+                 showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Curso inválido. Por favor, selecione um curso da lista.");
+                 return;
+            }
+            if (periodoSelecionado == null && !periodoLetivoComboBox.getEditor().getText().isEmpty()) {
+                 showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Período Letivo inválido. Por favor, selecione um período da lista.");
+                 return;
+            }
+            
+            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Todos os campos são obrigatórios.");
             return;
         }
 
         try {
             if (turmaParaEditar == null) { 
-                // --- MODO CRIAÇÃO ---
                 Turma novaTurma = new Turma(
                     nomeTurmaField.getText(),
-                    cursoComboBox.getValue(),
-                    periodoLetivoComboBox.getValue(),
-                    turnoComboBox.getValue(),
+                    cursoSelecionado,
+                    periodoSelecionado,
+                    turnoSelecionado,
                     salaField.getText()
                 );
                 turmaDAO.save(novaTurma);
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Turma salva com sucesso!");
             
             } else {
-                // --- MODO ATUALIZAÇÃO ---
                 turmaParaEditar.setNome(nomeTurmaField.getText());
-                turmaParaEditar.setCurso(cursoComboBox.getValue());
-                turmaParaEditar.setPeriodoLetivo(periodoLetivoComboBox.getValue());
-                turmaParaEditar.setTurno(turnoComboBox.getValue());
+                turmaParaEditar.setCurso(cursoSelecionado);
+                turmaParaEditar.setPeriodoLetivo(periodoSelecionado);
+                turmaParaEditar.setTurno(turnoSelecionado);
                 turmaParaEditar.setSala(salaField.getText());
                 
                 turmaDAO.update(turmaParaEditar);
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Turma atualizada com sucesso!");
             }
-            
             fecharJanela();
-
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar a turma.");
             e.printStackTrace();
         }
     }
     
-    private boolean isTurmaDataValid() {
-        if (nomeTurmaField.getText().trim().isEmpty() || 
-            cursoComboBox.getValue() == null ||
-            periodoLetivoComboBox.getValue() == null ||
-            turnoComboBox.getValue() == null ||
-            salaField.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Todos os campos são obrigatórios.");
-            return false;
-        }
-        return true;
-    }
+    // O método isTurmaDataValid() foi removido.
     
     @FXML
     private void onCancelar() {

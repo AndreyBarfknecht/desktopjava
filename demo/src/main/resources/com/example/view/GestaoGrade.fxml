@@ -3,20 +3,42 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
 
 <BorderPane prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.GestaoGradeController" stylesheets="@../style.css">
     <top>
-        <Label text="Gestão de Grade Curricular" styleClass="titulo-janela" BorderPane.alignment="CENTER">
+        <VBox alignment="CENTER" spacing="10.0">
+            <children>
+                <Label text="Gestão de Grade Curricular" styleClass="titulo-janela" />
+                
+                <GridPane hgap="10.0" vgap="10.0" 
+                          style="-fx-background-color: #f8f9fa; -fx-padding: 15px; -fx-background-radius: 5px; -fx-border-color: #dee2e6; -fx-border-radius: 5px;" 
+                          maxWidth="500.0">
+                  <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="350.0" />
+                  </columnConstraints>
+                  <rowConstraints>
+                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  </rowConstraints>
+                   <children>
+                      <Label text="Curso:" style="-fx-font-weight: bold;" />
+                      <Label fx:id="lblNomeCurso" text="[Nome do Curso]" GridPane.columnIndex="1" />
+                   </children>
+                </GridPane>
+                </children>
             <padding>
-                <Insets bottom="20.0" top="20.0" />
+                <Insets bottom="10.0" top="20.0" left="20.0" right="20.0" />
             </padding>
-        </Label>
+        </VBox>
     </top>
     <center>
         <HBox alignment="TOP_CENTER" spacing="40.0">
@@ -24,17 +46,11 @@
                 <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
             </padding>
             <children>
+            
                 <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                     <children>
-                        <Label text="Selecione o Curso:" />
-                        <ComboBox fx:id="cursoComboBox" prefWidth="300.0" promptText="Escolha um curso" />
-                        
-                        <Label text="Disciplinas na Grade deste Curso:">
-                           <VBox.margin>
-                              <Insets top="20.0" />
-                           </VBox.margin>
-                        </Label>
-                        <ListView fx:id="associadasListView" prefHeight="250.0" />
+                        <Label text="Disciplinas na Grade deste Curso:" />
+                        <ListView fx:id="associadasListView" prefHeight="250.0" disable="true" />
                         
                         <HBox alignment="CENTER_RIGHT">
                            <children>
@@ -44,34 +60,32 @@
                               <Insets top="10.0" />
                            </VBox.margin>
                         </HBox>
-                    </children>
+                     </children>
                 </VBox>
 
-                <VBox spacing="10.0" HBox.hgrow="NEVER" alignment="TOP_CENTER">
+                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label text="Adicionar Disciplina à Grade:" />
-                        <ComboBox fx:id="disponiveisComboBox" prefWidth="300.0" promptText="Escolha uma disciplina" disable="true" />
+                        <Label text="Disciplinas Disponíveis para Adicionar:" />
+                        <ComboBox fx:id="disponiveisComboBox" editable="true" prefWidth="300.0" promptText="Escolha uma disciplina" disable="true" />
                         <Button fx:id="adicionarButton" onAction="#onAdicionar" text="Adicionar à Grade" styleClass="salvar-button" disable="true">
                            <VBox.margin>
                               <Insets top="10.0" />
                            </VBox.margin>
                         </Button>
                      </children>
-                  <HBox.margin>
-                     <Insets top="30.0" />
-                  </HBox.margin>
                 </VBox>
+                
             </children>
         </HBox>
     </center>
     <bottom>
-        <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+       <HBox alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
             <padding>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
             </padding>
             <children>
                 <Button fx:id="fecharButton" onAction="#onFechar" text="Fechar" prefWidth="100.0" />
             </children>
-        </HBox>
+       </HBox>
     </bottom>
 </BorderPane>

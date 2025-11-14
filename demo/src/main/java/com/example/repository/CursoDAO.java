@@ -110,4 +110,100 @@ public class CursoDAO {
         }
         return contagem;
     }
+
+    public List<Curso> searchByName(String nome) {
+        String sql = "SELECT * FROM cursos WHERE nome_curso LIKE ? LIMIT 10";
+        List<Curso> cursos = new ArrayList<>();
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, "%" + nome + "%"); // Procura por qualquer curso que contenha o nome
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Curso curso = new Curso(
+                        rs.getString("nome_curso"),
+                        rs.getString("nivel"),
+                        rs.getInt("duracao_semestres")
+                    );
+                    curso.setId(rs.getInt("id"));
+                    cursos.add(curso);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar cursos por nome: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return cursos;
+    }
+
+    public int countCursosFiltrados(String termoBusca) {
+        String sqlBase = "SELECT COUNT(*) FROM cursos ";
+        String termoLike = "%" + termoBusca + "%";
+        // Busca por nome, nível ou duração (convertendo duração para texto)
+        String sqlWhere = "WHERE nome_curso LIKE ? OR nivel LIKE ? OR CAST(duracao_semestres AS CHAR) LIKE ?";
+        
+        String sqlFinal = termoBusca.isEmpty() ? sqlBase : sqlBase + sqlWhere;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlFinal)) {
+
+            if (!termoBusca.isEmpty()) {
+                pstmt.setString(1, termoLike);
+                pstmt.setString(2, termoLike);
+                pstmt.setString(3, termoLike);
+            }
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1); // Retorna a contagem
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<Curso> getCursosPaginadoEFiltrado(String termoBusca, int pagina, int limitePorPagina) {
+        List<Curso> cursos = new ArrayList<>();
+        
+        String sqlBase = "SELECT * FROM cursos ";
+        String termoLike = "%" + termoBusca + "%";
+        String sqlWhere = "WHERE nome_curso LIKE ? OR nivel LIKE ? OR CAST(duracao_semestres AS CHAR) LIKE ? ";
+        
+        int offset = (pagina - 1) * limitePorPagina;
+        
+        String sqlFinal = termoBusca.isEmpty() ? 
+                          sqlBase + "LIMIT ? OFFSET ?" : 
+                          sqlBase + sqlWhere + "LIMIT ? OFFSET ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sqlFinal)) {
+
+            int paramIndex = 1;
+            if (!termoBusca.isEmpty()) {
+                pstmt.setString(paramIndex++, termoLike);
+                pstmt.setString(paramIndex++, termoLike);
+                pstmt.setString(paramIndex++, termoLike);
+            }
+            pstmt.setInt(paramIndex++, limitePorPagina);
+            pstmt.setInt(paramIndex++, offset);
+
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                 Curso curso = new Curso(
+                     rs.getString("nome_curso"),
+                     rs.getString("nivel"),
+                     rs.getInt("duracao_semestres")
+                 );
+                 curso.setId(rs.getInt("id"));
+                 cursos.add(curso);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cursos;
+    }
 }

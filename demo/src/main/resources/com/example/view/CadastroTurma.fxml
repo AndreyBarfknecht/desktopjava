@@ -41,10 +41,10 @@
                         <TextField fx:id="nomeTurmaField" promptText="Ex: Turma A, 1º Ano" GridPane.columnIndex="1" />
                         
                         <Label text="Curso:" GridPane.rowIndex="1" />
-                        <ComboBox fx:id="cursoComboBox" prefWidth="450.0" promptText="Selecione o curso" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="cursoComboBox" editable="true" prefWidth="450.0" promptText="Selecione o curso" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         
                         <Label text="Período Letivo:" GridPane.rowIndex="2" />
-                        <ComboBox fx:id="periodoLetivoComboBox" prefWidth="450.0" promptText="Selecione o período letivo" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <ComboBox fx:id="periodoLetivoComboBox" editable="true" prefWidth="450.0" promptText="Selecione o período letivo" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         
                         <Label text="Turno:" GridPane.rowIndex="3" />
                         <ComboBox fx:id="turnoComboBox" prefWidth="450.0" promptText="Selecione o turno" GridPane.columnIndex="1" GridPane.rowIndex="3" />

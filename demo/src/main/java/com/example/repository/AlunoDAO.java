@@ -9,6 +9,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -237,6 +238,54 @@ public class AlunoDAO {
                 alunos.add(aluno);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return alunos;
+    }
+
+    public List<Aluno> searchByName(String nome) {
+        List<Aluno> alunos = new ArrayList<>();
+        
+        // SQL base (o mesmo do seu getAll() para garantir que o Responsável vem junto)
+        String sql = "SELECT e.id as aluno_id, e.nome_completo as aluno_nome, e.cpf as aluno_cpf, " +
+                     "e.data_nascimento, e.telefone as aluno_telefone, e.email as aluno_email, " +
+                     "r.id as resp_id, r.nome_completo as resp_nome, r.cpf as resp_cpf, " +
+                     "r.telefone as resp_telefone, r.email as resp_email " +
+                     "FROM estudantes e " +
+                     "JOIN responsaveis r ON e.id_responsavel = r.id " +
+                     "WHERE e.nome_completo LIKE ? LIMIT 10";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, "%" + nome + "%"); 
+
+            ResultSet rs = pstmt.executeQuery();
+            
+            // Este loop é idêntico ao do seu getAll()
+            while (rs.next()) {
+                Responsavel responsavel = new Responsavel(
+                    rs.getString("resp_nome"), rs.getString("resp_cpf"),
+                    rs.getString("resp_telefone"), rs.getString("resp_email")
+                );
+                responsavel.setId(rs.getInt("resp_id"));
+
+                java.sql.Date sqlDate = rs.getDate("data_nascimento");
+                LocalDate dataNascimento = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+
+                Aluno aluno = new Aluno(
+                    rs.getString("aluno_nome"),
+                    rs.getString("aluno_cpf"),
+                    dataNascimento,
+                    responsavel,
+                    rs.getString("aluno_telefone"),
+                    rs.getString("aluno_email")
+                );
+                aluno.setId(rs.getInt("aluno_id"));
+                alunos.add(aluno);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar alunos por nome: " + e.getMessage());
             e.printStackTrace();
         }
         return alunos;

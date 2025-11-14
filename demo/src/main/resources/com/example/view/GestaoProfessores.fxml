@@ -26,17 +26,17 @@
                               <FontAwesomeIconView glyphName="PLUS" styleClass="acao-rapida-icon" size="1.5em"/>
                            </graphic>
                         </Button>
-                        <Button onAction="#onAssociarDisciplina" text="Associar Disciplinas" styleClass="acao-rapida-button">
+                        <!-- <Button onAction="#onAssociarDisciplina" text="Associar Disciplinas" styleClass="acao-rapida-button">
                            <graphic>
                               <FontAwesomeIconView glyphName="LINK" styleClass="acao-rapida-icon" size="1.5em"/>
                            </graphic>
-                        </Button>
+                        </Button> -->
                     </children>
                 </HBox>
                 
                 <Label text="Consulta de Professores" style="-fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: #2c3e50;" />
                 
-                <TextField fx:id="searchField" maxWidth="400.0" promptText="Buscar por nome do professor ou CPF..." />
+                <TextField fx:id="searchField" onAction="#onBuscar" maxWidth="400.0" promptText="Buscar por nome do professor ou CPF..." />
                 
             </children>
             <padding>
@@ -65,7 +65,7 @@
                     <cellValueFactory><PropertyValueFactory property="telefone" />
                 </cellValueFactory></TableColumn>
 
-                <TableColumn fx:id="colAcoes" prefWidth="120.0" text="Ações" />
+                <TableColumn fx:id="colAcoes" prefWidth="180.0" text="Ações" />
                 
             </columns>
             <BorderPane.margin>
@@ -73,4 +73,17 @@
             </BorderPane.margin>
         </TableView>
     </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="btnPaginaAnterior" onAction="#onPaginaAnterior" text="Anterior" />
+                <Label fx:id="lblStatusPaginacao" text="Página 1 de 1" />
+                <Button fx:id="btnPaginaProxima" onAction="#onPaginaProxima" text="Próxima" />
+            </children>
+            <padding>
+                <Insets bottom="10.0" top="10.0" />
+            </padding>
+        </HBox>
+    </bottom>
 </BorderPane>
