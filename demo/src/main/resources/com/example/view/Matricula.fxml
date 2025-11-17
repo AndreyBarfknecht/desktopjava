@@ -4,68 +4,74 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<VBox prefWidth="600.0" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.MatriculaController" stylesheets="@../style.css">
-   <children>
-      <Label text="Nova Matrícula">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </Label>
-      <HBox alignment="BOTTOM_LEFT" spacing="20.0">
-         <children>
-            <VBox spacing="5.0">
-               <children>
-                  <Label text="Aluno" />
-                  <ComboBox fx:id="alunoComboBox" editable="true" prefWidth="250.0" promptText="Selecione o Aluno" />
-               </children>
-            </VBox>
-            <VBox spacing="5.0">
-               <children>
-                  <Label text="Turma" />
-                  <ComboBox fx:id="turmaComboBox" editable="true" prefWidth="250.0" promptText="Selecione a Turma" />
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-      <HBox>
-         <VBox spacing="5.0">
+<AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.MatriculaController" stylesheets="@../style.css">
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
             <children>
-               <Label text="Data da Matrícula" />
-               <DatePicker fx:id="dataMatriculaPicker" />
-            </children>
-         </VBox>
-         <VBox spacing="5.0">
-            <children>
-               <Label text="Status" />
-               <ComboBox fx:id="statusComboBox" prefWidth="200.0" promptText="Selecione o Status" />
-            </children>
-         </VBox>
-         
-      </HBox>
+                <Label text="Matrícula de Aluno">
+                    <styleClass>
+                        <String fx:value="label" />
+                        <String fx:value="titulo-janela" />
+                    </styleClass>
+                </Label>
+                
+                <GridPane hgap="10.0" vgap="10.0" style="-fx-background-color: #f8f9fa; -fx-padding: 15px; -fx-background-radius: 5px; -fx-border-color: #dee2e6; -fx-border-radius: 5px;" maxWidth="560.0">
+                   <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="350.0" />
+                   </columnConstraints>
+                   <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   </rowConstraints>
+                   <children>
+                      <Label text="Aluno:" style="-fx-font-weight: bold;" />
+                      <Label fx:id="lblNomeAluno" text="[Nome do Aluno]" GridPane.columnIndex="1" />
+                   </children>
+                </GridPane>
 
-      <HBox alignment="CENTER_RIGHT" spacing="10.0">
-         <children>
-            <Button fx:id="cancelarButton" onAction="#onCancelar" prefWidth="120.0" text="Cancelar" styleClass="cancel-button" />
-            <Button fx:id="salvarButton" onAction="#onSalvar" prefWidth="120.0" text="Salvar Matrícula">
-                <styleClass>
-                    <String fx:value="button" />
-                    <String fx:value="salvar-button" />
-                </styleClass>
-            </Button>
-         </children>
-         <padding>
-            <Insets top="20.0" />
-         </padding>
-      </HBox>
-   </children>
-   <padding>
-      <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
-   </padding>
-</VBox>
+                <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="350.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Nova Turma:" />
+                        <ComboBox fx:id="turmaComboBox" editable="true" prefWidth="450.0" promptText="Selecione a turma para matricular" GridPane.columnIndex="1" />
+                    </children>
+                </GridPane>
+                
+                <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                    <children>
+                        <Button fx:id="cancelarButton" onAction="#onCancelar" prefWidth="120.0" text="Cancelar" styleClass="cancel-button" />
+                        <Button fx:id="matricularButton" onAction="#onMatricular" prefWidth="120.0" text="Matricular" styleClass="salvar-button" />
+                    </children>
+                </HBox>
+                
+                <VBox spacing="10.0" style="-fx-padding: 10px 0 0 0;">
+                     <children>
+                        <Label text="Turmas Atuais do Aluno:">
+                           <styleClass>
+                              <String fx:value="label" />
+                              <String fx:value="subtitulo" />
+                           </styleClass>
+                        </Label>
+                        <ListView fx:id="turmasAtuaisListView" prefHeight="150.0" />
+                     </children>
+                  </VBox>
+
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

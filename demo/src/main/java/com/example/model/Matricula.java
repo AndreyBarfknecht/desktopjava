@@ -66,4 +66,12 @@ public class Matricula {
     public String getNomeTurma() {
         return turma != null ? turma.getNome() : "";
     }
+    
+    /**
+     * Retorna o CPF do aluno associado a esta matrícula.
+     * Usado pela TableView (property="cpfAluno").
+     */
+    public String getCpfAluno() {
+        return aluno != null ? aluno.getCpf() : "";
+    }
 }

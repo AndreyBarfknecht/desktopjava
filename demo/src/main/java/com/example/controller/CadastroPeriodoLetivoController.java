@@ -15,6 +15,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.scene.control.Label; // <-- IMPORTA O LABEL
 
 public class CadastroPeriodoLetivoController implements Initializable {
 
@@ -24,7 +25,7 @@ public class CadastroPeriodoLetivoController implements Initializable {
     @FXML private ComboBox<String> statusComboBox;
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
-
+    @FXML private Label lblTituloJanela;
     private PeriodoLetivoDAO periodoDAO; 
 
     private PeriodoLetivo periodoParaEditar;
@@ -37,7 +38,7 @@ public class CadastroPeriodoLetivoController implements Initializable {
 
     public void setPeriodoParaEdicao(PeriodoLetivo periodo) {
         this.periodoParaEditar = periodo;
-
+        lblTituloJanela.setText("Editar Período Letivo");
         nomePeriodoField.setText(periodo.getNome());
         dataInicioPicker.setValue(periodo.getDataInicio());
         dataFimPicker.setValue(periodo.getDataFim());

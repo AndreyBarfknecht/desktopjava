@@ -18,11 +18,11 @@
             <children>
                 <Label text="Consulta de Matrículas">
                     <styleClass>
-                        <String fx:value="label" />
+                         <String fx:value="label" />
                         <String fx:value="titulo-janela" />
                     </styleClass>
                 </Label>
-                <TextField fx:id="searchField" onAction="#onBuscar" maxWidth="400.0" promptText="Buscar por nome do aluno, turma ou status..." />
+                <TextField fx:id="searchField" onAction="#onBuscar" maxWidth="400.0" promptText="Buscar por nome, CPF, turma ou status..." />
             </children>
             <padding>
                 <Insets bottom="20.0" top="20.0" />
@@ -32,17 +32,25 @@
     <center>
         <TableView fx:id="matriculasTableView" BorderPane.alignment="CENTER">
             <columns>
-                <TableColumn prefWidth="250.0" text="Nome do Aluno">
+      
+                 <TableColumn prefWidth="220.0" text="Nome do Aluno">
                     <cellValueFactory><PropertyValueFactory property="nomeAluno" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="250.0" text="Nome da Turma">
-                    <cellValueFactory><PropertyValueFactory property="nomeTurma" /></cellValueFactory>
+
+                <TableColumn prefWidth="110.0" text="CPF do Aluno">
+                    <cellValueFactory><PropertyValueFactory property="cpfAluno" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="150.0" text="Data da Matrícula">
+                
+                <TableColumn prefWidth="210.0" text="Nome da Turma">
+                    <cellValueFactory><PropertyValueFactory property="nomeTurma" /></cellValueFactory>
+                 </TableColumn>
+                 
+                <TableColumn prefWidth="120.0" text="Data da Matrícula">
                     <cellValueFactory><PropertyValueFactory property="dataMatricula" /></cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="120.0" text="Status">
-                    <cellValueFactory><PropertyValueFactory property="status" /></cellValueFactory>
+                
+                <TableColumn prefWidth="110.0" text="Status">
+                     <cellValueFactory><PropertyValueFactory property="status" /></cellValueFactory>
                 </TableColumn>
             </columns>
              <BorderPane.margin>
@@ -51,7 +59,7 @@
         </TableView>
     </center>
     <bottom>
-    <VBox alignment="CENTER" spacing="10.0">
+     <VBox alignment="CENTER" spacing="10.0">
         <children>
             <HBox alignment="CENTER" spacing="10.0">
                 <children>
@@ -63,13 +71,13 @@
             
             <HBox alignment="CENTER_RIGHT" spacing="10.0">
                 <children>
-                    <Button onAction="#onEditar" prefWidth="120.0" styleClass="salvar-button" text="Editar Status" />
+                     <Button onAction="#onEditar" prefWidth="120.0" styleClass="salvar-button" text="Editar Status" />
                     <Button onAction="#onExcluir" prefWidth="120.0" styleClass="cancel-button" text="Excluir Matrícula" />
                     <Button onAction="#onFechar" prefWidth="120.0" text="Fechar" />
                 </children>
             </HBox>
         </children>
-        <padding>
+         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
         </padding>
     </VBox>

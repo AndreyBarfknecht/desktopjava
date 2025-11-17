@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.scene.control.Label; // <-- IMPORTA O LABEL
 
 public class CadastroCursoController implements Initializable {
 
@@ -20,6 +21,7 @@ public class CadastroCursoController implements Initializable {
     @FXML private TextField duracaoField;
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
+    @FXML private Label lblTituloJanela;
 
     private CursoDAO cursoDAO;
     private Curso cursoParaEditar;
@@ -41,6 +43,7 @@ public class CadastroCursoController implements Initializable {
 
     public void setCursoParaEdicao(Curso curso) {
         this.cursoParaEditar = curso;
+        lblTituloJanela.setText("Editar Curso");
         nomeCursoField.setText(curso.getNomeCurso());
         nivelComboBox.setValue(curso.getNivel());
         duracaoField.setText(String.valueOf(curso.getDuracaoSemestres()));

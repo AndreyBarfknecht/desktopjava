@@ -21,6 +21,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.StringConverter; // Importar o StringConverter
+import javafx.scene.control.Label; // <-- IMPORTA O LABEL
 
 public class CadastroTurmaController implements Initializable {
 
@@ -31,7 +32,7 @@ public class CadastroTurmaController implements Initializable {
     @FXML private TextField salaField;
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
-
+    @FXML private Label lblTituloJanela;
     private TurmaDAO turmaDAO; 
     private CursoDAO cursoDAO;
     private PeriodoLetivoDAO periodoLetivoDAO;
@@ -148,7 +149,7 @@ public class CadastroTurmaController implements Initializable {
 
     public void setTurmaParaEdicao(Turma turma) {
         this.turmaParaEditar = turma;
-        
+        lblTituloJanela.setText("Editar Turma");
         nomeTurmaField.setText(turma.getNome());
         salaField.setText(turma.getSala());
         turnoComboBox.setValue(turma.getTurno());

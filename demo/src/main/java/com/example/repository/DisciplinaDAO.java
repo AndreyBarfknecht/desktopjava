@@ -102,6 +102,49 @@ public class DisciplinaDAO {
         return disciplinas;
     }
 
+    // --- NOVO MÉTODO ADICIONADO ---
+    /**
+     * Busca disciplinas pelo nome, mas filtradas por um curso específico.
+     * Utiliza a tabela grade_curricular para encontrar as associações.
+     *
+     * @param name    O termo de busca para o nome da disciplina.
+     * @param cursoId O ID do curso ao qual as disciplinas devem pertencer.
+     * @return Uma lista de Disciplinas.
+     */
+    public List<Disciplina> searchByNameAndCursoId(String name, int cursoId) {
+        List<Disciplina> disciplinas = new ArrayList<>();
+        
+        // Este SQL junta as disciplinas com a grade curricular
+        // para filtrar apenas as do curso desejado.
+        String sql = "SELECT d.id, d.nome_disciplina, d.carga_horaria " +
+                     "FROM disciplinas d " +
+                     "JOIN grade_curricular gc ON d.id = gc.id_disciplina " +
+                     "WHERE gc.id_curso = ? " +
+                     "AND d.nome_disciplina LIKE ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, cursoId);           // Filtro do ID do Curso
+            pstmt.setString(2, "%" + name + "%"); // Filtro do Nome
+            
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Disciplina disciplina = new Disciplina(
+                    rs.getString("nome_disciplina"),
+                    rs.getInt("carga_horaria")
+                );
+                disciplina.setId(rs.getInt("id"));
+                disciplinas.add(disciplina);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar disciplinas por curso: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return disciplinas;
+    }
+
     public int countDisciplinasFiltradas(String termoBusca) {
         String sqlBase = "SELECT COUNT(*) FROM disciplinas ";
         String termoLike = "%" + termoBusca + "%";

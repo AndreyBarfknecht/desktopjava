@@ -1,74 +1,62 @@
 package com.example.controller;
 
-import com.example.model.Horario; 
+import com.example.model.Disciplina;
 import com.example.model.Professor;
 import com.example.model.Turma;
-import com.example.model.Disciplina; 
-import com.example.repository.ProfessorDAO;      
-import com.example.repository.TurmaDAO;         
-import com.example.repository.HorarioDAO;       
-import com.example.repository.TurmaProfessorDAO; 
-import com.example.repository.DisciplinaDAO; 
-
+import com.example.model.Horario;
+import com.example.repository.DisciplinaDAO;
+import com.example.repository.ProfessorDAO; // Mantido para o setHorario (embora o DAO novo seja melhor)
+import com.example.repository.HorarioDAO;
+import com.example.repository.ProfessorDisciplinaDAO; // --- DAO NOVO ---
 import java.net.URL;
-import java.sql.SQLException; 
-import java.time.LocalDate; // Importar LocalDate
-import java.util.List; // Importar List
+import java.sql.SQLException;
+import java.util.List;
 import java.util.ResourceBundle;
-
-import javafx.collections.FXCollections;
+import javafx.collections.FXCollections; // --- IMPORT NOVO ---
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.util.StringConverter; // NOVO: Importar StringConverter
+import javafx.util.StringConverter; // Mantido para os conversores
 
 public class CadastroHorarioController implements Initializable {
 
     @FXML private ComboBox<Disciplina> disciplinaComboBox;
-    @FXML private ComboBox<Turma> turmaComboBox;
     @FXML private ComboBox<Professor> professorComboBox;
     @FXML private ComboBox<String> diaSemanaComboBox;
     @FXML private TextField horaInicioField;
     @FXML private TextField horaFimField;
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
+    @FXML private Label lblNomeTurma;
+    @FXML private Label lblTituloJanela;
 
     private DisciplinaDAO disciplinaDAO;
-    private TurmaDAO turmaDAO;
-    private ProfessorDAO professorDAO;
-    private TurmaProfessorDAO turmaProfessorDAO;
+    private ProfessorDAO professorDAO; // Mantido por segurança
     private HorarioDAO horarioDAO;
-
+    private ProfessorDisciplinaDAO professorDisciplinaDAO; // --- DAO ADICIONADO ---
+    
     private Horario horarioParaEditar;
+    private Turma turmaSelecionada;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.disciplinaDAO = new DisciplinaDAO();
-        this.turmaDAO = new TurmaDAO();
         this.professorDAO = new ProfessorDAO();
-        this.turmaProfessorDAO = new TurmaProfessorDAO();
         this.horarioDAO = new HorarioDAO();
-
-        // --- MUDANÇA PRINCIPAL AQUI ---
-        // NÃO carregamos mais "getAll()" para disciplina e professor
+        this.professorDisciplinaDAO = new ProfessorDisciplinaDAO(); // --- INICIALIZA O DAO ---
         
-        // A Turma é pré-carregada (pois são poucas) ou definida pelo setTurmaParaHorario
-        // Esta linha pode ser mantida ou removida, já que setTurmaParaHorario é o ideal
-        turmaComboBox.setItems(FXCollections.observableArrayList(turmaDAO.getAll()));
+        // Removemos os setups de autocomplete
         
-        // Adicionamos os listeners de autocompletar
-        setupAutocompleteDisciplina(disciplinaComboBox);
-        setupAutocompleteProfessor(professorComboBox);
+        // Configura a aparência dos ComboBoxes
+        configurarConversores();
         
-        // Configura o ComboBox de Turma (para mostrar o nome)
-        turmaComboBox.setConverter(new StringConverter<Turma>() {
-            @Override public String toString(Turma t) { return t == null ? "" : t.getNome(); }
-            @Override public Turma fromString(String s) { return null; }
-        });
+        // Configura a lógica em cascata
+        configurarDependenciaProfessor();
 
         diaSemanaComboBox.getItems().addAll(
             "Segunda-feira", "Terça-feira", "Quarta-feira", 
@@ -77,123 +65,123 @@ public class CadastroHorarioController implements Initializable {
     }
     
     /**
-     * NOVO: Configura o autocompletar para o ComboBox de Disciplinas.
+     * Configura os StringConverters para que os ComboBoxes saibam
+     * como exibir os nomes dos objetos Disciplina e Professor.
      */
-    private void setupAutocompleteDisciplina(ComboBox<Disciplina> comboBox) {
-        comboBox.setEditable(true);
-        
-        // Ensina o ComboBox a converter String <-> Disciplina
-        comboBox.setConverter(new StringConverter<Disciplina>() {
+    private void configurarConversores() {
+        disciplinaComboBox.setConverter(new StringConverter<Disciplina>() {
             @Override
             public String toString(Disciplina object) {
-                return object == null ? "" : object.getNomeDisciplina();
+                return object == null ? "Selecione uma disciplina..." : object.getNomeDisciplina();
             }
             @Override
-            public Disciplina fromString(String string) {
-                return comboBox.getItems().stream()
-                         .filter(item -> item.getNomeDisciplina().equals(string))
-                         .findFirst().orElse(null);
-            }
+            public Disciplina fromString(String string) { return null; } // Não usado em não-editável
         });
-
-        comboBox.getEditor().textProperty().addListener((obs, oldText, newText) -> {
-            if (newText == null || newText.isEmpty()) {
-                comboBox.setItems(FXCollections.observableArrayList());
-                return;
+        
+        professorComboBox.setConverter(new StringConverter<Professor>() {
+            @Override
+            public String toString(Professor object) {
+                return object == null ? "Selecione um professor..." : object.getNomeCompleto();
             }
-
-            Disciplina selecionada = comboBox.getSelectionModel().getSelectedItem();
-            if (selecionada != null && selecionada.toString().equals(newText)) {
-                return;
+            @Override
+            public Professor fromString(String string) { return null; } // Não usado em não-editável
+        });
+        
+        // Define o texto inicial
+        disciplinaComboBox.setPromptText("Selecione uma disciplina...");
+        professorComboBox.setPromptText("Selecione um professor...");
+    }
+    
+    /**
+     * NOVO: Configura o listener que filtra os professores.
+     * Quando uma disciplina é escolhida, este método é ativado
+     * e carrega os professores correspondentes.
+     */
+    private void configurarDependenciaProfessor() {
+        disciplinaComboBox.valueProperty().addListener((obs, oldDisciplina, newDisciplina) -> {
+            if (newDisciplina != null) {
+                // Se uma nova disciplina for selecionada, carrega os professores dela
+                carregarProfessoresDaDisciplina(newDisciplina.getId());
+            } else {
+                // Se a disciplina for limpa, limpa os professores
+                professorComboBox.getItems().clear();
             }
-
-            List<Disciplina> sugestoes = disciplinaDAO.searchByName(newText);
-            Disciplina itemSelecionado = comboBox.getSelectionModel().getSelectedItem(); // Salva seleção
-            comboBox.setItems(FXCollections.observableArrayList(sugestoes)); // Atualiza lista
-            
-            if (itemSelecionado != null && sugestoes.contains(itemSelecionado)) {
-                comboBox.getSelectionModel().select(itemSelecionado); // Restaura seleção
-            }
-            comboBox.show();
         });
     }
 
     /**
-     * NOVO: Configura o autocompletar para o ComboBox de Professores.
+     * NOVO: Carrega a lista de disciplinas do curso.
+     * Usa o método que criamos anteriormente.
      */
-    private void setupAutocompleteProfessor(ComboBox<Professor> comboBox) {
-        comboBox.setEditable(true);
-
-        // Ensina o ComboBox a converter String <-> Professor
-        comboBox.setConverter(new StringConverter<Professor>() {
-            @Override
-            public String toString(Professor object) {
-                return object == null ? "" : object.getNomeCompleto();
-            }
-            @Override
-            public Professor fromString(String string) {
-                return comboBox.getItems().stream()
-                         .filter(item -> item.getNomeCompleto().equals(string))
-                         .findFirst().orElse(null);
-            }
-        });
-        
-        comboBox.getEditor().textProperty().addListener((obs, oldText, newText) -> {
-            if (newText == null || newText.isEmpty()) {
-                comboBox.setItems(FXCollections.observableArrayList());
-                return;
-            }
-            
-            Professor selecionado = comboBox.getSelectionModel().getSelectedItem();
-            if (selecionado != null && selecionado.toString().equals(newText)) {
-                return;
-            }
-
-            List<Professor> sugestoes = professorDAO.searchByName(newText);
-            Professor itemSelecionado = comboBox.getSelectionModel().getSelectedItem(); // Salva seleção
-            comboBox.setItems(FXCollections.observableArrayList(sugestoes)); // Atualiza lista
-            
-            if (itemSelecionado != null && sugestoes.contains(itemSelecionado)) {
-                comboBox.getSelectionModel().select(itemSelecionado); // Restaura seleção
-            }
-            comboBox.show(); 
-        });
+    private void carregarDisciplinasDoCurso(int cursoId) {
+        // Usamos "" para buscar todas as disciplinas (LIKE '%%') daquele curso
+        List<Disciplina> disciplinasDoCurso = disciplinaDAO.searchByNameAndCursoId("", cursoId);
+        disciplinaComboBox.setItems(FXCollections.observableArrayList(disciplinasDoCurso));
+    }
+    
+    /**
+     * NOVO: Carrega a lista de professores filtrada pela disciplina.
+     * Usa o DAO de associação 'professor_disciplina'.
+     */
+    private void carregarProfessoresDaDisciplina(int disciplinaId) {
+        List<Professor> professoresDaDisciplina = professorDisciplinaDAO.getProfessoresByDisciplinaId(disciplinaId);
+        professorComboBox.setItems(FXCollections.observableArrayList(professoresDaDisciplina));
     }
 
-    // Método para modo de edição (Atualizado)
+
+    /**
+     * Define o formulário para o modo de EDIÇÃO.
+     * MÉTODO MODIFICADO
+     */
     public void setHorarioParaEdicao(Horario horario) {
         this.horarioParaEditar = horario;
+        lblTituloJanela.setText("Editar Horário"); 
+        this.turmaSelecionada = horario.getTurma();
+        lblNomeTurma.setText(horario.getNomeTurma());
 
         horaInicioField.setText(horario.getHoraInicio());
         horaFimField.setText(horario.getHoraFim());
         diaSemanaComboBox.setValue(horario.getDiaSemana());
         salvarButton.setText("Atualizar");
 
-        // Adiciona e seleciona os itens nos ComboBoxes agora vazios
-        disciplinaComboBox.getItems().setAll(horario.getDisciplina());
-        disciplinaComboBox.getSelectionModel().select(horario.getDisciplina());
+        // --- LÓGICA DE CARGA MODIFICADA ---
+        
+        // 1. Carrega todas as disciplinas do curso
+        carregarDisciplinasDoCurso(horario.getTurma().getCurso().getId());
+        // 2. Seleciona a disciplina salva
+        disciplinaComboBox.setValue(horario.getDisciplina());
 
-        turmaComboBox.setValue(horario.getTurma()); // Este já estava carregado ou é pré-selecionado
-
-        professorComboBox.getItems().setAll(horario.getProfessor());
-        professorComboBox.getSelectionModel().select(horario.getProfessor());
+        // 3. Carrega os professores daquela disciplina
+        carregarProfessoresDaDisciplina(horario.getDisciplina().getId());
+        // 4. Seleciona o professor salvo
+        professorComboBox.setValue(horario.getProfessor());
     }
 
-    // Método para pré-selecionar a turma (vinda da Gestão de Turmas)
+    /**
+     * Define o formulário para o modo de CRIAÇÃO.
+     * MÉTODO MODIFICADO
+     */
     public void setTurmaParaHorario(Turma turma) {
-        if (turmaComboBox != null) {
-            // Não precisa carregar "getAll", apenas define o valor
-            turmaComboBox.getItems().setAll(turma);
-            turmaComboBox.setValue(turma);
-            turmaComboBox.setDisable(true);
+        this.turmaSelecionada = turma;
+        if (lblNomeTurma != null) {
+            lblNomeTurma.setText(turma.getNome());
         }
+        if (lblTituloJanela != null) {
+            lblTituloJanela.setText("Cadastro de Horário");
+        }
+        
+        // --- LÓGICA DE CARGA ADICIONADA ---
+        // 1. Carrega as disciplinas do curso da turma
+        carregarDisciplinasDoCurso(turma.getCurso().getId());
+        // 2. Limpa a seleção de professor (caso a janela esteja sendo reutilizada)
+        professorComboBox.getItems().clear();
     }
 
     @FXML
     private void onSalvar() {
-        // --- CORREÇÃO: Usar getSelectionModel().getSelectedItem() ---
+        // ... (Este método continua 100% igual)
         Disciplina disciplina = disciplinaComboBox.getSelectionModel().getSelectedItem();
-        Turma turma = turmaComboBox.getSelectionModel().getSelectedItem();
+        Turma turma = this.turmaSelecionada; 
         Professor professor = professorComboBox.getSelectionModel().getSelectedItem();
         String dia = diaSemanaComboBox.getValue();
         String inicio = horaInicioField.getText();
@@ -210,7 +198,7 @@ public class CadastroHorarioController implements Initializable {
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso!", "Horário salvo com sucesso!");
             } else {
                 horarioParaEditar.setDisciplina(disciplina); 
-                horarioParaEditar.setTurma(turma);
+                horarioParaEditar.setTurma(turma); 
                 horarioParaEditar.setProfessor(professor);
                 horarioParaEditar.setDiaSemana(dia);
                 horarioParaEditar.setHoraInicio(inicio);
@@ -230,20 +218,12 @@ public class CadastroHorarioController implements Initializable {
         }
     }
 
-    // Método de validação atualizado
     private boolean isDataValid(Disciplina d, Turma t, Professor p, String dia, String inicio, String fim) {
+        // --- VALIDAÇÃO MODIFICADA (REMOVEMOS A CHECAGEM DE TEXTO DO EDITOR) ---
         if (d == null || t == null || p == null || dia == null || inicio.trim().isEmpty() || fim.trim().isEmpty()) {
             
-            // Feedback melhor se o utilizador digitou mas não selecionou
-            if (d == null && !disciplinaComboBox.getEditor().getText().isEmpty()) {
-                showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Disciplina inválida. Por favor, selecione uma da lista.");
-                return false;
-            }
-             if (p == null && !professorComboBox.getEditor().getText().isEmpty()) {
-                showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Professor inválido. Por favor, selecione um da lista.");
-                return false;
-            }
-
+            // Removemos as checagens de "getEditor()" pois não são mais editáveis
+            
             showAlert(Alert.AlertType.ERROR, "Erro de Validação", "Todos os campos são obrigatórios.");
             return false;
         }
@@ -273,4 +253,7 @@ public class CadastroHorarioController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+    
+    // --- MÉTODOS 'setupAutocompleteDisciplina' E 'setupAutocompleteProfessor' REMOVIDOS ---
+    
 }

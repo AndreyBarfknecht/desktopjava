@@ -1,6 +1,7 @@
 package com.example.repository;
 
 import com.example.model.Disciplina;
+import com.example.model.Professor;
 import com.example.util.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -84,6 +85,39 @@ public class ProfessorDisciplinaDAO {
             e.printStackTrace();
         }
         return disciplinas;
+    }
+
+    public List<Professor> getProfessoresByDisciplinaId(int disciplinaId) {
+        List<Professor> professores = new ArrayList<>();
+        
+        // SQL que junta professores (p) com a tabela de associação (pd)
+        String sql = "SELECT p.id, p.nome_completo, p.cpf, p.data_nascimento, p.email, p.telefone " +
+                     "FROM professores p " +
+                     "JOIN professor_disciplina pd ON p.id = pd.id_professor " +
+                     "WHERE pd.id_disciplina = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, disciplinaId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Professor professor = new Professor(
+                    rs.getString("nome_completo"),
+                    rs.getString("cpf"),
+                    rs.getDate("data_nascimento") != null ? rs.getDate("data_nascimento").toLocalDate() : null,
+                    rs.getString("email"),
+                    rs.getString("telefone")
+                );
+                professor.setId(rs.getInt("id"));
+                professores.add(professor);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar professores por disciplina: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return professores;
     }
 
     public void addDisciplina(int professorId, int disciplinaId) throws SQLException {

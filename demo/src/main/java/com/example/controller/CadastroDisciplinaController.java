@@ -12,6 +12,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.scene.control.Label; // <-- IMPORTA O LABEL
 
 public class CadastroDisciplinaController implements Initializable {
 
@@ -19,6 +20,7 @@ public class CadastroDisciplinaController implements Initializable {
     @FXML private TextField cargaHorariaField;
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
+    @FXML private Label lblTituloJanela;
 
     private DisciplinaDAO disciplinaDAO;
     private Disciplina disciplinaParaEditar;
@@ -39,6 +41,7 @@ public class CadastroDisciplinaController implements Initializable {
 
       public void setDisciplinaParaEdicao(Disciplina disciplina) {
         this.disciplinaParaEditar = disciplina;
+        lblTituloJanela.setText("Editar Disciplina");
         nomeDisciplinaField.setText(disciplina.getNomeDisciplina());
         cargaHorariaField.setText(String.valueOf(disciplina.getCargaHoraria()));
         salvarButton.setText("Atualizar");

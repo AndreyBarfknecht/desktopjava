@@ -16,6 +16,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.Label; // <-- IMPORTA O LABEL
 
 public class CadastroAlunoController implements Initializable {
 
@@ -34,6 +35,8 @@ public class CadastroAlunoController implements Initializable {
     @FXML private TextField emailField; // Campo para o email do aluno
     @FXML private TextField telefoneField; // Campo para o telefone do aluno
     @FXML private Button salvarButton;
+    @FXML private Label lblTituloJanela;
+    
 
     // --- DAOs para acesso à base de dados ---
     private AlunoDAO alunoDAO;
@@ -62,6 +65,7 @@ public class CadastroAlunoController implements Initializable {
     public void setAlunoParaEdicao(Aluno aluno) {
         this.alunoParaEditar = aluno;
         Responsavel responsavel = aluno.getResponsavel();
+        lblTituloJanela.setText("Editar Aluno");
 
         // Preenche campos do responsável
         guardianNameField.setText(responsavel.getNomeCompleto());

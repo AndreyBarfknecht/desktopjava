@@ -15,7 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
+import javafx.scene.control.Label; // <-- IMPORTA O LABEL
 
 public class CadastroProfessorController implements Initializable {
 
@@ -29,7 +29,7 @@ public class CadastroProfessorController implements Initializable {
     @FXML private TextField telefoneField;
     @FXML private Button salvarButton;
     @FXML private Button cancelarButton;
-    
+    @FXML private Label lblTituloJanela;
 
     private ProfessorDAO professorDAO; // ALTERAÇÃO: Adicionamos uma variável para o nosso DAO
 
@@ -44,7 +44,7 @@ public class CadastroProfessorController implements Initializable {
     private Professor professorParaEditar;
     public void setProfessorParaEdicao(Professor professor) {
         this.professorParaEditar = professor;
-        
+        lblTituloJanela.setText("Editar Professor");
         // Preenche os campos do formulário com os dados do professor
         nomeCompletoField.setText(professor.getNomeCompleto());
         cpfField.setText(professor.getCpf());

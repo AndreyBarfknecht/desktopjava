@@ -17,7 +17,7 @@
     <children>
         <VBox alignment="TOP_CENTER" spacing="30.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
             <children>
-                <Label text="Cadastro de Professor">
+                <Label fx:id="lblTituloJanela" text="Cadastro de Professor">
                     <styleClass>
                         <String fx:value="label" />
                         <String fx:value="titulo-janela" />

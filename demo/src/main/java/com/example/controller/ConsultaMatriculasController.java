@@ -5,20 +5,23 @@ import com.example.repository.MatriculaDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader; // NOVO
+import javafx.fxml.FXMLLoader; 
 import javafx.fxml.Initializable;
-import javafx.scene.Parent; // NOVO
-import javafx.scene.Scene; // NOVO
+import javafx.scene.Parent; 
+import javafx.scene.Scene; 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality; // NOVO
+import javafx.stage.Modality; 
 import javafx.stage.Stage;
 
-import java.io.IOException; // NOVO
+import javafx.scene.control.ChoiceDialog;
+import java.util.Arrays;
+
+import java.io.IOException; 
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
@@ -96,9 +99,6 @@ public class ConsultaMatriculasController implements Initializable {
         }
     }
 
-    /**
-     * NOVO: Método onEditar (baseado no de ConsultaHorarios)
-     */
     @FXML
     private void onEditar() {
         Matricula selecionada = matriculasTableView.getSelectionModel().getSelectedItem();
@@ -106,35 +106,31 @@ public class ConsultaMatriculasController implements Initializable {
             showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Por favor, selecione uma matrícula para editar.");
             return;
         }
+        
+        List<String> escolhas = Arrays.asList("Ativo", "Inativo", "Trancado", "Concluído");
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(selecionada.getStatus(), escolhas);
+        dialog.setTitle("Editar Status da Matrícula");
+        dialog.setHeaderText("Alterar status para: " + selecionada.getNomeAluno());
+        dialog.setContentText("Selecione o novo status:");
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/view/Matricula.fxml"));
-            Parent root = loader.load();
-            
-            // Pega o controlador do popup
-            MatriculaController controller = loader.getController();
-            
-            // Injeta a matrícula no modo de edição
-            controller.setMatriculaParaEdicao(selecionada);
+        dialog.initOwner(matriculasTableView.getScene().getWindow());
 
-            Stage stage = new Stage();
-            stage.setTitle("Editar Status da Matrícula");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(matriculasTableView.getScene().getWindow()); // Correção do Tiling
-            stage.showAndWait();
+        Optional<String> result = dialog.showAndWait();
 
-            carregarMatriculas(); // Recarrega a página atual
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de matrícula.");
+        if (result.isPresent()){
+            String novoStatus = result.get();
+            try {
+                matriculaDAO.updateStatus(selecionada.getId(), novoStatus);
+                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Status da matrícula atualizado.");
+                carregarMatriculas(); 
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível atualizar o status.");
+                e.printStackTrace();
+            }
         }
     }
 
-    /**
-     * NOVO: Método onExcluir (restaurado)
-     */
+
     @FXML
     private void onExcluir() {
         Matricula selecionada = matriculasTableView.getSelectionModel().getSelectedItem();
@@ -154,7 +150,6 @@ public class ConsultaMatriculasController implements Initializable {
                 matriculaDAO.delete(selecionada.getId());
                 showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Matrícula excluída.");
                 
-                // Recarrega a página (verifica se a página ficou vazia)
                 if (masterData.size() == 1 && paginaAtual > 1) {
                     paginaAtual--;
                 }
