@@ -1,22 +1,19 @@
 package com.example.model;
 
 public class Nota {
-    private int id;
     
-    // --- CAMPOS CORRIGIDOS (para corresponder ao diagrama) ---
+    // --- CORRIGIDO ---
+    private int idNota; // Alterado de 'id' para 'idNota'
+    
     private int idMatricula; 
     private int idDisciplina; 
-
     private double valor;
     private String avaliacao;
 
-    // --- CAMPOS EXTRA (para a visualização na tabela) ---
+    // Campos extra para a UI
     private String nomeDisciplina; 
     private String nomeAluno;
 
-    /**
-     * Construtor atualizado para os campos corretos.
-     */
     public Nota(int idMatricula, int idDisciplina, double valor, String avaliacao) {
         this.idMatricula = idMatricula;
         this.idDisciplina = idDisciplina;
@@ -24,11 +21,11 @@ public class Nota {
         this.avaliacao = avaliacao;
     }
 
-    // --- Getters e Setters ---
-    
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    // --- GETTER E SETTER CORRIGIDOS ---
+    public int getIdNota() { return idNota; }
+    public void setIdNota(int idNota) { this.idNota = idNota; }
 
+    // --- Restante dos Getters e Setters ---
     public int getIdMatricula() { return idMatricula; }
     public void setIdMatricula(int idMatricula) { this.idMatricula = idMatricula; }
 
@@ -46,9 +43,4 @@ public class Nota {
 
     public String getNomeAluno() { return nomeAluno; }
     public void setNomeAluno(String nomeAluno) { this.nomeAluno = nomeAluno; }
-    
-    @Override
-    public String toString() {
-        return "Matrícula ID " + idMatricula + " / Disciplina ID " + idDisciplina + " (" + avaliacao + "): " + valor;
-    }
 }

@@ -599,8 +599,8 @@ public class GestaoTurmasController implements Initializable {
 
         if (result.isPresent() && result.get() == ButtonType.YES) {
             try {
-                notaDAO.delete(notaSelecionada.getId());
-                refreshNotas(); // Chama o método de refresh atualizado
+                notaDAO.delete(notaSelecionada.getIdNota());
+                refreshNotas(); // Chama o método de refresh atualizadogetId
                 
             } catch (SQLException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro de Exclusão", "Não foi possível excluir a nota.");

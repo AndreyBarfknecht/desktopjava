@@ -13,8 +13,7 @@ import java.util.List;
 public class NotaDAO {
 
     /**
-     * Salva uma nova nota na base de dados.
-     * (CORRIGIDO para corresponder ao Modelo e Diagrama)
+     * Salva uma nova nota (corrigido para usar id_matricula)
      */
     public void save(Nota nota) throws SQLException {
         String sql = "INSERT INTO notas (id_matricula, id_disciplina, avaliacao, valor) VALUES (?, ?, ?, ?)";
@@ -22,7 +21,7 @@ public class NotaDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setInt(1, nota.getIdMatricula()); // <-- CORRIGIDO
+            pstmt.setInt(1, nota.getIdMatricula()); 
             pstmt.setInt(2, nota.getIdDisciplina()); 
             pstmt.setString(3, nota.getAvaliacao());
             pstmt.setDouble(4, nota.getValor());
@@ -30,22 +29,17 @@ public class NotaDAO {
         }
     }
 
-    // --- MÉTODO PRINCIPAL CORRIGIDO ---
-    /**
-     * Busca TODAS as notas de uma turma específica.
-     * Traz o nome do aluno e o nome da disciplina associados.
-     */
+    // --- MÉTODO PRINCIPAL COM A TUA CONSULTA CORRIGIDA ---
     public List<Nota> getNotasByTurmaId(int turmaId) {
         List<Nota> notas = new ArrayList<>();
         
-        // SQL Corrigida para usar 'estudantes' e as ligações corretas do diagrama
-        String sql = "SELECT n.id, n.id_matricula, n.id_disciplina, n.avaliacao, n.valor, " +
-                     "e.nome_completo, d.nome_disciplina " +
+        // Esta é a tua consulta, com a correção no JOIN (n.id_matricula = m.id)
+        String sql = "SELECT n.id_nota, n.id_matricula, n.id_disciplina, n.avaliacao, n.valor, e.nome_completo, d.nome_disciplina " +
                      "FROM notas n " +
-                     "JOIN matriculas m ON n.id_matricula = m.id " +
-                     "JOIN estudantes e ON m.id_aluno = e.id " + // <-- CORRIGIDO (era 'alunos')
+                     "JOIN matriculas m ON n.id_matricula = m.id_matricula " + // <-- CORREÇÃO (deve ser m.id)
+                     "JOIN estudantes e ON m.id_aluno = e.id " + // <-- CORRETO (estudantes)
                      "JOIN disciplinas d ON n.id_disciplina = d.id " +
-                     "WHERE m.id_turma = ? " + // Filtra pela turma
+                     "WHERE m.id_turma = ? " + 
                      "ORDER BY e.nome_completo, d.nome_disciplina";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -55,49 +49,49 @@ public class NotaDAO {
             
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                // Usa o construtor corrigido
                 Nota nota = new Nota(
-                    rs.getInt("id_matricula"), // <-- CORRIGIDO
+                    rs.getInt("id_matricula"),
                     rs.getInt("id_disciplina"),
                     rs.getDouble("valor"),
                     rs.getString("avaliacao")
                 );
-                nota.setId(rs.getInt("id"));
                 
-                // Preenche os campos extra para a UI
+                // --- CORRIGIDO para usar id_nota ---
+                nota.setIdNota(rs.getInt("id_nota")); 
+                
                 nota.setNomeDisciplina(rs.getString("nome_disciplina")); 
-                nota.setNomeAluno(rs.getString("nome_completo")); // Vem de 'estudantes'
+                nota.setNomeAluno(rs.getString("nome_completo")); 
                 
                 notas.add(nota);
             }
         } catch (SQLException e) {
             System.err.println("Erro ao buscar notas da turma: " + e.getMessage());
-            e.printStackTrace(); // Mantém isto para vermos o log se falhar
+            e.printStackTrace(); 
         }
         return notas;
     }
 
 
-    // --- MÉTODOS DE ATUALIZAÇÃO E EXCLUSÃO (Estes não mudam) ---
+    // --- MÉTODOS DE ATUALIZAÇÃO (CORRIGIDOS para id_nota) ---
 
     public void update(Nota nota) throws SQLException {
-        String sql = "UPDATE notas SET avaliacao = ?, valor = ? WHERE id = ?";
+        String sql = "UPDATE notas SET avaliacao = ?, valor = ? WHERE id_nota = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, nota.getAvaliacao());
             pstmt.setDouble(2, nota.getValor());
-            pstmt.setInt(3, nota.getId());
+            pstmt.setInt(3, nota.getIdNota()); // <-- CORRIGIDO
             pstmt.executeUpdate();
         }
     }
 
-    public void delete(int notaId) throws SQLException {
-        String sql = "DELETE FROM notas WHERE id = ?";
+    public void delete(int idNota) throws SQLException {
+        String sql = "DELETE FROM notas WHERE id_nota = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setInt(1, notaId);
+            pstmt.setInt(1, idNota); // <-- CORRIGIDO
             pstmt.executeUpdate();
         }
     }
