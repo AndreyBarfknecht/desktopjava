@@ -273,4 +273,32 @@ public class TurmaDAO {
         }
         return turmas;
     }
+
+    /**
+     * Conta quantos alunos existem em cada turno.
+     */
+    public java.util.Map<String, Integer> getContagemAlunosPorTurno() {
+        String sql = "SELECT t.turno, COUNT(m.id_aluno) as total " +
+                     "FROM turmas t " +
+                     "LEFT JOIN matriculas m ON t.id = m.id_turma " +
+                     "GROUP BY t.turno";
+        
+        java.util.Map<String, Integer> dados = new java.util.HashMap<>();
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            
+            while(rs.next()) {
+                String turno = rs.getString("turno");
+                // Se o turno for nulo na BD, chamamos de "Não Definido"
+                if (turno == null) turno = "Não Definido"; 
+                dados.put(turno, rs.getInt("total"));
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dados;
+    }
 }

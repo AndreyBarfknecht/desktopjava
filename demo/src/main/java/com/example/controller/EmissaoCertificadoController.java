@@ -69,7 +69,7 @@ public class EmissaoCertificadoController {
 
         // 2. Filtra a lista em Java
         List<Matricula> concluidas = todasMatriculas.stream()
-                .filter(m -> "Concluído".equalsIgnoreCase(m.getStatus())) // Regra de negócio!
+                .filter(m -> "Concluido".equalsIgnoreCase(m.getStatus()) || "Concluído".equalsIgnoreCase(m.getStatus()))
                 .collect(Collectors.toList());
 
         matriculasConcluidas.setAll(concluidas);

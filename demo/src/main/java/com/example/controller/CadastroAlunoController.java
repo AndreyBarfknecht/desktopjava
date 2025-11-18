@@ -44,7 +44,8 @@ public class CadastroAlunoController implements Initializable {
 
     // --- Variável para o modo de edição ---
     private Aluno alunoParaEditar;
-
+    private Responsavel responsavelExistente = null;
+    
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         guardianPane.setVisible(true);
@@ -87,54 +88,114 @@ public class CadastroAlunoController implements Initializable {
     }
 
     @FXML
-    private void onSalvar() {
-        if (!isStudentDataValid()) { return; }
+private void onSalvar() {
+    if (!isStudentDataValid()) { return; }
 
-        try {
-            if (alunoParaEditar == null) { // --- MODO DE CRIAÇÃO ---
-                Responsavel responsavel = new Responsavel(
+    try {
+        // --- LÓGICA DO RESPONSÁVEL ---
+        Responsavel responsavelFinal;
+
+        if (alunoParaEditar != null) {
+            // Edição de aluno existente: mantém o responsável atual (ou atualiza os dados dele)
+            responsavelFinal = alunoParaEditar.getResponsavel();
+            // Atualiza os dados do objeto com o que está na tela
+            responsavelFinal.setNomeCompleto(guardianNameField.getText());
+            responsavelFinal.setCpf(guardianCpfField.getText());
+            responsavelFinal.setTelefone(guardianPhoneField.getText());
+            responsavelFinal.setEmail(guardianEmailField.getText());
+            responsavelDAO.update(responsavelFinal);
+            
+        } else {
+            // Novo Cadastro de Aluno
+            if (responsavelExistente != null) {
+                // CASO 1: Responsável JÁ EXISTE no banco (foi buscado pelo botão)
+                responsavelFinal = responsavelExistente;
+                
+                // Opcional: Atualizar os dados do responsável existente caso o usuário tenha mudado o telefone/email na tela
+                responsavelFinal.setNomeCompleto(guardianNameField.getText());
+                responsavelFinal.setTelefone(guardianPhoneField.getText());
+                responsavelFinal.setEmail(guardianEmailField.getText());
+                responsavelDAO.update(responsavelFinal);
+                
+            } else {
+                // CASO 2: Responsável NOVO (não existe no banco)
+                responsavelFinal = new Responsavel(
                     guardianNameField.getText(), guardianCpfField.getText(),
                     guardianPhoneField.getText(), guardianEmailField.getText()
                 );
-                int responsavelId = responsavelDAO.saveAndReturnId(responsavel);
-                if (responsavelId == -1) {
-                    showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível salvar o responsável.");
-                    return;
-                }
-                responsavel.setId(responsavelId);
-
-                Aluno novoAluno = new Aluno(
-                    nomeCompletoField.getText(), cpfField.getText(),
-                    dataNascimentoPicker.getValue(), responsavel,
-                    telefoneField.getText(),
-                    emailField.getText()
-                );
-
-                alunoDAO.save(novoAluno);
-                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Aluno e Responsável salvos com sucesso!");
-
-            } else { // --- MODO DE EDIÇÃO ---
-                Responsavel responsavel = alunoParaEditar.getResponsavel();
-                responsavel.setNomeCompleto(guardianNameField.getText());
-                responsavel.setCpf(guardianCpfField.getText());
-                responsavel.setTelefone(guardianPhoneField.getText());
-                responsavel.setEmail(guardianEmailField.getText());
-                responsavelDAO.update(responsavel);
-
-                alunoParaEditar.setNomeCompleto(nomeCompletoField.getText());
-                alunoParaEditar.setCpf(cpfField.getText());
-                alunoParaEditar.setDataNascimento(dataNascimentoPicker.getValue());
-                alunoParaEditar.setTelefone(telefoneField.getText());
-                alunoParaEditar.setEmail(emailField.getText());
-                alunoDAO.update(alunoParaEditar);
-                showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Aluno e Responsável atualizados com sucesso!");
+                int novoId = responsavelDAO.saveAndReturnId(responsavelFinal);
+                if (novoId == -1) throw new Exception("Falha ao criar responsável");
+                responsavelFinal.setId(novoId);
             }
-            fecharJanela();
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Ocorreu um erro ao salvar os dados.");
-            e.printStackTrace();
         }
+
+        // --- LÓGICA DO ALUNO (Praticamente igual, mas usa o responsavelFinal) ---
+        if (alunoParaEditar == null) {
+            Aluno novoAluno = new Aluno(
+                nomeCompletoField.getText(), cpfField.getText(),
+                dataNascimentoPicker.getValue(), 
+                responsavelFinal, // Usa o responsável correto (novo ou existente)
+                telefoneField.getText(),
+                emailField.getText()
+            );
+            alunoDAO.save(novoAluno);
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Aluno matriculado com sucesso!");
+        } else {
+            // Lógica de update do aluno (mantém-se igual)
+            alunoParaEditar.setNomeCompleto(nomeCompletoField.getText());
+            alunoParaEditar.setCpf(cpfField.getText());
+            alunoParaEditar.setDataNascimento(dataNascimentoPicker.getValue());
+            alunoParaEditar.setTelefone(telefoneField.getText());
+            alunoParaEditar.setEmail(emailField.getText());
+            // Se quiser permitir trocar o responsável na edição, faria: alunoParaEditar.setResponsavel(responsavelFinal);
+            
+            alunoDAO.update(alunoParaEditar);
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Dados atualizados com sucesso!");
+        }
+        fecharJanela();
+
+    } catch (Exception e) {
+        showAlert(Alert.AlertType.ERROR, "Erro", "Erro ao salvar: " + e.getMessage());
+        e.printStackTrace();
     }
+}
+
+    @FXML
+    private void onBuscarResponsavel() {
+    String cpf = guardianCpfField.getText().replaceAll("\\D", ""); // Remove a máscara para buscar
+    
+    // Se estiver usando máscara na tela, o getText pode vir formatado (ex: 111.222...), 
+    // certifique-se de buscar como está salvo no banco (com ou sem pontuação). 
+    // Se no banco tem pontuação, use guardianCpfField.getText().
+    
+    if (cpf.length() < 11) {
+        showAlert(Alert.AlertType.WARNING, "Aviso", "Digite o CPF completo para buscar.");
+        return;
+    }
+
+    // Busca no banco (tente buscar com formatação e sem, dependendo de como salvou)
+    Responsavel encontrado = responsavelDAO.findByCpf(guardianCpfField.getText());
+
+    if (encontrado != null) {
+        // SE ENCONTROU: Preenche os campos e guarda o objeto
+        responsavelExistente = encontrado;
+        
+        guardianNameField.setText(encontrado.getNomeCompleto());
+        guardianEmailField.setText(encontrado.getEmail());
+        guardianPhoneField.setText(encontrado.getTelefone());
+        
+        showAlert(Alert.AlertType.INFORMATION, "Encontrado", "Responsável já cadastrado! Os dados foram carregados.");
+    } else {
+        // SE NÃO ENCONTROU: Limpa a variável de controle (mas mantém o CPF digitado)
+        responsavelExistente = null;
+        // Opcional: Limpar os outros campos para garantir que não há lixo
+        guardianNameField.clear();
+        guardianEmailField.clear();
+        guardianPhoneField.clear();
+        
+        showAlert(Alert.AlertType.INFORMATION, "Não Encontrado", "Responsável não encontrado. Por favor, preencha os dados para cadastrar um novo.");
+    }
+}
 
     // ... (Todos os outros métodos como onProximo, onVoltar, validações, máscaras, etc. permanecem aqui sem alterações)
     @FXML

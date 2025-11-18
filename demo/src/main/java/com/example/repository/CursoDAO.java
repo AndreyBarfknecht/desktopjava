@@ -206,4 +206,51 @@ public class CursoDAO {
         }
         return cursos;
     }
+
+    /**
+     * Calcula a média de todas as notas lançadas para cada curso.
+     * @return Mapa com Nome do Curso -> Média (Double)
+     */
+    public java.util.Map<String, Double> getMediaNotasPorCurso() {
+        // SQL corrigida para usar LEFT JOIN (pega cursos mesmo se a média for null, tratamos depois)
+        // VERIFIQUE: A sua tabela de notas tem a coluna 'valor' ou 'nota'? 
+        // Estou assumindo 'valor' baseada no seu código anterior.
+        String sql = "SELECT c.nome_curso, AVG(n.valor) as media " +
+                     "FROM cursos c " +
+                     "JOIN turmas t ON c.id = t.id_curso " +
+                     "JOIN matriculas m ON t.id = m.id_turma " +
+                     "JOIN notas n ON m.id_matricula = n.id_matricula " +
+                     "GROUP BY c.id, c.nome_curso";
+        
+        java.util.Map<String, Double> dados = new java.util.HashMap<>();
+        
+        try (java.sql.Connection conn = com.example.util.DatabaseConnection.getConnection();
+             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = pstmt.executeQuery()) {
+            
+            System.out.println("--- DEBUG GRÁFICO CURSOS ---"); // Debug
+            boolean temDados = false;
+
+            while(rs.next()) {
+                temDados = true;
+                String curso = rs.getString("nome_curso");
+                double media = rs.getDouble("media");
+                
+                // Arredonda
+                media = Math.round(media * 10.0) / 10.0;
+                
+                System.out.println("Encontrado: " + curso + " - Média: " + media); // Debug
+                dados.put(curso, media);
+            }
+
+            if (!temDados) {
+                System.out.println("A consulta SQL rodou, mas não retornou nenhuma linha (ZERO notas encontradas).");
+            }
+            
+        } catch (java.sql.SQLException e) {
+            System.err.println("ERRO SQL AO BUSCAR MÉDIAS:");
+            e.printStackTrace();
+        }
+        return dados;
+    }
 }

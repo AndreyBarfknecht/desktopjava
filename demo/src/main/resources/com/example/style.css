@@ -7,23 +7,23 @@
 .root {
     -fx-font-family: "Segoe UI", Arial, sans-serif;
     -fx-font-size: 14px;
-    -fx-background-color: #F4F7FC; /* --cor-fundo */
+    -fx-background-color: #F4F7FC; /* Fundo cinza/azul claro */
 }
 
 .label {
-    -fx-text-fill: #333333; /* --cor-texto */
+    -fx-text-fill: #333333;
     -fx-font-weight: bold;
 }
 
 .titulo-janela {
     -fx-font-size: 24px;
     -fx-font-weight: 700; 
-    -fx-text-fill: #2c3e50; /* --cor-sidebar */
+    -fx-text-fill: #2c3e50;
 }
 
 /* --- BOTÕES PADRÃO --- */
 .button {
-    -fx-background-color: #3498DB; /* --cor-principal */
+    -fx-background-color: #3498DB;
     -fx-text-fill: #FFFFFF;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
@@ -31,32 +31,32 @@
     -fx-padding: 10px 20px;
     -fx-cursor: hand;
 }
-.button:hover { -fx-background-color: #2980B9; /* --cor-principal-hover */ }
+.button:hover { -fx-background-color: #2980B9; }
 
 /* Botão Salvar */
-.salvar-button { -fx-background-color: #3498DB; /* --cor-salvar */ }
-.salvar-button:hover { -fx-background-color: #2980B9; /* --cor-salvar-hover */ }
+.salvar-button { -fx-background-color: #3498DB; }
+.salvar-button:hover { -fx-background-color: #2980B9; }
 
 /* Botão Cancelar */
-.cancel-button { -fx-background-color: #E74C3C; /* --cor-cancelar */ }
-.cancel-button:hover { -fx-background-color: #C0392B; /* --cor-cancelar-hover */ }
+.cancel-button { -fx-background-color: #E74C3C; }
+.cancel-button:hover { -fx-background-color: #C0392B; }
 
 /* --- CAMPOS DE FORMULÁRIO --- */
 .text-field, .password-field, .date-picker, .combo-box {
     -fx-background-color: #FFFFFF;
-    -fx-text-fill: #333333; /* --cor-texto */
+    -fx-text-fill: #333333;
     -fx-background-radius: 5px;
-    -fx-border-color: #BDC3C7; /* --cor-borda */
+    -fx-border-color: #BDC3C7;
     -fx-border-radius: 5px;
     -fx-border-width: 1px;
     -fx-font-size: 14px;
 }
 .text-field:focused, .password-field:focused, .date-picker:focused, .combo-box:focused {
-    -fx-border-color: #3498DB; /* --cor-principal */
+    -fx-border-color: #3498DB;
     -fx-border-width: 2px;
 }
 .text-field-error {
-    -fx-border-color: #E74C3C; /* --cor-cancelar */
+    -fx-border-color: #E74C3C;
     -fx-border-width: 2px;
 }
 
@@ -69,10 +69,10 @@
     -fx-padding: 30px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.5, 0, 0);
 }
-.login-title { -fx-font-size: 28px; -fx-text-fill: #333333; /* --cor-texto */ }
+.login-title { -fx-font-size: 28px; -fx-text-fill: #333333; }
 .login-subtitle { -fx-font-size: 14px; -fx-text-fill: #777; -fx-font-weight: normal; }
-.login-hyperlink { -fx-font-size: 14px; -fx-text-fill: #3498DB; /* --cor-principal */ -fx-font-weight: normal; }
-.login-hyperlink:hover { -fx-text-fill: #2980B9; /* --cor-principal-hover */ -fx-underline: true; }
+.login-hyperlink { -fx-font-size: 14px; -fx-text-fill: #3498DB; -fx-font-weight: normal; }
+.login-hyperlink:hover { -fx-text-fill: #2980B9; -fx-underline: true; }
 .text-field-icon { -fx-fill: #AAAAAA; }
 
 /* ==========================================================================
@@ -81,7 +81,7 @@
 
 /* --- CABEÇALHO (HEADER) --- */
 .header-bar {
-    -fx-background-color: #3498DB; /* --cor-principal */
+    -fx-background-color: #2c3e50; /* [MODIFICAÇÃO] Azul escuro/cinza - Profissional */
     -fx-padding: 10px 20px;
 }
 .header-bar .label, .header-bar .text {
@@ -97,7 +97,7 @@
 
 .sidebar { 
     -fx-padding: 0;
-    -fx-background-color: #2c3e50; /* --cor-sidebar */
+    -fx-background-color: #2c3e50;
     -fx-alignment: top-center;
 }
 .sidebar .accordion {
@@ -106,21 +106,21 @@
 
 /* Título de cada seção (TitledPane) */
 .sidebar-titled-pane {
-    -fx-text-fill: #ECF0F1; /* --cor-texto-sidebar */
+    -fx-text-fill: #ECF0F1;
 }
 .sidebar-titled-pane > .title {
     -fx-background-color: transparent;
-    -fx-border-color: transparent transparent #34495e transparent; /* --cor-sidebar-hover */
+    -fx-border-color: transparent transparent #34495e transparent;
     -fx-border-width: 0 0 1 0;
     -fx-padding: 15px 25px;
 }
 .sidebar-titled-pane > .title > .text {
-    -fx-fill: #ECF0F1 !important; /* --cor-texto-sidebar */
+    -fx-fill: #ECF0F1 !important;
     -fx-font-size: 16px;
     -fx-font-weight: 700;
 }
 .sidebar-titled-pane > .title > .arrow-button .arrow {
-     -fx-background-color: #ECF0F1; /* --cor-texto-sidebar */
+     -fx-background-color: #ECF0F1;
      -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
      -fx-scale-x: 0.8;
      -fx-scale-y: 0.8;
@@ -129,9 +129,9 @@
 /* Hover e Foco no Título */
 .sidebar-titled-pane:hover > .title,
 .sidebar-titled-pane:focused > .title {
-     -fx-background-color: #34495e; /* --cor-sidebar-hover */
-     -fx-color: #34495e; /* --cor-sidebar-hover */
-     -fx-border-color: transparent transparent #34495e transparent; /* --cor-sidebar-hover */
+     -fx-background-color: #34495e;
+     -fx-color: #34495e;
+     -fx-border-color: transparent transparent #34495e transparent;
      -fx-background-insets: 0;
 }
 .sidebar-titled-pane:hover > .title > .text,
@@ -155,14 +155,9 @@
 }
 
 /* Botões da Sidebar */
-/* Botões da Sidebar */
 .sidebar-button {
-    /* MUDANÇA AQUI: Permite que o VBox estique o botão */
     -fx-max-width: infinity; 
-    
-    /* MUDANÇA AQUI: Impede o botão de encolher e cortar o texto */
     -fx-min-width: use-pref-size; 
-    
     -fx-padding: 15px 15px 15px 25px;
     -fx-alignment: CENTER_LEFT;
     -fx-graphic-text-gap: 15px;
@@ -171,20 +166,20 @@
     -fx-border-width: 0;
     -fx-font-size: 16px;
     -fx-font-weight: normal;
-    -fx-text-fill: #ECF0F1; /* --cor-texto-sidebar */
+    -fx-text-fill: #ECF0F1;
     -fx-text-overrun: clip;
 }
 .sidebar-button .label, .sidebar-button .text {
-    -fx-text-fill: #ECF0F1; /* --cor-texto-sidebar */
-    -fx-fill: #ECF0F1; /* --cor-texto-sidebar */
+    -fx-text-fill: #ECF0F1;
+    -fx-fill: #ECF0F1;
 }
 .sidebar-icon {
-    -fx-fill: #ECF0F1; /* --cor-texto-sidebar */
+    -fx-fill: #ECF0F1;
 }
 
 /* Hover do Botão */
 .sidebar-button:hover {
-    -fx-background-color: #34495e; /* --cor-sidebar-hover */
+    -fx-background-color: #34495e;
     -fx-text-fill: #FFFFFF;
 }
 .sidebar-button:hover .label,
@@ -195,7 +190,6 @@
 .sidebar-button:hover .sidebar-icon {
     -fx-fill: #FFFFFF;
 }
-
 
 /* ==========================================================================
    WIDGETS (CARTÕES) DO DASHBOARD
@@ -210,7 +204,7 @@
 }
 .summary-card:hover {
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 2);
-    -fx-border-color: #3498DB; /* --cor-principal */
+    -fx-border-color: #3498DB;
     -fx-border-width: 1px;
 }
 
@@ -221,7 +215,7 @@
 }
 .summary-card-value { 
     -fx-font-size: 40px; 
-    -fx-text-fill: #3498DB; /* --cor-principal */
+    -fx-text-fill: #3498DB;
     -fx-font-weight: 700; 
 }
 
@@ -234,28 +228,56 @@
 
 
 /* ==========================================================================
-   NOVOS ESTILOS PARA OS GRÁFICOS (CHARTS)
+   NOVOS ESTILOS PARA OS GRÁFICOS E TABELAS (WIDGETS)
    ========================================================================== */
 
-.chart-title {
-    -fx-font-size: 18px;
-    -fx-font-weight: 700;
-    -fx-text-fill: #2c3e50; /* --cor-sidebar */
-    -fx-padding: 0 0 10px 5px;
+/* Estilo para Títulos dos Widgets (Aulas de Hoje, Últimos Alunos) */
+.chart-title, .label {
+    -fx-font-weight: bold; /* Garante que os títulos sejam negrito */
 }
 
-.chart-pie-label-line { -fx-stroke: #888888; }
-.chart-pie-label { -fx-fill: #333333; /* --cor-texto */ -fx-font-size: 12px; }
+/* Tabelas (Para harmonizar com os cards) */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #ECF0F1;
+    -fx-border-radius: 5px;
+}
 
-.chart-bar { -fx-bar-fill: #3498DB; /* --cor-principal */ }
-.chart-bar:hover { -fx-bar-fill: #2980B9; /* --cor-principal-hover */ }
+/* Cabeçalho da Tabela */
+.table-view .column-header,
+.table-view .column-header-background .filler {
+    -fx-background-color: #ECF0F1; /* Fundo cinza claro */
+}
 
-.default-color0.chart-pie { -fx-pie-color: #3498DB; /* --cor-principal */ }
-.default-color1.chart-pie { -fx-pie-color: #E74C3C; } 
-.default-color2.chart-pie { -fx-pie-color: #2ECC71; } 
-.default-color3.chart-pie { -fx-pie-color: #F39C12; } 
-.default-color4.chart-pie { -fx-pie-color: #9B59B6; } 
-.default-color5.chart-pie { -fx-pie-color: #34495e; /* --cor-sidebar-hover */ }
+/* Texto do Cabeçalho */
+.table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50; /* Azul escuro */
+}
+
+/* --- ESTILOS DINÂMICOS PARA GRÁFICO DE BARRAS DE MÉDIAS --- */
+
+.chart-bar { 
+    -fx-bar-fill: #3498db; 
+    -fx-background-radius: 5px 5px 0 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 5, 0, 0, 1); /* Sombra sutil */
+}
+.chart-bar:hover { -fx-bar-fill: #2980B9; }
+
+/* Cor CRÍTICO: Média < 6.0 */
+.chart-bar.bar-critico {
+    -fx-bar-fill: #e74c3c; /* Vermelho/Coral - Alerta Máximo */
+}
+
+/* Cor ATENÇÃO: Média < 8.0 */
+.chart-bar.bar-atencao {
+    -fx-bar-fill: #f39c12; /* Laranja/Amarelo - Precisa de Olhar */
+}
+
+/* Cor SUCESSO: Média >= 8.0 */
+.chart-bar.bar-sucesso {
+    -fx-bar-fill: #2ecc71; /* Verde - Tudo Certo */
+}
 
 .chart-plot-background { -fx-background-color: transparent; }
 .chart-content { -fx-padding: 10px; }
@@ -282,11 +304,11 @@
    ========================================================================== */
 
 .acao-rapida-button {
-    -fx-background-color: #FFFFFF;
-    -fx-text-fill: #2c3e50; /* --cor-sidebar */
+    -fx-background-color: #3498DB; /* [MODIFICAÇÃO] Cor principal */
+    -fx-text-fill: #FFFFFF; /* Texto branco */
     -fx-font-weight: 700;
     -fx-background-radius: 8px;
-    -fx-padding: 15px 25px; /* Padding maior para parecerem "widgets" */
+    -fx-padding: 15px 25px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0.2, 0, 1);
     -fx-alignment: CENTER_LEFT;
     -fx-graphic-text-gap: 10px;
@@ -294,16 +316,16 @@
 }
 
 .acao-rapida-icon {
-    -fx-fill: #3498DB; /* MUDANÇA AQUI: Agora os ícones são brancos */
+    -fx-fill: #FFFFFF; /* Ícones em branco */
 }
 
 .acao-rapida-button:hover {
-    -fx-background-color: #3c5e99; /* --cor-fundo (um cinza muito claro) */
+    -fx-background-color: #2980B9; /* Cor mais escura no hover */
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.3, 0, 2);
 }
 
 .acao-rapida-button:hover .acao-rapida-icon {
-    -fx-fill: WHITE; /* MUDANÇA AQUI: Ícones continuam brancos no hover */
+    -fx-fill: #ECF0F1;
 }
 
 /* ==========================================================================
@@ -312,7 +334,7 @@
 
 /* Remove o fundo, bordas e padding do ScrollPane */
 .sidebar-scroll-pane {
-    -fx-background-color: #2c3e50; /* --cor-sidebar */
+    -fx-background-color: #2c3e50;
     -fx-padding: 0;
     -fx-background-insets: 0;
     -fx-border-width: 0;
@@ -339,31 +361,31 @@
 
 /* Cor de fundo da barra de scroll (onde o "polegar" corre) */
 .sidebar-scroll-pane .scroll-bar:vertical .track {
-    -fx-background-color: #2c3e50; /* --cor-sidebar */
+    -fx-background-color: #2c3e50;
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }
 
 /* O "polegar" (thumb) - a parte que se move */
 .sidebar-scroll-pane .scroll-bar:vertical .thumb {
-    -fx-background-color: #34495e; /* --cor-sidebar-hover */
+    -fx-background-color: #34495e;
     -fx-background-insets: 2;
     -fx-background-radius: 4px;
 }
 
 /* Efeito Hover: Deixa o "polegar" mais claro ao passar o rato */
 .sidebar-scroll-pane .scroll-bar:vertical:hover .thumb {
-    -fx-background-color: #ECF0F1; /* --cor-texto-sidebar */
+    -fx-background-color: #ECF0F1;
 }
 
 /* ==========================================================================
-   SIDEBAR RETRÁTIL (NOVO)
+   SIDEBAR RETRÁTIL (ESTADOS)
    ========================================================================== */
 
-/* --- Ajuste de Alinhamento (Títulos: "Cadastros", "Acadêmico") --- */
+/* --- Ajuste de Alinhamento (Títulos e Botões) --- */
 .sidebar-titled-pane > .title {
-    -fx-alignment: CENTER_LEFT; /* Garante alinhamento à esquerda */
-    -fx-padding: 15px 20px; /* Ajusta o padding */
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 15px 20px;
 }
 .sidebar-titled-pane > .title > .text {
     -fx-opacity: 1;
@@ -373,12 +395,11 @@
     -fx-padding: 0 0 0 10px;
 }
 
-/* --- Ajuste de Alinhamento (Botões) --- */
 .sidebar-button {
-    -fx-alignment: CENTER_LEFT; /* MUDANÇA: Voltamos para CENTER_LEFT */
+    -fx-alignment: CENTER_LEFT;
     -fx-max-width: infinity; 
     -fx-min-width: use-pref-size; 
-    -fx-padding: 15px 20px; /* Padding ajustado */
+    -fx-padding: 15px 20px;
     -fx-graphic-text-gap: 15px;
     -fx-background-color: transparent;
     -fx-background-radius: 0;
@@ -388,25 +409,22 @@
     -fx-text-fill: #ECF0F1;
     -fx-text-overrun: clip;
 }
-/* Oculta o texto do botão (o ".text") com uma transição suave */
+
 .sidebar-button .text {
     -fx-opacity: 1;
     -fx-transition: -fx-opacity 0.2s ease-in-out;
 }
-/* Novo: O "embrulho" (wrapper) do ícone */
 .sidebar-icon-pane {
-    -fx-min-width: 25px; /* Largura fixa para o ícone */
+    -fx-min-width: 25px;
     -fx-alignment: CENTER;
 }
 
 
 /* --- ESTADO ENCOLHIDO (sidebar-collapsed) --- */
 
-/* Esconde o texto do Título ("Cadastros", etc) */
 .sidebar-collapsed .sidebar-titled-pane > .title > .text {
     -fx-opacity: 0;
 }
-/* Centraliza a seta do Título */
 .sidebar-collapsed .sidebar-titled-pane > .title {
     -fx-alignment: CENTER;
     -fx-padding: 15px;
@@ -415,18 +433,14 @@
     -fx-padding: 0;
 }
 
-
-/* Esconde o texto do Botão */
 .sidebar-collapsed .sidebar-button .text {
     -fx-opacity: 0;
 }
-/* Centraliza o ícone do Botão */
 .sidebar-collapsed .sidebar-button {
     -fx-alignment: CENTER;
     -fx-padding: 15px;
     -fx-graphic-text-gap: 0;
 }
-/* Oculta o padding do VBox interno */
 .sidebar-collapsed .sidebar-pane-content {
      -fx-padding: 0;
 }

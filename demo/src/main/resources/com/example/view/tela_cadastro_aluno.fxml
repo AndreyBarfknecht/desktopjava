@@ -45,7 +45,12 @@
                                         <Label text="Nome Completo:" />
                                         <TextField fx:id="guardianNameField" promptText="Nome completo do responsável" GridPane.columnIndex="1" />
                                         <Label text="CPF:" GridPane.rowIndex="1" />
-                                        <TextField fx:id="guardianCpfField" promptText="000.000.000-00" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <HBox spacing="10.0" alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                            <children>
+                                                <TextField fx:id="guardianCpfField" promptText="000.000.000-00" HBox.hgrow="ALWAYS" />
+                                                <Button text="Buscar" onAction="#onBuscarResponsavel" style="-fx-background-color: #F39C12; -fx-text-fill: white; -fx-font-size: 12px;" />
+                                            </children>
+                                        </HBox>                                        
                                         <Label text="E-mail:" GridPane.rowIndex="2" />
                                         <TextField fx:id="guardianEmailField" promptText="exemplo@email.com" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                         <Label text="Telefone:" GridPane.rowIndex="3" />

@@ -66,4 +66,35 @@ public class ResponsavelDAO {
         e.printStackTrace();
     }
 }
+
+/**
+     * Busca um responsável pelo CPF exato.
+     * Retorna null se não encontrar.
+     */
+    public Responsavel findByCpf(String cpf) {
+        String sql = "SELECT * FROM responsaveis WHERE cpf = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, cpf);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Responsavel resp = new Responsavel(
+                        rs.getString("nome_completo"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone"),
+                        rs.getString("email")
+                    );
+                    resp.setId(rs.getInt("id"));
+                    return resp;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar responsável por CPF: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

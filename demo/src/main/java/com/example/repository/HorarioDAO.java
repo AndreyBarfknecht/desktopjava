@@ -369,4 +369,92 @@ public List<Horario> getHorariosByTurmaId(int idTurma) {
         }
         return horarios;
     }
+
+    /**
+     * Busca os horários de um dia específico da semana.
+     * @param diaSemana Ex: "Segunda-feira", "Terça-feira"...
+     */
+    public List<Horario> getHorariosDoDia(String diaSemana) {
+        String sql = "SELECT " +
+                     "    h.id as horario_id, h.dia_semana, h.hora_inicio, h.hora_fim, " +
+                     "    p.id as prof_id, p.nome_completo as prof_nome, p.cpf as prof_cpf, p.data_nascimento as prof_nasc, p.email as prof_email, p.telefone as prof_tel, " +
+                     "    t.id as turma_id, t.nome_turma, t.turno, t.salaAula, " +
+                     "    d.id as disc_id, d.nome_disciplina, d.carga_horaria, " + 
+                     "    pl.id as pl_id, pl.nome as pl_nome, pl.data_inicio, pl.data_fim, pl.status, " + 
+                     "    c.id as curso_id, c.nome_curso, c.nivel, c.duracao_semestres " +
+                     "FROM horarios h " +
+                     "LEFT JOIN professores p ON h.id_professor = p.id " +
+                     "LEFT JOIN turmas t ON h.id_turma = t.id " +
+                     "LEFT JOIN disciplinas d ON h.id_disciplina = d.id " + 
+                     "LEFT JOIN periodos_letivos pl ON t.id_periodo_letivo = pl.id " + 
+                     "LEFT JOIN cursos c ON t.id_curso = c.id " +
+                     "WHERE h.dia_semana = ? " +
+                     "ORDER BY h.hora_inicio ASC"; // Ordena pela hora
+
+        List<Horario> horarios = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, diaSemana);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                // --- REUTILIZAR A LÓGICA DE CRIAÇÃO DE OBJETOS DO SEU getAll() AQUI ---
+                // (Para poupar espaço, assumo que você copiará a lógica de instanciação
+                // de Professor, Curso, PeriodoLetivo, Turma, Disciplina e Horario do método getAll)
+                
+                // ... (Copie o bloco 'while' do seu getAll() aqui, mas use a lista 'horarios' local)
+                
+                // Exemplo resumido da montagem final:
+                // Horario horario = new Horario(...);
+                // horarios.add(horario);
+                
+                // --- SE PRECISAR, EU REESCREVO O BLOCO COMPLETO, MAS É IGUAL AO getAll() ---
+                // Vou colocar aqui a montagem para garantir que não haja erros:
+                 Professor professor = new Professor(
+                    rs.getString("prof_nome"), rs.getString("prof_cpf"),
+                    rs.getDate("prof_nasc") != null ? rs.getDate("prof_nasc").toLocalDate() : null,
+                    rs.getString("prof_email"), rs.getString("prof_tel")
+                );
+                professor.setId(rs.getInt("prof_id"));
+
+                Curso curso = new Curso(rs.getString("nome_curso"), rs.getString("nivel"), rs.getInt("duracao_semestres"));
+                curso.setId(rs.getInt("curso_id"));
+
+                java.sql.Date sqlDataInicio = rs.getDate("data_inicio");
+                java.sql.Date sqlDataFim = rs.getDate("data_fim");
+                LocalDate dataInicio = (sqlDataInicio != null) ? sqlDataInicio.toLocalDate() : null;
+                LocalDate dataFim = (sqlDataFim != null) ? sqlDataFim.toLocalDate() : null;
+
+                PeriodoLetivo periodoLetivo = new PeriodoLetivo(
+                    rs.getInt("pl_id"), rs.getString("pl_nome"),
+                    dataInicio, dataFim, rs.getString("status")
+                );
+
+                Turma turma = new Turma(
+                    rs.getString("nome_turma"), curso, periodoLetivo,
+                    rs.getString("turno"), rs.getString("salaAula")
+                );
+                turma.setId(rs.getInt("turma_id"));
+
+                Disciplina disciplina = new Disciplina(
+                    rs.getString("nome_disciplina"),
+                    rs.getInt("carga_horaria")
+                );
+                disciplina.setId(rs.getInt("disc_id"));
+
+                Horario horario = new Horario(
+                    disciplina, turma, professor,
+                    rs.getString("dia_semana"),
+                    rs.getTime("hora_inicio").toString().substring(0, 5),
+                    rs.getTime("hora_fim").toString().substring(0, 5)
+                );
+                horario.setId(rs.getInt("horario_id"));
+                horarios.add(horario);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return horarios;
+    }
 }

@@ -29,11 +29,9 @@ public class NotaDAO {
         }
     }
 
-    // --- MÉTODO PRINCIPAL COM A TUA CONSULTA CORRIGIDA ---
     public List<Nota> getNotasByTurmaId(int turmaId) {
         List<Nota> notas = new ArrayList<>();
         
-        // Esta é a tua consulta, com a correção no JOIN (n.id_matricula = m.id)
         String sql = "SELECT n.id_nota, n.id_matricula, n.id_disciplina, n.avaliacao, n.valor, e.nome_completo, d.nome_disciplina " +
                      "FROM notas n " +
                      "JOIN matriculas m ON n.id_matricula = m.id_matricula " + // <-- CORREÇÃO (deve ser m.id)

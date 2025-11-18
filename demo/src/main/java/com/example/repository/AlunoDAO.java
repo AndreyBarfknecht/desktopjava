@@ -290,4 +290,48 @@ public class AlunoDAO {
         }
         return alunos;
     }
+
+    /**
+     * Busca os últimos N alunos registados na base de dados.
+     */
+    public List<Aluno> getUltimosCadastrados(int limite) {
+        // Ordena por ID decrescente (os maiores IDs são os mais recentes)
+        String sql = "SELECT e.id as aluno_id, e.nome_completo as aluno_nome, e.cpf as aluno_cpf, " +
+                     "e.data_nascimento, e.telefone as aluno_telefone, e.email as aluno_email, " +
+                     "r.id as resp_id, r.nome_completo as resp_nome, r.cpf as resp_cpf, " +
+                     "r.telefone as resp_telefone, r.email as resp_email " +
+                     "FROM estudantes e " +
+                     "JOIN responsaveis r ON e.id_responsavel = r.id " +
+                     "ORDER BY e.id DESC LIMIT ?";
+
+        List<Aluno> alunos = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, limite);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Responsavel responsavel = new Responsavel(
+                    rs.getString("resp_nome"), rs.getString("resp_cpf"),
+                    rs.getString("resp_telefone"), rs.getString("resp_email")
+                );
+                responsavel.setId(rs.getInt("resp_id"));
+
+                Aluno aluno = new Aluno(
+                    rs.getString("aluno_nome"),
+                    rs.getString("aluno_cpf"),
+                    rs.getDate("data_nascimento").toLocalDate(),
+                    responsavel,
+                    rs.getString("aluno_telefone"),
+                    rs.getString("aluno_email")
+                );
+                aluno.setId(rs.getInt("aluno_id"));
+                alunos.add(aluno);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return alunos;
+    }
 }
