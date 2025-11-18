@@ -80,7 +80,7 @@
                     <cellValueFactory><PropertyValueFactory property="telefoneResponsavel" />
                 </cellValueFactory></TableColumn>
                 
-                <TableColumn fx:id="colAcoes" prefWidth="180.0" text="Ações" />
+                <TableColumn fx:id="colAcoes" prefWidth="230.0" text="Ações" />
             </columns>
             <BorderPane.margin>
                 <Insets bottom="30.0" left="30.0" right="30.0" />

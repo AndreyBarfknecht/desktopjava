@@ -1,7 +1,9 @@
 package com.example.repository;
 
 import com.example.model.Aluno;
+import com.example.model.Curso;
 import com.example.model.Matricula;
+import com.example.model.PeriodoLetivo;
 import com.example.model.Turma;
 import com.example.util.DatabaseConnection;
 
@@ -74,43 +76,74 @@ public class MatriculaDAO {
     }
 
     public List<Matricula> getMatriculasPorAluno(int alunoId) {
-        String sql = "SELECT m.id_matricula, m.data_matricula, m.status, " +
-                     "a.id as aluno_id, a.nome_completo as aluno_nome, a.cpf as aluno_cpf, " +
-                     "t.id as turma_id, t.nome_turma as turma_nome " +
-                     "FROM matriculas m " +
-                     "JOIN estudantes a ON m.id_aluno = a.id " +
-                     "JOIN turmas t ON m.id_turma = t.id " +
-                     "WHERE m.id_aluno = ?"; 
-        
-        List<Matricula> matriculas = new ArrayList<>();
+    // SQL ATUALIZADA: Agora faz JOIN em Cursos e Periodos Letivos
+    String sql = "SELECT m.id_matricula, m.data_matricula, m.status, " +
+                 "a.id as aluno_id, a.nome_completo as aluno_nome, a.cpf as aluno_cpf, " +
+                 "t.id as turma_id, t.nome_turma as turma_nome, t.turno, t.salaAula, " +
+                 "c.id as curso_id, c.nome_curso, c.nivel, c.duracao_semestres, " +
+                 "p.id as periodo_id, p.nome as periodo_nome, p.data_inicio, p.data_fim, p.status as periodo_status " +
+                 "FROM matriculas m " +
+                 "JOIN estudantes a ON m.id_aluno = a.id " +
+                 "JOIN turmas t ON m.id_turma = t.id " +
+                 "JOIN cursos c ON t.id_curso = c.id " + // <-- JOIN ADICIONADO
+                 "JOIN periodos_letivos p ON t.id_periodo_letivo = p.id " + // <-- JOIN ADICIONADO
+                 "WHERE m.id_aluno = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, alunoId); 
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    Aluno aluno = new Aluno(rs.getString("aluno_nome"), rs.getString("aluno_cpf"), null, null, null, null);
-                    aluno.setId(rs.getInt("aluno_id"));
+    List<Matricula> matriculas = new ArrayList<>();
 
-                    Turma turma = new Turma(rs.getString("turma_nome"), null, null, null, null);
-                    turma.setId(rs.getInt("turma_id"));
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-                    LocalDate dataMatricula = rs.getDate("data_matricula").toLocalDate();
-                    String status = rs.getString("status");
-                    Matricula matricula = new Matricula(aluno, turma, dataMatricula, status);
-                    matricula.setId(rs.getInt("id_matricula"));
+        pstmt.setInt(1, alunoId);
 
-                    matriculas.add(matricula);
-                }
+        try (ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                // 1. Monta o Aluno (simplificado, já que temos o ID)
+                Aluno aluno = new Aluno(rs.getString("aluno_nome"), rs.getString("aluno_cpf"), null, null, null, null);
+                aluno.setId(rs.getInt("aluno_id"));
+
+                // 2. Monta o Curso
+                Curso curso = new Curso(
+                    rs.getString("nome_curso"),
+                    rs.getString("nivel"),
+                    rs.getInt("duracao_semestres")
+                );
+                curso.setId(rs.getInt("curso_id"));
+
+                // 3. Monta o PeriodoLetivo
+                PeriodoLetivo periodo = new PeriodoLetivo(
+                    rs.getInt("periodo_id"),
+                    rs.getString("periodo_nome"),
+                    rs.getDate("data_inicio").toLocalDate(),
+                    rs.getDate("data_fim").toLocalDate(),
+                    rs.getString("periodo_status")
+                );
+
+                // 4. Monta a Turma (agora com Curso e Periodo)
+                Turma turma = new Turma(
+                    rs.getString("turma_nome"),
+                    curso, // <-- AGORA TEMOS O CURSO
+                    periodo,
+                    rs.getString("turno"),
+                    rs.getString("salaAula")
+                );
+                turma.setId(rs.getInt("turma_id"));
+
+                // 5. Monta a Matrícula
+                LocalDate dataMatricula = rs.getDate("data_matricula").toLocalDate();
+                String status = rs.getString("status");
+                Matricula matricula = new Matricula(aluno, turma, dataMatricula, status);
+                matricula.setId(rs.getInt("id_matricula"));
+
+                matriculas.add(matricula);
             }
-        } catch (SQLException e) {
-            System.err.println("Erro ao buscar matrículas do aluno: " + e.getMessage());
-            e.printStackTrace();
         }
-        return matriculas;
+    } catch (SQLException e) {
+        System.err.println("Erro ao buscar matrículas do aluno: " + e.getMessage());
+        e.printStackTrace();
     }
+    return matriculas;
+}
 
 
     public Integer getMatriculaId(int alunoId, int turmaId) {

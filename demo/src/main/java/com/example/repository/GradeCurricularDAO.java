@@ -117,4 +117,35 @@ public class GradeCurricularDAO {
             throw e; 
         }
     }
+
+    // Em: desktopjava/demo/src/main/java/com/example/repository/GradeCurricularDAO.java
+// Adicione este novo método (pode ser no final da classe):
+
+/**
+ * Calcula a carga horária total de um curso somando todas as suas disciplinas.
+ * @param idCurso O ID do curso.
+ * @return A soma total da carga horária, ou 0 se não houver disciplinas.
+ */
+public int getCargaHorariaTotalByCursoId(int idCurso) {
+    String sql = "SELECT SUM(d.carga_horaria) as total " +
+                 "FROM disciplinas d " +
+                 "JOIN grade_curricular gc ON d.id = gc.id_disciplina " +
+                 "WHERE gc.id_curso = ?";
+    
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setInt(1, idCurso);
+        
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("total"); // Retorna a soma
+            }
+        }
+    } catch (SQLException e) {
+        System.err.println("Erro ao calcular carga horária total do curso: " + e.getMessage());
+        e.printStackTrace();
+    }
+    return 0; // Retorna 0 em caso de erro
+}
 }

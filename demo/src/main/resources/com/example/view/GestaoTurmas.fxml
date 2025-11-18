@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ListView?>
 
 <BorderPane prefHeight="720.0" prefWidth="1010.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.GestaoTurmasController">
     
@@ -27,7 +28,7 @@
                         <graphic><FontAwesomeIconView glyphName="PLUS" styleClass="acao-rapida-icon" size="1.5em"/></graphic>
                         </Button>
                         
-                        </children>
+                    </children>
                 </HBox>
                 <Label text="Consulta de Turmas" style="-fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: #2c3e50;" />
                 <TextField fx:id="searchField" onAction="#onBuscar" maxWidth="400.0" promptText="Buscar por nome da turma, curso, turno..." />
@@ -99,7 +100,7 @@
                             </VBox>
                         </content>
                     </Tab>
-                    
+                   
                     <Tab text="Horários">
                         <content>
                             <VBox spacing="5.0">
@@ -134,7 +135,6 @@
                                             <Insets top="10.0" />
                                         </VBox.margin>
                                     </HBox>
-                                    
                                 </children>
                                 <padding>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -142,6 +142,60 @@
                             </VBox>
                         </content>
                     </Tab>
+                    
+                    <Tab text="Avaliações">
+                        <content>
+                            <SplitPane dividerPositions="0.40">
+                                <items>
+                                    <VBox spacing="5.0">
+                                        <children>
+                                            <Label text="Avaliações da Turma" style="-fx-font-size: 16px; -fx-padding: 0 0 5 0;" />
+                                            <ListView fx:id="avaliacoesListView" VBox.vgrow="ALWAYS" />
+                                        </children>
+                                        <padding>
+                                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                        </padding>
+                                    </VBox>
+                                    
+                                    <VBox spacing="5.0">
+                                        <children>
+                                            <Label text="Notas da Avaliação Selecionada" style="-fx-font-size: 16px; -fx-padding: 0 0 5 0;" />
+                                            <TableView fx:id="notasTableView" VBox.vgrow="ALWAYS">
+                                                <columns>
+                                                    <TableColumn prefWidth="250.0" text="Aluno">
+                                                        <cellValueFactory><PropertyValueFactory property="nomeAluno" /></cellValueFactory>
+                                                    </TableColumn>
+                                                    <TableColumn prefWidth="180.0" text="Disciplina">
+                                                        <cellValueFactory><PropertyValueFactory property="nomeDisciplina" /></cellValueFactory>
+                                                    </TableColumn>
+                                                    <TableColumn prefWidth="100.0" text="Nota">
+                                                        <cellValueFactory><PropertyValueFactory property="valor" /></cellValueFactory>
+                                                    </TableColumn>
+                                                </columns>
+                                                <columnResizePolicy>
+                                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                                </columnResizePolicy>
+                                            </TableView>
+                                            
+                                            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                                                <children>
+                                                    <Button fx:id="btnEditarNota" onAction="#onEditarNota" prefWidth="120.0" text="Editar Nota" styleClass="salvar-button" disable="true" />
+                                                    <Button fx:id="btnExcluirNota" onAction="#onExcluirNota" prefWidth="120.0" text="Excluir Nota" styleClass="cancel-button" disable="true" />
+                                                </children>
+                                                <VBox.margin>
+                                                    <Insets top="10.0" />
+                                                </VBox.margin>
+                                            </HBox>
+                                        </children>
+                                        <padding>
+                                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                        </padding>
+                                    </VBox>
+                                </items>
+                            </SplitPane>
+                        </content>
+                    </Tab>
+                    
                 </tabs>
                 <padding>
                     <Insets bottom="30.0" left="10.0" right="30.0" />

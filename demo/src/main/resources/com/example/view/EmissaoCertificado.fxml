@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<BorderPane prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.EmissaoCertificadoController" stylesheets="@../style.css">
+    <top>
+        <VBox alignment="CENTER" spacing="10.0">
+            <children>
+                <Label text="Emissão de Certificado" styleClass="titulo-janela" />
+            </children>
+            <padding>
+                <Insets bottom="20.0" top="20.0" />
+            </padding>
+        </VBox>
+    </top>
+    <center>
+        <VBox spacing="15.0">
+            <padding>
+                <Insets left="20.0" right="20.0" />
+            </padding>
+            <children>
+                <GridPane hgap="10.0" vgap="10.0" style="-fx-background-color: #f8f9fa; -fx-padding: 15px; -fx-background-radius: 5px; -fx-border-color: #dee2e6; -fx-border-radius: 5px;">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Aluno:" style="-fx-font-weight: bold;" />
+                        <Label fx:id="lblNomeAluno" text="[Nome do Aluno]" GridPane.columnIndex="1" />
+                    </children>
+                </GridPane>
+
+                <Label text="Selecione um curso concluído para gerar o certificado:" />
+                
+                <TableView fx:id="matriculasConcluidasView" prefHeight="200.0">
+                    <columns>
+                        <TableColumn prefWidth="300.0" text="Curso Concluído">
+                            <cellValueFactory><PropertyValueFactory property="nomeCurso" /></cellValueFactory>
+                        </TableColumn>
+                        <TableColumn prefWidth="240.0" text="Turma">
+                            <cellValueFactory><PropertyValueFactory property="nomeTurma" /></cellValueFactory>
+                        </TableColumn>
+                    </columns>
+                </TableView>
+                
+                <Label fx:id="lblStatus" textFill="red" />
+
+            </children>
+        </VBox>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <Button onAction="#onFechar" prefWidth="120.0" text="Fechar" styleClass="cancel-button" />
+                <Button fx:id="btnGerarPdf" onAction="#onGerarPdf" prefWidth="150.0" text="Gerar Certificado" styleClass="salvar-button" disable="true" />
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>

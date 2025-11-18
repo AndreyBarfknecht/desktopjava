@@ -4,9 +4,11 @@ import com.example.SceneNavigator;
 import com.example.model.Aluno; 
 import com.example.model.Turma; 
 import com.example.model.Horario;
+import com.example.model.Nota; 
 import com.example.repository.HorarioDAO;
 import com.example.repository.AlunoDAO; 
 import com.example.repository.TurmaDAO; 
+import com.example.repository.NotaDAO; 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.io.IOException;
@@ -15,6 +17,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set; // Import necessário
+import java.util.stream.Collectors; // Import necessário
+import javafx.scene.control.TextInputDialog; 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -28,6 +33,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label; 
+import javafx.scene.control.ListView; // Import necessário
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -51,10 +57,14 @@ public class GestaoTurmasController implements Initializable {
 
     // --- FXML da Tabela de Detalhe (Horários) ---
     @FXML private TableView<Horario> horariosTableView;
-
-    // --- NOVOS BOTÕES FXML PARA A ABA HORÁRIOS ---
     @FXML private Button btnEditarHorario;
     @FXML private Button btnExcluirHorario;
+
+    // --- FXML DA ABA AVALIAÇÕES (ATUALIZADO) ---
+    @FXML private ListView<String> avaliacoesListView; // <-- Lista da Esquerda
+    @FXML private TableView<Nota> notasTableView;       // <-- Tabela da Direita
+    @FXML private Button btnEditarNota;
+    @FXML private Button btnExcluirNota;
 
     // --- FXML de Paginação (Para a tabela de Turmas) ---
     @FXML private Button btnPaginaAnterior;
@@ -65,11 +75,16 @@ public class GestaoTurmasController implements Initializable {
     private TurmaDAO turmaDAO;
     private AlunoDAO alunoDAO; 
     private HorarioDAO horarioDAO; 
+    private NotaDAO notaDAO; 
 
-    // --- Listas de Dados ---
+    // --- Listas de Dados (ATUALIZADO) ---
     private final ObservableList<Turma> masterData = FXCollections.observableArrayList();
     private final ObservableList<Aluno> alunosMasterData = FXCollections.observableArrayList(); 
     private final ObservableList<Horario> horariosMasterData = FXCollections.observableArrayList(); 
+    
+    private final ObservableList<String> avaliacoesMasterData = FXCollections.observableArrayList(); 
+    private final ObservableList<Nota> notasMasterData = FXCollections.observableArrayList();
+    private FilteredList<Nota> notasFilteredData; 
 
     // --- Variáveis de Paginação (Para Turmas) ---
     private int paginaAtual = 1;
@@ -82,11 +97,12 @@ public class GestaoTurmasController implements Initializable {
         this.turmaDAO = new TurmaDAO();
         this.alunoDAO = new AlunoDAO(); 
         this.horarioDAO = new HorarioDAO(); 
+        this.notaDAO = new NotaDAO(); 
         
         configurarColunaAcoes();
         
         turmasTableView.setItems(masterData);
-        carregarTurmas(); // Carregamento inicial paginado
+        carregarTurmas(); 
 
         
         // --- LÓGICA DA ABA ALUNOS ---
@@ -104,21 +120,72 @@ public class GestaoTurmasController implements Initializable {
         // --- LÓGICA DA ABA HORÁRIOS ---
         horariosTableView.setItems(horariosMasterData);
 
-        // Listener Mestre-Detalhe (Carrega ambas as abas)
+        // --- LÓGICA DA ABA AVALIAÇÕES (ATUALIZADO) ---
+        avaliacoesListView.setItems(avaliacoesMasterData);
+        notasFilteredData = new FilteredList<>(notasMasterData, p -> false);
+        notasTableView.setItems(notasFilteredData);
+
+        // --- LISTENER MESTRE-DETALHE (TURMA -> ABAS) ---
         turmasTableView.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, turmaSelecionada) -> {
                 if (turmaSelecionada != null) {
                     carregarAlunosDaTurma(turmaSelecionada);
                     carregarHorariosDaTurma(turmaSelecionada); 
+                    carregarAvaliacoesDaTurma(turmaSelecionada); 
                 } else {
                     alunosMasterData.clear();
                     horariosMasterData.clear(); 
+                    avaliacoesMasterData.clear();
+                    notasMasterData.clear();
+                }
+
+                if (turmaSelecionada == null) {
+                    btnEditarHorario.setDisable(true);
+                    btnExcluirHorario.setDisable(true);
+                    btnEditarNota.setDisable(true);
+                    btnExcluirNota.setDisable(true);
                 }
             }
         );
+
+        // --- NOVO LISTENER (ListView de Avaliações -> TableView de Notas) ---
+        avaliacoesListView.getSelectionModel().selectedItemProperty().addListener(
+            (obs, oldAvaliacao, nomeAvaliacao) -> {
+                if (nomeAvaliacao != null) {
+                    notasFilteredData.setPredicate(nota -> 
+                        nota.getAvaliacao().equals(nomeAvaliacao)
+                    );
+                } else {
+                    notasFilteredData.setPredicate(p -> false);
+                }
+            }
+        );
+
+        // --- LISTENER (HORÁRIOS -> BOTÕES) ---
+        horariosTableView.getSelectionModel().selectedItemProperty().addListener(
+            (obs, oldHorario, newHorario) -> {
+                boolean selecionado = (newHorario != null);
+                btnEditarHorario.setDisable(!selecionado);
+                btnExcluirHorario.setDisable(!selecionado);
+            }
+        );
+
+        // --- LISTENER (NOTAS -> BOTÕES) ---
+        notasTableView.getSelectionModel().selectedItemProperty().addListener(
+            (obs, oldNota, newNota) -> {
+                boolean selecionado = (newNota != null);
+                btnEditarNota.setDisable(!selecionado);
+                btnExcluirNota.setDisable(!selecionado);
+            }
+        );
+        
+        btnEditarHorario.setDisable(true);
+        btnExcluirHorario.setDisable(true);
+        btnEditarNota.setDisable(true);
+        btnExcluirNota.setDisable(true);
     }
     
-    // --- Métodos de Paginação e Carga de Turmas (Sem alterações) ---
+    // --- Métodos de Paginação e Carga de Turmas ---
     
     private void carregarTurmas() {
         try {
@@ -134,7 +201,6 @@ public class GestaoTurmasController implements Initializable {
             atualizarControlesPaginacao();
 
         } catch (Exception e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Não foi possível carregar as turmas.");
         }
     }
@@ -179,7 +245,6 @@ public class GestaoTurmasController implements Initializable {
             List<Aluno> alunos = alunoDAO.getAlunosByTurmaId(turma.getId());
             alunosMasterData.setAll(alunos);
         } catch (Exception e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar os alunos da turma.");
         }
     }
@@ -193,8 +258,37 @@ public class GestaoTurmasController implements Initializable {
             List<Horario> horarios = horarioDAO.getHorariosByTurmaId(turma.getId());
             horariosMasterData.setAll(horarios);
         } catch (Exception e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar os horários da turma.");
+        }
+    }
+
+    // --- MÉTODO NOVO (Para a aba Avaliações) ---
+    private void carregarAvaliacoesDaTurma(Turma turma) {
+        avaliacoesMasterData.clear();
+        notasMasterData.clear();
+        
+        if (turma == null) {
+            return;
+        }
+        
+        try {
+            // 1. Busca todas as notas (ERRO ESTAVA AQUI)
+            List<Nota> todasNotas = notaDAO.getNotasByTurmaId(turma.getId());
+            
+            notasMasterData.setAll(todasNotas);
+            
+            // 2. Extrai os nomes únicos das avaliações
+            Set<String> nomesAvaliacoes = todasNotas.stream()
+                                                    .map(Nota::getAvaliacao)
+                                                    .collect(Collectors.toSet());
+            
+            avaliacoesMasterData.addAll(nomesAvaliacoes);
+            
+            notasFilteredData.setPredicate(p -> false);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Bom para vermos o erro exato no log
+            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível carregar as avaliações da turma.");
         }
     }
 
@@ -209,13 +303,8 @@ public class GestaoTurmasController implements Initializable {
         paginaAtual = 1;
         carregarTurmas(); 
     }
-
-    // --- MÉTODO REMOVIDO ---
-    // @FXML private void onConsultarHorarios() { ... }
-    
     
     // --- LÓGICA DE AÇÕES NA TABELA (Turmas) ---
-    // (Esta parte não muda)
     private void configurarColunaAcoes() {
         colAcoes.setCellFactory(param -> new TableCell<Turma, Void>() {
             
@@ -258,9 +347,8 @@ public class GestaoTurmasController implements Initializable {
         });
     }
 
-    // --- LÓGICA DE AÇÕES NA TABELA DE ALUNOS (Não mexe) ---
+    // --- LÓGICA DE AÇÕES NA TABELA DE ALUNOS ---
     private void configurarColunaAcoesAluno() {
-        // (Este método permanece 100% igual)
         colAcoesAluno.setCellFactory(param -> new TableCell<Aluno, Void>() {
             private final Button btnLancarNota = new Button("", new FontAwesomeIconView(FontAwesomeIcon.EDIT)); 
             private final HBox painelBotoes = new HBox(5, btnLancarNota);
@@ -285,9 +373,9 @@ public class GestaoTurmasController implements Initializable {
     }
     
     // --- MÉTODOS DE AÇÃO (handle...) ---
+    // --- CORRIGIDOS PARA INCLUIR 'Stage stage = new Stage();' ---
 
     private void handleDefinirHorario(Turma turma) {
-        // (Este método permanece 100% igual)
         if (turma == null) return;
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/view/CadastroHorario.fxml"));
@@ -295,6 +383,7 @@ public class GestaoTurmasController implements Initializable {
             CadastroHorarioController controller = loader.getController();
             controller.setTurmaParaHorario(turma); 
 
+            // --- CORREÇÃO (O Stage estava em falta) ---
             Stage stage = new Stage();
             stage.setTitle("Definir Horários para: " + turma.getNome());
             stage.setScene(new Scene(root));
@@ -307,13 +396,11 @@ public class GestaoTurmasController implements Initializable {
             }
             
         } catch (IOException e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de cadastro de horários.");
         }
     }
     
     private void handleLancarNota(Aluno aluno) {
-        // (Este método permanece 100% igual)
         if (aluno == null) return;
         Turma turmaSelecionada = turmasTableView.getSelectionModel().getSelectedItem();
         if (turmaSelecionada == null) {
@@ -326,20 +413,22 @@ public class GestaoTurmasController implements Initializable {
             RegistroNotasController controller = loader.getController();
             controller.initData(turmaSelecionada, aluno);
 
+            // --- CORREÇÃO (O Stage estava em falta) ---
             Stage stage = new Stage();
             stage.setTitle("Lançar Nota para " + aluno.getNomeCompleto());
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(turmasTableView.getScene().getWindow());
             stage.showAndWait();
+
+            refreshNotas(); // Agora chama o refresh da aba de avaliações
+
         } catch (IOException e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de registro de notas.");
         }
     }
 
     private void handleEditar(Turma turmaSelecionada) {
-        // (Este método permanece 100% igual)
         if (turmaSelecionada == null) return; 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/view/CadastroTurma.fxml"));
@@ -347,6 +436,7 @@ public class GestaoTurmasController implements Initializable {
             CadastroTurmaController controller = loader.getController();
             controller.setTurmaParaEdicao(turmaSelecionada); 
 
+            // --- CORREÇÃO (O Stage estava em falta) ---
             Stage stage = new Stage();
             stage.setTitle("Editar Turma");
             stage.setScene(new Scene(root));
@@ -356,14 +446,14 @@ public class GestaoTurmasController implements Initializable {
 
             carregarTurmas(); 
         } catch (IOException e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de edição.");
         }
     }
 
    private void handleExcluir(Turma turmaSelecionada) {
-        // (Este método permanece 100% igual)
         if (turmaSelecionada == null) return; 
+        
+        // --- CORREÇÃO (O Alert estava em falta) ---
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmar Exclusão");
         alert.setHeaderText("Deseja realmente excluir a turma '" + turmaSelecionada.getNome() + "'?");
@@ -379,17 +469,19 @@ public class GestaoTurmasController implements Initializable {
                 carregarTurmas();
                 alunosMasterData.clear(); 
                 horariosMasterData.clear(); 
+                avaliacoesMasterData.clear(); // Limpa a nova lista
+                notasMasterData.clear();      // Limpa a nova lista
             } catch (SQLException e) {
                 showAlert(Alert.AlertType.ERROR, "Erro de Exclusão", "Não foi possível excluir a turma. Verifique se ela não está associada a matrículas ou horários.");
             }
         }
     }
 
-    // --- MÉTODOS NOVOS (Ações da Aba Horários) ---
-    // (A lógica foi copiada do ConsultaHorariosController)
+    // --- MÉTODOS (Ações da Aba Horários) ---
 
     @FXML
     private void onEditarHorario() {
+        // (Este método já estava correto no teu ficheiro original)
         Horario horarioSelecionado = horariosTableView.getSelectionModel().getSelectedItem();
         if (horarioSelecionado == null) {
             showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Por favor, selecione um horário para editar.");
@@ -410,20 +502,19 @@ public class GestaoTurmasController implements Initializable {
             
             stage.showAndWait();
 
-            // Recarrega os dados da aba de horários
             Turma turmaSelecionada = turmasTableView.getSelectionModel().getSelectedItem();
             if (turmaSelecionada != null) {
                 carregarHorariosDaTurma(turmaSelecionada);
             }
             
         } catch (IOException e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de cadastro de horário.");
         }
     }
 
     @FXML
     private void onExcluirHorario() {
+        // (Este método já estava correto no teu ficheiro original)
         Horario horarioSelecionado = horariosTableView.getSelectionModel().getSelectedItem();
         if (horarioSelecionado == null) {
             showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Por favor, selecione um horário para excluir.");
@@ -432,14 +523,13 @@ public class GestaoTurmasController implements Initializable {
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Deseja realmente excluir este horário?", ButtonType.YES, ButtonType.NO);
         alert.setTitle("Confirmar Exclusão");
-        alert.setHeaderText(null); // Limpa o cabeçalho
+        alert.setHeaderText(null); 
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.isPresent() && result.get() == ButtonType.YES) {
             try {
                 horarioDAO.delete(horarioSelecionado.getId());
                 
-                // Recarrega os dados da aba de horários
                 Turma turmaSelecionada = turmasTableView.getSelectionModel().getSelectedItem();
                 if (turmaSelecionada != null) {
                     carregarHorariosDaTurma(turmaSelecionada);
@@ -450,8 +540,89 @@ public class GestaoTurmasController implements Initializable {
             }
         }
     }
+    
+    
+    // --- MÉTODOS (Ações da Aba Avaliações) ---
 
+    @FXML
+    private void onEditarNota() {
+        Nota notaSelecionada = notasTableView.getSelectionModel().getSelectedItem();
+        if (notaSelecionada == null) {
+            showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Por favor, selecione uma nota para editar.");
+            return;
+        }
 
+        TextInputDialog dialog = new TextInputDialog(String.valueOf(notaSelecionada.getValor()));
+        dialog.setTitle("Editar Nota");
+        // Diálogo melhorado para mostrar o aluno
+        dialog.setHeaderText("Aluno: " + notaSelecionada.getNomeAluno());
+        dialog.setContentText("Editando nota de '" + notaSelecionada.getAvaliacao() + 
+                              "' (" + notaSelecionada.getNomeDisciplina() + "):");
+
+        Optional<String> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
+            try {
+                double novoValor = Double.parseDouble(result.get().replace(",", "."));
+                
+                notaSelecionada.setValor(novoValor);
+                notaDAO.update(notaSelecionada);
+                
+                refreshNotas(); // Chama o método de refresh atualizado
+                
+            } catch (NumberFormatException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro de Formato", "O valor da nota é inválido. Use números (ex: 8.5).");
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro de Base de Dados", "Não foi possível atualizar a nota.");
+            }
+        }
+    }
+
+    @FXML
+    private void onExcluirNota() {
+        Nota notaSelecionada = notasTableView.getSelectionModel().getSelectedItem();
+        if (notaSelecionada == null) {
+            showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Por favor, selecione uma nota para excluir.");
+            return;
+        }
+
+        // Alerta de confirmação melhorado
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, 
+            "Aluno: " + notaSelecionada.getNomeAluno() + "\n" +
+            "Disciplina: " + notaSelecionada.getNomeDisciplina() + "\n" +
+            "Avaliação: " + notaSelecionada.getAvaliacao() + " (" + notaSelecionada.getValor() + ")\n\n" +
+            "Deseja realmente excluir esta nota?", 
+            ButtonType.YES, ButtonType.NO);
+        alert.setTitle("Confirmar Exclusão");
+        alert.setHeaderText(null);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.YES) {
+            try {
+                notaDAO.delete(notaSelecionada.getId());
+                refreshNotas(); // Chama o método de refresh atualizado
+                
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erro de Exclusão", "Não foi possível excluir a nota.");
+            }
+        }
+    }
+    
+    // --- MÉTODO REFRESH ATUALIZADO ---
+    private void refreshNotas() {
+        String avaliacaoSelecionada = avaliacoesListView.getSelectionModel().getSelectedItem();
+        
+        Turma turma = turmasTableView.getSelectionModel().getSelectedItem();
+        if (turma != null) {
+            carregarAvaliacoesDaTurma(turma);
+            
+            if (avaliacaoSelecionada != null) {
+                avaliacoesListView.getSelectionModel().select(avaliacaoSelecionada);
+            }
+        }
+    }
+    
+    // --- MÉTODO AUXILIAR ---
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

@@ -33,6 +33,8 @@ import javafx.scene.control.Tooltip; // NOVO: Para as dicas
 import javafx.scene.layout.HBox; 
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import com.example.service.GeradorPdfService; // Precisamos disto
+import java.util.UUID; // Para o código de verificação
 
 public class GestaoAlunosController implements Initializable {
 
@@ -176,48 +178,61 @@ public class GestaoAlunosController implements Initializable {
     // --- LÓGICA DE AÇÕES NA TABELA (COM TOOLTIPS) ---
 
     private void configurarColunaAcoes() {
-        colAcoes.setCellFactory(param -> new TableCell<Aluno, Void>() {
-            
-            private final Button btnMatricular = new Button("", new FontAwesomeIconView(FontAwesomeIcon.ADDRESS_BOOK));
-            private final Button btnEditar = new Button("", new FontAwesomeIconView(FontAwesomeIcon.PENCIL));
-            private final Button btnExcluir = new Button("", new FontAwesomeIconView(FontAwesomeIcon.TRASH));
-            private final HBox painelBotoes = new HBox(5, btnMatricular, btnEditar, btnExcluir);
+    colAcoes.setCellFactory(param -> new TableCell<Aluno, Void>() {
 
-            {
-                btnMatricular.getStyleClass().add("salvar-button");
-                btnEditar.getStyleClass().add("salvar-button");
-                btnExcluir.getStyleClass().add("cancel-button");
-                painelBotoes.setPadding(new Insets(5));
-                
-                // Adiciona Tooltips (dicas de texto)
-                Tooltip.install(btnMatricular, new Tooltip("Matricular este aluno"));
-                Tooltip.install(btnEditar, new Tooltip("Editar dados do aluno"));
-                Tooltip.install(btnExcluir, new Tooltip("Excluir aluno e responsável"));
-                
-                // Ações dos botões
-                btnMatricular.setOnAction(event -> {
-                    Aluno aluno = getTableView().getItems().get(getIndex());
-                    handleMatricular(aluno);
-                });
-                
-                btnEditar.setOnAction(event -> {
-                    Aluno aluno = getTableView().getItems().get(getIndex());
-                    handleEditar(aluno); 
-                });
-                
-                btnExcluir.setOnAction(event -> {
-                    Aluno aluno = getTableView().getItems().get(getIndex());
-                    handleExcluir(aluno); 
-                });
-            }
+        // 1. Adiciona o novo botão
+        private final Button btnCertificado = new Button("", new FontAwesomeIconView(FontAwesomeIcon.FILE_PDF_ALT));
+        private final Button btnMatricular = new Button("", new FontAwesomeIconView(FontAwesomeIcon.ADDRESS_BOOK));
+        private final Button btnEditar = new Button("", new FontAwesomeIconView(FontAwesomeIcon.PENCIL));
+        private final Button btnExcluir = new Button("", new FontAwesomeIconView(FontAwesomeIcon.TRASH));
 
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : painelBotoes);
-            }
-        });
-    }
+        // 2. Adiciona-o ao painel (na primeira posição)
+        private final HBox painelBotoes = new HBox(5, btnCertificado, btnMatricular, btnEditar, btnExcluir);
+
+        {
+            // 3. Define o estilo e a dica (Tooltip)
+            btnCertificado.getStyleClass().add("salvar-button");
+            Tooltip.install(btnCertificado, new Tooltip("Emitir certificados para este aluno"));
+
+            btnMatricular.getStyleClass().add("salvar-button");
+            btnEditar.getStyleClass().add("salvar-button");
+            btnExcluir.getStyleClass().add("cancel-button");
+            painelBotoes.setPadding(new Insets(5));
+
+            Tooltip.install(btnMatricular, new Tooltip("Matricular este aluno"));
+            Tooltip.install(btnEditar, new Tooltip("Editar dados do aluno"));
+            Tooltip.install(btnExcluir, new Tooltip("Excluir aluno e responsável"));
+
+            // 4. Define a ação do novo botão
+            btnCertificado.setOnAction(event -> {
+                Aluno aluno = getTableView().getItems().get(getIndex());
+                handleGerarCertificado(aluno); // Chama o novo método handler
+            });
+
+            // Ações dos botões (sem alteração)
+            btnMatricular.setOnAction(event -> {
+                Aluno aluno = getTableView().getItems().get(getIndex());
+                handleMatricular(aluno);
+            });
+
+            btnEditar.setOnAction(event -> {
+                Aluno aluno = getTableView().getItems().get(getIndex());
+                handleEditar(aluno); 
+            });
+
+            btnExcluir.setOnAction(event -> {
+                Aluno aluno = getTableView().getItems().get(getIndex());
+                handleExcluir(aluno); 
+            });
+        }
+
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            setGraphic(empty ? null : painelBotoes);
+        }
+    });
+}
 
     /**
      * NOVO: Ação para o botão de matricular na linha.
@@ -251,6 +266,36 @@ public class GestaoAlunosController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de matrícula.");
         }
     }
+
+    private void handleGerarCertificado(Aluno aluno) {
+    if (aluno == null) {
+        showAlert(Alert.AlertType.WARNING, "Seleção Inválida", "Aluno não encontrado.");
+        return;
+    }
+
+    try {
+        // 1. Carrega o novo FXML
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/view/EmissaoCertificado.fxml"));
+        Parent root = loader.load();
+
+        // 2. Obtém o controller do popup
+        EmissaoCertificadoController controller = loader.getController();
+
+        // 3. Injeta o aluno no controlador do popup
+        controller.initData(aluno);
+
+        Stage stage = new Stage();
+        stage.setTitle("Emitir Certificado para: " + aluno.getNomeCompleto());
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(alunosTableView.getScene().getWindow()); 
+        stage.showAndWait();
+
+    } catch (IOException e) {
+        e.printStackTrace();
+        showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a tela de emissão de certificados.");
+    }
+}
 
 
     private void handleEditar(Aluno alunoSelecionado) {

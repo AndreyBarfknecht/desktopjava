@@ -1,25 +1,25 @@
 module com.example {
     requires javafx.controls;
     requires javafx.fxml;
-    // Requisito para a biblioteca de ícones que adicionámos
     requires de.jensd.fx.glyphs.fontawesome;
     requires java.sql;
-
-    // Abre os pacotes para que o JavaFX possa acedê-los (via reflection)
-    opens com.example.controller to javafx.fxml;
-    opens com.example.view to javafx.fxml; // Já existe, mas garantindo
     
-    // --- LINHA ADICIONADA ---
-    // Permite que o JavaFX aceda aos seus modelos (útil para ComboBox)
+    // LINHAS OBRIGATÓRIAS PARA O PDF:
+    requires org.apache.pdfbox;
+    requires java.desktop; 
+
+    // ABRE OS PACOTES:
+    opens com.example.controller to javafx.fxml;
+    opens com.example.view to javafx.fxml;
     opens com.example.model to javafx.fxml;
 
-    // Exporta os pacotes para que as suas classes sejam visíveis em todo o projeto
+    // EXPORTA OS PACOTES:
     exports com.example;
-    
-    // --- LINHAS ADICIONADAS ---
     exports com.example.model;
-    // exports com.example.service;
-    exports com.example.util;       // Torna o pacote 'util' visível
-    exports com.example.repository; // Torna o pacote 'repository' visível
-    exports com.example.controller; // Exporta o controller
+    exports com.example.util;       
+    exports com.example.repository; 
+    exports com.example.controller;
+    
+    // LINHA OBRIGATÓRIA PARA O PDF:
+    exports com.example.service; 
 }

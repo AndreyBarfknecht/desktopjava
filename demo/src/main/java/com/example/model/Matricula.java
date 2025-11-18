@@ -74,4 +74,9 @@ public class Matricula {
     public String getCpfAluno() {
         return aluno != null ? aluno.getCpf() : "";
     }
+
+    public String getNomeCurso() {
+        return (turma != null && turma.getCurso() != null) 
+               ? turma.getCurso().getNomeCurso() : "";
+    }
 }
